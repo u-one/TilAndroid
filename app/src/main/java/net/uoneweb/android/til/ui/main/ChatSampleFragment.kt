@@ -35,11 +35,9 @@ import net.uoneweb.android.til.R
 import net.uoneweb.android.til.ui.chatsample.Message
 import net.uoneweb.android.til.ui.chatsample.SampleData
 import net.uoneweb.android.til.ui.theme.MyApplicationTheme
+import javax.inject.Inject
 
-class ChatSampleFragment: Fragment() {
-    companion object {
-        fun newInstance() = ChatSampleFragment()
-    }
+class ChatSampleFragment @Inject constructor() : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +70,9 @@ class ChatSampleFragment: Fragment() {
     @Composable
     fun PreviewConversation() {
         MyApplicationTheme {
-            Conversation(SampleData.conversationSample)
+            Surface {
+                Conversation(SampleData.conversationSample)
+            }
         }
     }
 

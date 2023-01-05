@@ -22,21 +22,20 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.get
+import dagger.hilt.android.AndroidEntryPoint
 import net.uoneweb.android.til.R
 import net.uoneweb.android.til.ui.theme.MyApplicationTheme
+import javax.inject.Inject
 
-class MainFragment : Fragment() {
+@AndroidEntryPoint
+class MainFragment @Inject constructor(): Fragment() {
 
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
-    private lateinit var viewModel: MainViewModel
+    private var viewModel = viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
     override fun onCreateView(

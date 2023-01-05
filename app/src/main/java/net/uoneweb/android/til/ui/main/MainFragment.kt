@@ -32,7 +32,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainFragment @Inject constructor(): Fragment() {
 
-    private var viewModel = viewModels<MainViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +47,7 @@ class MainFragment @Inject constructor(): Fragment() {
             setContent {
                 MyApplicationTheme {
                     Surface(modifier = Modifier.fillMaxSize()) {
-                        MessageCard(Message("Android", "MainFragment") )
+                        MessageCard(viewModel)
                     }
                 }
             }
@@ -57,7 +57,9 @@ class MainFragment @Inject constructor(): Fragment() {
     data class Message(val author: String, val body: String)
 
     @Composable
-    fun MessageCard(msg: Message) {
+    fun MessageCard(viewModel: MainViewModel) {
+        val msg = viewModel.message.value ?: Message("-", "-")
+
         Row(modifier = Modifier.padding(all = 8.dp)) {
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_background),
@@ -99,7 +101,7 @@ class MainFragment @Inject constructor(): Fragment() {
     fun PreviewMessageCard() {
         MyApplicationTheme {
             Surface {
-                MessageCard(Message("test1", "test2"))
+                MessageCard(MainViewModel())
             }
         }
     }

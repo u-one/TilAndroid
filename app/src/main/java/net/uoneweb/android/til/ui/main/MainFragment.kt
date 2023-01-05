@@ -6,6 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.tooling.preview.Preview
 import net.uoneweb.android.til.R
 
 class MainFragment : Fragment() {
@@ -26,7 +31,23 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MessageCard(name = "Main")
+            }
+        }
+    }
+
+    @Composable
+    fun MessageCard(name: String) {
+        Text(text = "${name}Fragment")
+    }
+
+    @Preview
+    @Composable
+    fun MessageCardPreview() {
+        MessageCard("Main")
     }
 
 }

@@ -1,24 +1,30 @@
 package net.uoneweb.android.til
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.VibratorManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -49,7 +56,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TilApp()
+            MaterialTheme {
+                TilApp()
+            }
         }
 
         checkPermissions()
@@ -111,11 +120,14 @@ private fun TilApp() {
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
     object Main : Screen("main", R.string.main, Icons.Filled.Home)
     object Camera : Screen("camera", R.string.camera, Icons.Filled.AccountBox)
+
+    object HapticSample : Screen("haptic_sample", R.string.haptic_sample, Icons.Filled.Face)
 }
 
 private val screens = listOf(
     Screen.Main,
-    Screen.Camera
+    Screen.Camera,
+    Screen.HapticSample,
 )
 
 @Composable
@@ -148,15 +160,15 @@ private fun TilNavHost(
     navController: NavHostController,
     modifier: Modifier
 ) {
-    NavHost(navController = navController, startDestination = "main", modifier = modifier) {
-        composable("camera") {
+    NavHost(navController = navController, startDestination = Screen.HapticSample.route, modifier = modifier) {
+        composable(Screen.Camera.route) {
             CameraFragmentComposable()
         }
-        composable("main") {
+        composable(Screen.Main.route) {
             MainFragmentComposable()
         }
-        composable("hoge") {
-            Hoge()
+        composable(Screen.HapticSample.route) {
+            HapticFeedbackScreen()
         }
     }
 }
@@ -193,6 +205,40 @@ private fun FragmentComposable(fragment: Fragment) {
 }
 
 @Composable
-private fun Hoge() {
-    Text("hoge")
+private fun HapticFeedbackScreen() {
+    LazyColumn {
+        item {
+            PredefinedVibration("Click", VibrationEffect.EFFECT_CLICK)
+            PredefinedVibration("Double Click", VibrationEffect.EFFECT_DOUBLE_CLICK)
+            PredefinedVibration("Heavy Click", VibrationEffect.EFFECT_HEAVY_CLICK)
+            PredefinedVibration("Tick", VibrationEffect.EFFECT_TICK)
+        }
+    }
+
+}
+
+@Composable
+private fun PredefinedVibration(text: String, effectId: Int) {
+    val context = LocalContext.current
+    Text(text = text,
+        style = MaterialTheme.typography.body1,
+        modifier = Modifier.clickable {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager =
+                    context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                val vibrator = vibratorManager.defaultVibrator
+                vibrator.vibrate(VibrationEffect.createPredefined(effectId))
+            }
+        }
+    )
+}
+
+@Preview(
+    showBackground = true,
+)
+@Composable
+private fun PredefinedVibrationPreview() {
+    MaterialTheme {
+        PredefinedVibration("Click", VibrationEffect.EFFECT_CLICK)
+    }
 }

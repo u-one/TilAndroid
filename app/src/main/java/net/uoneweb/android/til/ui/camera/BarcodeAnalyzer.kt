@@ -18,7 +18,7 @@ class BarcodeAnalyzer(private val listener: BarcodeListener) : ImageAnalysis.Ana
 
             val scanner = BarcodeScanning.getClient()
 
-            val result = scanner.process(image)
+            scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     barcodes.forEach { barcode ->
                         listener(barcode)

@@ -91,8 +91,7 @@ class CameraFragment @Inject constructor(): Fragment() {
                         Log.d(TAG, "Average luminosity: $luma")
                     })
                      */
-                    it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode ->
-                    })
+                    it.setAnalyzer(cameraExecutor, BarcodeAnalyzer {})
                 }
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA

@@ -51,6 +51,8 @@ class CameraFragment @Inject constructor(): Fragment() {
         _binding = FragmentCameraBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        binding.viewFinder
+
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         binding.imageCaptureButton.setOnClickListener {
@@ -74,7 +76,7 @@ class CameraFragment @Inject constructor(): Fragment() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-                    it.setSurfaceProvider(_binding!!.viewFinder.surfaceProvider)
+                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
 
             imageCapture = ImageCapture.Builder().build()

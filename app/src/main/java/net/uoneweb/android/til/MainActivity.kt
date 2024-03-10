@@ -48,6 +48,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import net.uoneweb.android.til.ui.camera.CameraFragment
+import net.uoneweb.android.til.ui.graphql.GraphQLScreen
 import net.uoneweb.android.til.ui.main.MainFragment
 
 @AndroidEntryPoint
@@ -122,12 +123,15 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon:
     object Camera : Screen("camera", R.string.camera, Icons.Filled.AccountBox)
 
     object HapticSample : Screen("haptic_sample", R.string.haptic_sample, Icons.Filled.Face)
+
+    object GraphQL : Screen("graphql", R.string.graphql, Icons.Filled.Face)
 }
 
 private val screens = listOf(
     Screen.Main,
     Screen.Camera,
     Screen.HapticSample,
+    Screen.GraphQL,
 )
 
 @Composable
@@ -169,6 +173,9 @@ private fun TilNavHost(
         }
         composable(Screen.HapticSample.route) {
             HapticFeedbackScreen()
+        }
+        composable(Screen.GraphQL.route) {
+            GraphQLScreen()
         }
     }
 }

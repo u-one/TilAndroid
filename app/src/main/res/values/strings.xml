@@ -4,4 +4,5 @@
     <string name="camera">camera</string>
     <string name="haptic_sample">触覚</string>
     <string name="graphql">GraphQL</string>
+    <string name="buttons">buttons</string>
 </resources>

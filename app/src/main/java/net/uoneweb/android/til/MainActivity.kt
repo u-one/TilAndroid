@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -36,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import net.uoneweb.android.til.ui.buttons.ButtonsScreen
 import net.uoneweb.android.til.ui.camera.CameraScreen
 import net.uoneweb.android.til.ui.graphql.GraphQLScreen
 import net.uoneweb.android.til.ui.haptic.HapticFeedbackScreen
@@ -59,13 +62,15 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissions() {
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+            )
         }
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            baseContext, it) == PackageManager.PERMISSION_GRANTED
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(
@@ -75,9 +80,11 @@ class MainActivity : AppCompatActivity() {
     ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (!allPermissionsGranted()) {
-                Toast.makeText(this,
+                Toast.makeText(
+                    this,
                     "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
         }
@@ -87,7 +94,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
-            mutableListOf (
+            mutableListOf(
                 Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO
             ).apply {
@@ -104,7 +111,7 @@ private fun TilApp() {
     val navController = rememberNavController()
     Scaffold(bottomBar = {
         BottomBar(navController)
-    }) {innerPadding ->
+    }) { innerPadding ->
         TilNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
     }
 }
@@ -114,24 +121,40 @@ private fun BottomBar(navController: NavController) {
     BottomNavigation {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
-        screens.forEach {screen ->
-            BottomNavigationItem(
-                icon = { Icon(screen.icon, contentDescription = stringResource(screen.resourceId)) },
-                label = { Text(stringResource(screen.resourceId)) },
-                selected = currentDestination?.hierarchy?.any {it.route == screen.route } == true,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
+        screens.forEach { screen ->
+            BottomBarItem(screen = screen,
+                selected = currentDestination?.isCurrentScreen(screen) ?: false,
+                onClick = { navController.navigate(screen) }
             )
         }
-
     }
+}
+
+private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean =
+    hierarchy.any { it.route == screen.route }
+
+private fun (NavController).navigate(screen: Screen) {
+    navigate(screen.route) {
+        popUpTo(graph.startDestinationId) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+@Composable
+private fun (RowScope).BottomBarItem(
+    screen: Screen,
+    selected: Boolean = false,
+    onClick: () -> Unit = {}
+) {
+    BottomNavigationItem(
+        icon = { Icon(screen.icon, contentDescription = stringResource(screen.resourceId)) },
+        label = { Text(stringResource(screen.resourceId)) },
+        selected = selected,
+        onClick = onClick
+    )
 }
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
@@ -156,7 +179,11 @@ private fun TilNavHost(
     navController: NavHostController,
     modifier: Modifier
 ) {
-    NavHost(navController = navController, startDestination = Screen.HapticSample.route, modifier = modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Buttons.route,
+        modifier = modifier
+    ) {
         composable(Screen.Camera.route) {
             CameraScreen()
         }
@@ -170,6 +197,7 @@ private fun TilNavHost(
             GraphQLScreen()
         }
         composable(Screen.Buttons.route) {
+            ButtonsScreen()
         }
     }
 }

@@ -1,10 +1,12 @@
 package net.uoneweb.android.til.ui.buttons
 
 import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -112,7 +114,7 @@ class DraggableGridState(
     }
 
     fun onDrag(dragAmount: Offset) {
-        dragOffset = dragOffset + dragAmount
+        dragOffset += dragAmount
     }
 
 }
@@ -192,6 +194,7 @@ fun DraggableGrid() {
         }
         DebugInfo(draggableGridState)
     }
+    DebugOverlay(draggableGridState)
 }
 
 @Composable
@@ -236,6 +239,13 @@ private fun LazyGridItemInfo(info: LazyGridItemInfo) {
             style = MaterialTheme.typography.body2, text =
             "size: ${info.size}"
         )
+    }
+}
+
+@Composable
+private fun DebugOverlay(draggableGridState: DraggableGridState) {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        drawCircle(color = Color.Red, radius = 16f, center = draggableGridState.offsetCenter())
     }
 }
 

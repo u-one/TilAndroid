@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.plus
 import androidx.compose.ui.unit.toOffset
 import androidx.compose.ui.unit.toSize
+import net.uoneweb.android.til.collection.MovableList
 
 @Stable
 class DraggableGridState(
@@ -122,13 +123,24 @@ fun DraggableGrid() {
 
     val draggableGridState = rememberDraggableGridState()
 
+    val tempList = remember(draggableGridState.currentItemsUnderOffset()) {
+        val currentIndex = draggableGridState.draggingIndex
+        val pair = draggableGridState.currentItemsUnderOffset() ?: return@remember list
+        if (pair.first == currentIndex || pair.second == currentIndex) return@remember list
+
+        MovableList(list.toMutableList()).apply {
+            move(currentIndex, pair.second)
+        }
+
+    }
+
     Column {
 
         LazyVerticalGrid(
             columns = GridCells.Adaptive(64.dp),
             state = draggableGridState.lazyGridState
         ) {
-            itemsIndexed(list) { index, item ->
+            itemsIndexed(tempList) { index, item ->
                 ItemButton(
                     item,
                     Modifier

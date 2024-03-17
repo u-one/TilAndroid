@@ -1,5 +1,6 @@
 package net.uoneweb.android.til.ui.buttons
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -30,38 +34,51 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.plus
 import androidx.compose.ui.unit.toOffset
 import androidx.compose.ui.unit.toSize
 
 @Stable
-data class DraggableGridState(
-    var draggingIndex: Int = -1,
-    var offset: Offset = Offset.Zero,
+class DraggableGridState(
     val lazyGridState: LazyGridState
 ) {
+    var draggingIndex: Int by mutableStateOf(-1)
+        private set
+    var dragOffset: Offset by mutableStateOf(Offset.Zero)
+        private set
+
     fun draggingItem(): LazyGridItemInfo? {
         return lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
             info.index == draggingIndex
         }
     }
 
-    fun currentItemUnderOffset(): Int {
-        val center = draggingItem()?.size?.center ?: IntOffset.Zero
-        val offsetCenter = Offset(offset.x + center.x.toFloat(), offset.y + center.y.toFloat())
+    fun itemIndexUnderDrag(): Int {
+        return itemUnderDrag()?.index ?: -1
+    }
+
+    private fun itemUnderDrag(): LazyGridItemInfo? {
         val currentItem = lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
             val rect = Rect(info.offset.toOffset(), info.size.toSize())
-            rect.contains(offsetCenter)
+            rect.contains(offsetCenter())
         }
-        return currentItem?.index ?: -1
+        return currentItem
+    }
+
+    /**
+     * Absolute position of the center of dragging item.
+     */
+    fun offsetCenter(): Offset {
+        val draggingItem = draggingItem()
+        val center = draggingItem?.size?.center ?: IntOffset.Zero
+        val centerOffset =
+            Offset(dragOffset.x + center.x.toFloat(), dragOffset.y + center.y.toFloat())
+        return draggingItem?.let { it.offset + centerOffset } ?: Offset.Zero
     }
 
     fun currentItemsUnderOffset(): Pair<Int, Int>? {
-        val center = draggingItem()?.size?.center ?: IntOffset.Zero
-        val offsetCenter = Offset(offset.x + center.x.toFloat(), offset.y + center.y.toFloat())
-        val currentItem = lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
-            val rect = Rect(info.offset.toOffset(), info.size.toSize())
-            rect.contains(offsetCenter)
-        }
+        val currentItem = itemUnderDrag()
+        val offsetCenter = offsetCenter()
         return currentItem?.let {
             val currentItemCenter =
                 Rect(currentItem.offset.toOffset(), currentItem.size.toSize()).center
@@ -79,11 +96,11 @@ data class DraggableGridState(
 
     fun resetIndex() {
         draggingIndex = -1
-        offset = Offset.Zero
+        dragOffset = Offset.Zero
     }
 
     fun onDrag(dragAmount: Offset) {
-        offset += dragAmount
+        dragOffset = dragOffset + dragAmount
     }
 
 }
@@ -115,9 +132,12 @@ fun DraggableGrid() {
                 ItemButton(
                     item,
                     Modifier
+                        .background(bgColor(draggableGridState, index))
                         .pointerInput(Unit) {
                             detectDragGestures(
-                                onDragStart = { draggableGridState.onDraggingIndexChange(index) },
+                                onDragStart = {
+                                    draggableGridState.onDraggingIndexChange(index)
+                                },
                                 onDragEnd = {
                                     draggableGridState.resetIndex()
                                 },
@@ -131,20 +151,77 @@ fun DraggableGrid() {
                             )
                         },
                     isDragging = (draggableGridState.draggingIndex == index),
-                    offset = draggableGridState.offset,
+                    offset = draggableGridState.dragOffset,
                     onClickItem = {
+                        val itemsInfo = draggableGridState.lazyGridState.layoutInfo.visibleItemsInfo
+                        itemsInfo.forEach {
+                            // 内容をすべてログ出力
+                            Log.d(
+                                "DraggableGrid",
+                                "index: ${it.index}, offset: ${it.offset}, size: ${it.size}"
+                            )
+                        }
                     }
                 )
             }
         }
+        DebugInfo(draggableGridState)
+    }
+}
+
+@Composable
+private fun DebugInfo(draggableGridState: DraggableGridState) {
+    Text(
+        style = MaterialTheme.typography.body2, text =
+        "draggingIndex: ${draggableGridState.draggingIndex}"
+    )
+    Text(
+        style = MaterialTheme.typography.body2, text =
+        "offsetCenter: ${draggableGridState.offsetCenter()}"
+    )
+    Text(
+        style = MaterialTheme.typography.body2, text =
+        "indexUnderDrag: ${draggableGridState.itemIndexUnderDrag()}"
+    )
+    Text(
+        style = MaterialTheme.typography.body2, text =
+        "currentItemsUnderOffset: ${draggableGridState.currentItemsUnderOffset()}"
+    )
+    draggableGridState.draggingItem()?.let {
+        LazyGridItemInfo(it)
+    }
+}
+
+@Composable
+private fun LazyGridItemInfo(info: LazyGridItemInfo) {
+    Column {
         Text(
             style = MaterialTheme.typography.body1, text =
-            "currentItemUnderDrag: ${draggableGridState.currentItemUnderOffset()}"
+            "draggingItem:"
         )
         Text(
-            style = MaterialTheme.typography.body1, text =
-            "currentItemsUnderDrag: ${draggableGridState.currentItemsUnderOffset()}"
+            style = MaterialTheme.typography.body2, text =
+            "index: ${info.index}"
         )
+        Text(
+            style = MaterialTheme.typography.body2, text =
+            "offset: ${info.offset}"
+        )
+        Text(
+            style = MaterialTheme.typography.body2, text =
+            "size: ${info.size}"
+        )
+    }
+}
+
+private fun bgColor(draggableGridState: DraggableGridState, index: Int): Color {
+    val indice = draggableGridState.currentItemsUnderOffset()
+    return if (draggableGridState.draggingIndex == index) {
+        Color.Green
+    } else if (indice?.first == index || indice?.second == index) {
+        Color.Yellow
+    } else {
+        Color.White
     }
 }
 

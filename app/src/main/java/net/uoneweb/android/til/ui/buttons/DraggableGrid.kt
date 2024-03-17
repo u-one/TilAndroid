@@ -18,6 +18,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -91,8 +92,18 @@ class DraggableGridState(
         }
     }
 
-    fun onDraggingIndexChange(index: Int) {
+    fun onDragStart(offset: Offset) {
+        val itemDragging = lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
+            val rect = Rect(info.offset.toOffset(), info.size.toSize())
+            rect.contains(offset)
+        }
+        Log.d("DraggableGrid", "onDragStart: $itemDragging")
+        draggingIndex = itemDragging?.index ?: -1
+    }
+
+    fun onDragIndexChange(index: Int) {
         draggingIndex = index
+        dragOffset = Offset.Zero
     }
 
     fun resetIndex() {
@@ -123,45 +134,47 @@ fun DraggableGrid() {
 
     val draggableGridState = rememberDraggableGridState()
 
-    val tempList = remember(draggableGridState.currentItemsUnderOffset()) {
+    val tempList = remember {
+        MovableList(list.toMutableList())
+    }
+
+    LaunchedEffect(draggableGridState.currentItemsUnderOffset()) {
         val currentIndex = draggableGridState.draggingIndex
-        val pair = draggableGridState.currentItemsUnderOffset() ?: return@remember list
-        if (pair.first == currentIndex || pair.second == currentIndex) return@remember list
-
-        MovableList(list.toMutableList()).apply {
-            move(currentIndex, pair.second)
-        }
-
+        val pair = draggableGridState.currentItemsUnderOffset() ?: return@LaunchedEffect
+        if (pair.first == currentIndex || pair.second == currentIndex) return@LaunchedEffect
+        val index = tempList.move(currentIndex, pair.second)
+        draggableGridState.onDragIndexChange(index)
     }
 
     Column {
 
         LazyVerticalGrid(
             columns = GridCells.Adaptive(64.dp),
-            state = draggableGridState.lazyGridState
+            state = draggableGridState.lazyGridState,
+            modifier = Modifier.pointerInput(Unit) {
+                detectDragGestures(
+                    onDragStart = {
+                        draggableGridState.onDragStart(it)
+                    },
+                    onDragEnd = {
+                        draggableGridState.resetIndex()
+                    },
+                    onDragCancel = {
+                        draggableGridState.resetIndex()
+                    },
+                    onDrag = { change, dragAmount ->
+                        draggableGridState.onDrag(dragAmount)
+                        change.consume()
+                    }
+                )
+            }
         ) {
             itemsIndexed(tempList) { index, item ->
                 ItemButton(
                     item,
                     Modifier
-                        .background(bgColor(draggableGridState, index))
-                        .pointerInput(Unit) {
-                            detectDragGestures(
-                                onDragStart = {
-                                    draggableGridState.onDraggingIndexChange(index)
-                                },
-                                onDragEnd = {
-                                    draggableGridState.resetIndex()
-                                },
-                                onDragCancel = {
-                                    draggableGridState.resetIndex()
-                                },
-                                onDrag = { change, dragAmount ->
-                                    draggableGridState.onDrag(dragAmount)
-                                    change.consume()
-                                }
-                            )
-                        },
+                        .background(bgColor(draggableGridState, index)),
+                    index,
                     isDragging = (draggableGridState.draggingIndex == index),
                     offset = draggableGridState.dragOffset,
                     onClickItem = {
@@ -230,7 +243,7 @@ private fun bgColor(draggableGridState: DraggableGridState, index: Int): Color {
     val indice = draggableGridState.currentItemsUnderOffset()
     return if (draggableGridState.draggingIndex == index) {
         Color.Green
-    } else if (indice?.first == index || indice?.second == index) {
+    } else if ((indice?.first != -1 && indice?.first == index) || indice?.second == index) {
         Color.Yellow
     } else {
         Color.White
@@ -242,6 +255,7 @@ private fun bgColor(draggableGridState: DraggableGridState, index: Int): Color {
 private fun ItemButton(
     item: String,
     modifier: Modifier = Modifier,
+    index: Int = 0,
     onClickItem: (item: String) -> Unit = {},
     isDragging: Boolean = false,
     offset: Offset = Offset(0f, 0f)
@@ -270,6 +284,7 @@ private fun ItemButton(
                 Text(item)
             }
         }
+        Text(index.toString())
 
     }
 }

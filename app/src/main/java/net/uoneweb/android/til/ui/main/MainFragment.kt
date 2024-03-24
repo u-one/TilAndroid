@@ -34,7 +34,7 @@ import net.uoneweb.android.til.ui.theme.MyApplicationTheme
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainFragment @Inject constructor(): Fragment() {
+class MainFragment @Inject constructor() : Fragment() {
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -51,7 +51,11 @@ class MainFragment @Inject constructor(): Fragment() {
             setContent {
                 MyApplicationTheme {
                     Surface(modifier = Modifier.fillMaxSize()) {
-                        MessageCard(viewModel)
+                        Column {
+                            MessageCard(viewModel)
+                            DeveloperOptionsButton()
+                            CreateDeveloperOptionsShortcutButton()
+                        }
                     }
                 }
             }
@@ -91,7 +95,7 @@ class MainFragment @Inject constructor(): Fragment() {
                         style = MaterialTheme.typography.body2
                     )
                 }
-            }           
+            }
         }
     }
 

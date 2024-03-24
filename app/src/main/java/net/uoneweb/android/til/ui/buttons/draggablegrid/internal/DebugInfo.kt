@@ -25,9 +25,6 @@ internal fun DebugInfo(draggableGridState: DraggableGridState) {
         style = MaterialTheme.typography.body2, text =
         "indexUnderDrag: ${draggableGridState.itemIndexUnderDrag()}"
     )
-    draggableGridState.draggingItem()?.let {
-        LazyGridItemInfo(it)
-    }
 }
 
 @Composable

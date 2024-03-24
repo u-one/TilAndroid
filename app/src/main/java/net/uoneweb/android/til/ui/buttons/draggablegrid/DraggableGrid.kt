@@ -19,7 +19,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,16 +46,15 @@ import java.security.MessageDigest
 
 @Stable
 class DraggableGridState(
+    list: List<Any> = emptyList(),
     val lazyGridState: LazyGridState
 ) {
+    val tempList = MovableList(list.toMutableList())
+
     var draggingIndex: Int by mutableStateOf(-1)
         private set
     var dragOffset: Offset by mutableStateOf(Offset.Zero)
         private set
-
-    fun draggingItem(): LazyGridItemInfo? {
-        return findItemInfo(draggingIndex)
-    }
 
     private fun findItemInfo(index: Int): LazyGridItemInfo? {
         return lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
@@ -82,7 +80,7 @@ class DraggableGridState(
      * Absolute position of the center of dragging item.
      */
     internal fun draggingCenter(): Offset {
-        val draggingItem = draggingItem() ?: return Offset.Zero
+        val draggingItem = findItemInfo(draggingIndex) ?: return Offset.Zero
         val center = draggingItem.size.center
         return dragOffset + draggingItem.offset + center.toOffset()
     }
@@ -95,7 +93,23 @@ class DraggableGridState(
         draggingIndex = itemDragging?.index ?: -1
     }
 
-    fun onDragIndexChange(index: Int) {
+    private fun resetIndex() {
+        draggingIndex = -1
+        dragOffset = Offset.Zero
+    }
+
+    fun onDrag(dragAmount: Offset) {
+        dragOffset += dragAmount
+
+        val target = itemIndexUnderDrag()
+        if (target == -1) return
+        if (target != draggingIndex) {
+            val index = tempList.move(draggingIndex, target)
+            onDragIndexChange(index)
+        }
+    }
+
+    private fun onDragIndexChange(index: Int) {
         val prevItemInfo = findItemInfo(draggingIndex)
         val curItemInfo = findItemInfo(index)
 
@@ -106,22 +120,22 @@ class DraggableGridState(
         dragOffset += (prevOffset - curOffset).toOffset()
     }
 
-    fun resetIndex() {
-        draggingIndex = -1
-        dragOffset = Offset.Zero
+    fun onDragEnd() {
+        resetIndex()
     }
 
-    fun onDrag(dragAmount: Offset) {
-        dragOffset += dragAmount
+    fun onDragCancel() {
+        resetIndex()
     }
 
 }
 
 @Composable
-fun rememberDraggableGridState(): DraggableGridState {
+fun rememberDraggableGridState(list: List<Any>): DraggableGridState {
     val lazyGridState = rememberLazyGridState()
     return remember {
         DraggableGridState(
+            list = list,
             lazyGridState = lazyGridState
         )
     }
@@ -132,21 +146,7 @@ fun DraggableGrid() {
     // A list of characters from A to Z
     val list = ('A'..'Z').map { it.toString() }
 
-    val draggableGridState = rememberDraggableGridState()
-
-    val tempList = remember {
-        MovableList(list.toMutableList())
-    }
-
-    LaunchedEffect(draggableGridState.itemIndexUnderDrag()) {
-        val target = draggableGridState.itemIndexUnderDrag()
-        if (target == -1) return@LaunchedEffect
-        if (target == draggableGridState.draggingIndex) {
-            return@LaunchedEffect
-        }
-        val index = tempList.move(draggableGridState.draggingIndex, target)
-        draggableGridState.onDragIndexChange(index)
-    }
+    val draggableGridState = rememberDraggableGridState(list)
 
     Column {
         LazyVerticalGrid(
@@ -159,10 +159,10 @@ fun DraggableGrid() {
                         draggableGridState.onDragStart(it)
                     },
                     onDragEnd = {
-                        draggableGridState.resetIndex()
+                        draggableGridState.onDragEnd()
                     },
                     onDragCancel = {
-                        draggableGridState.resetIndex()
+                        draggableGridState.onDragCancel()
                     },
                     onDrag = { change, dragAmount ->
                         draggableGridState.onDrag(dragAmount)
@@ -171,9 +171,9 @@ fun DraggableGrid() {
                 )
             }
         ) {
-            itemsIndexed(tempList) { index, item ->
+            itemsIndexed(draggableGridState.tempList) { index, item ->
                 ItemButton(
-                    item,
+                    item as String,
                     Modifier
                         .background(bgColor(draggableGridState, index)),
                     index,

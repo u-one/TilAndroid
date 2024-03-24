@@ -68,9 +68,11 @@ class DraggableGridState(
     }
 
     private fun itemUnderDrag(): LazyGridItemInfo? {
+        val draggingCenter = draggingCenter()
+        if (draggingCenter == Offset.Zero) return null
         val currentItem = lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
             val rect = Rect(info.offset.toOffset(), info.size.toSize())
-            rect.contains(offsetCenter())
+            rect.contains(draggingCenter)
         }
         return currentItem
     }
@@ -78,12 +80,10 @@ class DraggableGridState(
     /**
      * Absolute position of the center of dragging item.
      */
-    fun offsetCenter(): Offset {
-        val draggingItem = draggingItem()
-        val center = draggingItem?.size?.center ?: IntOffset.Zero
-        val centerOffset =
-            Offset(dragOffset.x + center.x.toFloat(), dragOffset.y + center.y.toFloat())
-        return draggingItem?.let { it.offset + centerOffset } ?: Offset.Zero
+    internal fun draggingCenter(): Offset {
+        val draggingItem = draggingItem() ?: return Offset.Zero
+        val center = draggingItem.size.center
+        return dragOffset + draggingItem.offset + center.toOffset()
     }
 
     fun onDragStart(offset: Offset) {
@@ -204,7 +204,7 @@ private fun DebugInfo(draggableGridState: DraggableGridState) {
     )
     Text(
         style = MaterialTheme.typography.body2, text =
-        "offsetCenter: ${draggableGridState.offsetCenter()}"
+        "draggingCenter: ${draggableGridState.draggingCenter()}"
     )
     Text(
         style = MaterialTheme.typography.body2, text =
@@ -240,7 +240,7 @@ private fun LazyGridItemInfo(info: LazyGridItemInfo) {
 @Composable
 private fun DebugOverlay(draggableGridState: DraggableGridState) {
     Canvas(modifier = Modifier.fillMaxSize()) {
-        drawCircle(color = Color.Red, radius = 16f, center = draggableGridState.offsetCenter())
+        drawCircle(color = Color.Red, radius = 16f, center = draggableGridState.draggingCenter())
     }
 }
 

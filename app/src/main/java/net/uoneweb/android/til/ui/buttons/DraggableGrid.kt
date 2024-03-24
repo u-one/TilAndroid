@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.plus
 import androidx.compose.ui.unit.toOffset
 import androidx.compose.ui.unit.toSize
 import net.uoneweb.android.til.collection.MovableList
+import java.security.MessageDigest
 
 @Stable
 class DraggableGridState(
@@ -146,10 +148,10 @@ fun DraggableGrid() {
     }
 
     Column {
-
         LazyVerticalGrid(
             columns = GridCells.Adaptive(64.dp),
             state = draggableGridState.lazyGridState,
+            userScrollEnabled = false, // needed to start dragging vertically
             modifier = Modifier.pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = {
@@ -263,13 +265,29 @@ private fun ItemButton(
     isDragging: Boolean = false,
     offset: Offset = Offset(0f, 0f)
 ) {
+    val itemColor = remember(item) {
+        val hash = item.toSHA256ToInt()
+        Color(hash or 0xFF000000.toInt())
+    }
+    val applyItemColor = true
+
     Box(
         modifier = modifier
             .size(64.dp)
             .padding(8.dp)
     ) {
         if (!isDragging) {
-            Button(modifier = Modifier.size(56.dp), onClick = { onClickItem(item) }) {
+            Button(
+                modifier = Modifier.size(56.dp),
+                colors = if (applyItemColor) {
+                    ButtonDefaults.buttonColors(
+                        backgroundColor = itemColor,
+                    )
+                } else {
+                    ButtonDefaults.buttonColors()
+                },
+                onClick = { onClickItem(item) })
+            {
                 Text(item)
             }
         } else {
@@ -290,6 +308,13 @@ private fun ItemButton(
         Text(index.toString())
 
     }
+}
+
+private fun String.toSHA256ToInt(): Int {
+    val md = MessageDigest.getInstance("SHA-256")
+    val digest = md.digest(this.toByteArray())
+    // translate byte array to int (use first 4 bytes)
+    return digest.slice(0..3).fold(0) { acc, byte -> (acc shl 8) or (byte.toInt() and 0xFF) }
 }
 
 

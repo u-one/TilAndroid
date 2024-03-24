@@ -36,13 +36,13 @@ class MovableListTest {
     }
 
     @Test
-    fun moveToNextWouldNoChange() {
+    fun moveToNext() {
         val list = MovableList(mutableListOf(0, 1, 2, 3, 4))
 
         val actual = list.move(2, 3)
 
-        assertThat(actual).isEqualTo(-1)
-        assertThat(list.toList()).isEqualTo(listOf(0, 1, 2, 3, 4))
+        assertThat(actual).isEqualTo(3)
+        assertThat(list.toList()).isEqualTo(listOf(0, 1, 3, 2, 4))
     }
 
     @Test
@@ -51,8 +51,8 @@ class MovableListTest {
 
         val actual = list.move(2, 4)
 
-        assertThat(actual).isEqualTo(3)
-        assertThat(list.toList()).isEqualTo(listOf(0, 1, 3, 2, 4))
+        assertThat(actual).isEqualTo(4)
+        assertThat(list.toList()).isEqualTo(listOf(0, 1, 3, 4, 2))
     }
 
     @Test

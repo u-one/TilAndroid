@@ -52,8 +52,12 @@ class DraggableGridState(
         private set
 
     fun draggingItem(): LazyGridItemInfo? {
+        return findItemInfo(draggingIndex)
+    }
+
+    private fun findItemInfo(index: Int): LazyGridItemInfo? {
         return lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
-            info.index == draggingIndex
+            info.index == index
         }
     }
 
@@ -80,32 +84,23 @@ class DraggableGridState(
         return draggingItem?.let { it.offset + centerOffset } ?: Offset.Zero
     }
 
-    fun currentItemsUnderOffset(): Pair<Int, Int>? {
-        val currentItem = itemUnderDrag()
-        val offsetCenter = offsetCenter()
-        return currentItem?.let {
-            val currentItemCenter =
-                Rect(currentItem.offset.toOffset(), currentItem.size.toSize()).center
-            if (offsetCenter.x > currentItemCenter.x) {
-                Pair(currentItem.index, currentItem.index + 1)
-            } else {
-                Pair(currentItem.index - 1, currentItem.index)
-            }
-        }
-    }
-
     fun onDragStart(offset: Offset) {
         val itemDragging = lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
             val rect = Rect(info.offset.toOffset(), info.size.toSize())
             rect.contains(offset)
         }
-        Log.d("DraggableGrid", "onDragStart: $itemDragging")
         draggingIndex = itemDragging?.index ?: -1
     }
 
     fun onDragIndexChange(index: Int) {
+        val prevItemInfo = findItemInfo(draggingIndex)
+        val curItemInfo = findItemInfo(index)
+
+        val prevOffset = prevItemInfo?.offset ?: IntOffset.Zero
+        val curOffset = curItemInfo?.offset ?: return
+
         draggingIndex = index
-        dragOffset = Offset.Zero
+        dragOffset += (prevOffset - curOffset).toOffset()
     }
 
     fun resetIndex() {
@@ -140,11 +135,13 @@ fun DraggableGrid() {
         MovableList(list.toMutableList())
     }
 
-    LaunchedEffect(draggableGridState.currentItemsUnderOffset()) {
-        val currentIndex = draggableGridState.draggingIndex
-        val pair = draggableGridState.currentItemsUnderOffset() ?: return@LaunchedEffect
-        if (pair.first == currentIndex || pair.second == currentIndex) return@LaunchedEffect
-        val index = tempList.move(currentIndex, pair.second)
+    LaunchedEffect(draggableGridState.itemIndexUnderDrag()) {
+        val target = draggableGridState.itemIndexUnderDrag()
+        if (target == -1) return@LaunchedEffect
+        if (target == draggableGridState.draggingIndex) {
+            return@LaunchedEffect
+        }
+        val index = tempList.move(draggableGridState.draggingIndex, target)
         draggableGridState.onDragIndexChange(index)
     }
 
@@ -211,10 +208,6 @@ private fun DebugInfo(draggableGridState: DraggableGridState) {
         style = MaterialTheme.typography.body2, text =
         "indexUnderDrag: ${draggableGridState.itemIndexUnderDrag()}"
     )
-    Text(
-        style = MaterialTheme.typography.body2, text =
-        "currentItemsUnderOffset: ${draggableGridState.currentItemsUnderOffset()}"
-    )
     draggableGridState.draggingItem()?.let {
         LazyGridItemInfo(it)
     }
@@ -250,10 +243,10 @@ private fun DebugOverlay(draggableGridState: DraggableGridState) {
 }
 
 private fun bgColor(draggableGridState: DraggableGridState, index: Int): Color {
-    val indice = draggableGridState.currentItemsUnderOffset()
+    val target = draggableGridState.itemIndexUnderDrag()
     return if (draggableGridState.draggingIndex == index) {
         Color.Green
-    } else if ((indice?.first != -1 && indice?.first == index) || indice?.second == index) {
+    } else if (target != -1 && target == index) {
         Color.Yellow
     } else {
         Color.White

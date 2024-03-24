@@ -1,8 +1,10 @@
 package net.uoneweb.android.til.ui.buttons.draggablegrid
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,10 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.center
@@ -123,7 +129,10 @@ class DraggableGridState(
 }
 
 @Composable
-fun rememberDraggableGridState(list: List<Any>, onListChanged: (List<Any>) -> Unit): DraggableGridState {
+fun rememberDraggableGridState(
+    list: List<Any>,
+    onListChanged: (List<Any>) -> Unit
+): DraggableGridState {
     val lazyGridState = rememberLazyGridState()
     return remember {
         DraggableGridState(
@@ -194,14 +203,35 @@ private fun DraggableGridPreview() {
     val list = ('A'..'Z').map { it.toString() }
     MaterialTheme {
         DraggableGrid(list) { index: Int, item: Any, dragging: Boolean, dragOffset: Offset ->
-            Box(modifier = Modifier.padding(4.dp),) {
-                Button(
-                    modifier = Modifier.size(56.dp),
-                    onClick = {})
-                {
-                    Text(item as String)
+            if (!dragging) {
+                Box(modifier = Modifier.padding(4.dp)) {
+                    Button(
+                        modifier = Modifier.size(56.dp),
+                        onClick = {})
+                    {
+                        Text(item as String)
+                    }
+                    Text(index.toString())
                 }
-                Text(index.toString())
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(Color.Yellow)
+                ) {
+                    val density = LocalDensity.current
+                    val offsetX = with(density) { dragOffset.x.toDp() }
+                    val offsetY = with(density) { dragOffset.y.toDp() }
+                    Button(
+                        modifier = Modifier.size(56.dp).offset(offsetX, offsetY),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.secondary,
+                        ),
+                        onClick = {})
+                    {
+                        Text(item as String)
+                    }
+                }
             }
         }
     }

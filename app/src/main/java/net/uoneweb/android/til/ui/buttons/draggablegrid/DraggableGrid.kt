@@ -1,12 +1,10 @@
-package net.uoneweb.android.til.ui.buttons
+package net.uoneweb.android.til.ui.buttons.draggablegrid
 
 import android.util.Log
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,6 +40,9 @@ import androidx.compose.ui.unit.plus
 import androidx.compose.ui.unit.toOffset
 import androidx.compose.ui.unit.toSize
 import net.uoneweb.android.til.collection.MovableList
+import net.uoneweb.android.til.ui.buttons.ButtonsScreen
+import net.uoneweb.android.til.ui.buttons.draggablegrid.internal.DebugInfo
+import net.uoneweb.android.til.ui.buttons.draggablegrid.internal.DebugOverlay
 import java.security.MessageDigest
 
 @Stable
@@ -196,54 +197,6 @@ fun DraggableGrid() {
     DebugOverlay(draggableGridState)
 }
 
-@Composable
-private fun DebugInfo(draggableGridState: DraggableGridState) {
-    Text(
-        style = MaterialTheme.typography.body2, text =
-        "draggingIndex: ${draggableGridState.draggingIndex}"
-    )
-    Text(
-        style = MaterialTheme.typography.body2, text =
-        "draggingCenter: ${draggableGridState.draggingCenter()}"
-    )
-    Text(
-        style = MaterialTheme.typography.body2, text =
-        "indexUnderDrag: ${draggableGridState.itemIndexUnderDrag()}"
-    )
-    draggableGridState.draggingItem()?.let {
-        LazyGridItemInfo(it)
-    }
-}
-
-@Composable
-private fun LazyGridItemInfo(info: LazyGridItemInfo) {
-    Column {
-        Text(
-            style = MaterialTheme.typography.body1, text =
-            "draggingItem:"
-        )
-        Text(
-            style = MaterialTheme.typography.body2, text =
-            "index: ${info.index}"
-        )
-        Text(
-            style = MaterialTheme.typography.body2, text =
-            "offset: ${info.offset}"
-        )
-        Text(
-            style = MaterialTheme.typography.body2, text =
-            "size: ${info.size}"
-        )
-    }
-}
-
-@Composable
-private fun DebugOverlay(draggableGridState: DraggableGridState) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        drawCircle(color = Color.Red, radius = 16f, center = draggableGridState.draggingCenter())
-    }
-}
-
 private fun bgColor(draggableGridState: DraggableGridState, index: Int): Color {
     val target = draggableGridState.itemIndexUnderDrag()
     return if (draggableGridState.draggingIndex == index) {
@@ -254,7 +207,6 @@ private fun bgColor(draggableGridState: DraggableGridState, index: Int): Color {
         Color.White
     }
 }
-
 
 @Composable
 private fun ItemButton(

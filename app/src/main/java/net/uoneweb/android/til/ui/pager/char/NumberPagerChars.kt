@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.pager
+package net.uoneweb.android.til.ui.pager.char
 
 object NumberPagerChars {
     val set = mutableSetOf<PagerChar>()

@@ -1,6 +1,8 @@
 package net.uoneweb.android.til.ui.pager
 
 import com.google.common.truth.Truth.assertThat
+import net.uoneweb.android.til.ui.pager.char.PagerChar
+import net.uoneweb.android.til.ui.pager.char.PagerCode
 import org.junit.Test
 
 class PagerCharTest {

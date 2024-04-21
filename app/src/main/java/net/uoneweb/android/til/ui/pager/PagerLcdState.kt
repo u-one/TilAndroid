@@ -4,6 +4,12 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import net.uoneweb.android.til.ui.pager.char.AlphabetPagerChars
+import net.uoneweb.android.til.ui.pager.char.KanaPagerChars
+import net.uoneweb.android.til.ui.pager.char.NumberPagerChars
+import net.uoneweb.android.til.ui.pager.char.PagerChar
+import net.uoneweb.android.til.ui.pager.char.PagerCode
+import net.uoneweb.android.til.ui.pager.char.SpecialPagerChars
 
 @Composable
 fun rememberPagerLcdState(): PagerLcdState {
@@ -52,8 +58,13 @@ class PagerLcdState(val dotMatrixLcdState: DotMatrixLcdState) {
             val pagerChar =
                 charset.find {
                     code.startsWith(it.code.value, startIndex, ignoreCase = true)
-                } ?: NumberPagerChars.set.find { it.char == code.substring(startIndex, startIndex + 1) }
-                    ?: PagerChar.Control(PagerCode(code.substring(startIndex, startIndex + 1)), "?")
+                } ?: NumberPagerChars.set.find {
+                    it.char == code.substring(
+                        startIndex,
+                        startIndex + 1,
+                    )
+                }
+                ?: PagerChar.Control(PagerCode(code.substring(startIndex, startIndex + 1)), "?")
             Log.d("PagerLcdState", "decode: ${pagerChar.code}")
             if (pagerChar == ctrlBegin) {
                 chars.clear()

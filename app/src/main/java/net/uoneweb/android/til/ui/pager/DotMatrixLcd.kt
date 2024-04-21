@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.uoneweb.android.til.ui.pager.char.PagerChar
+import net.uoneweb.android.til.ui.pager.char.PagerCode
 
 @Stable
 interface DotMatrixLcdState {
@@ -86,10 +88,10 @@ fun DotMatrixLcd(
 
                 val topLeft =
                     offset +
-                        Offset(
-                            x * (dotSize.width + dotMargin),
-                            y * (dotSize.height + dotMargin),
-                        )
+                            Offset(
+                                x * (dotSize.width + dotMargin),
+                                y * (dotSize.height + dotMargin),
+                            )
                 val rect = Rect(topLeft, dotSize)
                 if (size.toRect().contains(rect)) {
                     drawRect(
@@ -105,9 +107,9 @@ fun DotMatrixLcd(
 
 private fun Rect.contains(other: Rect): Boolean {
     return this.left <= other.left &&
-        this.top <= other.top &&
-        this.right >= other.right &&
-        this.bottom >= other.bottom
+            this.top <= other.top &&
+            this.right >= other.right &&
+            this.bottom >= other.bottom
 }
 
 private class PreviewStateImpl : DotMatrixLcdState {

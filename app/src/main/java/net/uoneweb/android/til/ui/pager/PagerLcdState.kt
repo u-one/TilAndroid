@@ -125,7 +125,19 @@ class PagerLcdState(val dotMatrixLcdState: DotMatrixLcdState) {
        00100
     """
     )
-    private val charset = setOf(emSmile, chA, chE, chG, chK, chL, chM, chO, chS, chT, chY)
+    val chSp = PagerChar.Special(
+        PagerCode("88"), " ", """
+         00000
+         00000
+         00000
+         00000
+         00000
+         00000
+         00000
+    """
+    )
+
+    private val charset = setOf(emSmile, chA, chE, chG, chK, chL, chM, chO, chS, chT, chY, chSp)
 
     fun update(text: String) {
         dotMatrixLcdState.update(stringToChars(text))

@@ -3,6 +3,8 @@ package net.uoneweb.android.til.ui.pager
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
@@ -30,31 +32,23 @@ interface DotMatrixLcdState {
     }
 }
 
-class DotMatrixLcdStateImpl(initialData: IntArray = intArrayOf()) : DotMatrixLcdState {
+class DotMatrixLcdStateImpl() : DotMatrixLcdState {
     override val dotWidth: Int = 80
     override val dotHeight: Int = 15
-    override var data = mutableStateOf(
-        initialData.copyInto(IntArray(dotWidth * dotHeight) { 0 }, 0, 0, initialData.size)
+    override var data = mutableStateOf(IntArray(dotWidth * dotHeight) { 0 })
+    private val characterLcdBuffer = CharacterLcdBuffer(
+        displayWidth = dotWidth,
+        displayHeight = dotHeight,
+        charWidth = 5,
+        charHeight = 7,
+        charMargin = 1,
     )
 
     override fun update(chars: List<PagerChar>) {
-        val data = IntArray(dotWidth * dotHeight) { 0 }
-        val charMarginWidth = 1
-
-        // 一番上のドット行ごとに文字を描画
-        // TODO 2次元的にコピーしてからシリアライズしたほうがやりやすそう
-        for (y in 0 until dotHeight) {
-            var destinationOffset = dotWidth * y
-            chars.forEachIndexed() { index, ch ->
-                if (y >= ch.size.height) return@forEachIndexed
-
-                val startIndex = ch.size.width * y
-                val endIndex = startIndex + ch.size.width
-                ch.charData.copyInto(data, destinationOffset, startIndex, endIndex)
-                destinationOffset += ch.size.width + charMarginWidth
-            }
+        chars.forEach {
+            characterLcdBuffer.draw(LcdBitmap(data = it.charData, size = it.size))
         }
-        update(data)
+        update(characterLcdBuffer.buffer)
     }
 }
 
@@ -63,23 +57,20 @@ fun DotMatrixLcd(
     state: DotMatrixLcdState,
     modifier: Modifier = Modifier
 ) {
-
     val density = LocalDensity.current
     val dotSize = with(density) {
-        //Size(12f, 12f)
-        Size(6.dp.toPx(), 6.dp.toPx())
+        Size(5.dp.toPx(), 5.dp.toPx())
     }
     val dotMargin = with(density) {
-        // 2f
-        0.5.dp.toPx()
+        0.4.dp.toPx()
+    }
+    val offset = with(density) {
+        Offset(10.dp.toPx(), 10.dp.toPx())
     }
 
     Canvas(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFF446644))
+        modifier = modifier.fillMaxSize()
     ) {
-        val offset = Offset(10f, 10f)
         (0 until state.dotHeight).forEach { y ->
             (0 until state.dotWidth).forEach { x ->
                 val index = x + state.dotWidth * y
@@ -156,6 +147,11 @@ private fun DotMatrixLcdPreview() {
     )
     val state = PreviewStateImpl()
     state.update(listOf(chA, chA, chA, chA))
-    DotMatrixLcd(state, Modifier.fillMaxSize())
+    DotMatrixLcd(
+        state,
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF446644))
+    )
 }
 

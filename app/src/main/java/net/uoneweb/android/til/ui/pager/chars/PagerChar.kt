@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.pager.char
+package net.uoneweb.android.til.ui.pager.chars
 
 import androidx.compose.ui.unit.IntSize
 

@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.pager.char
+package net.uoneweb.android.til.ui.pager.chars
 
 object SpecialPagerChars {
     val set = mutableSetOf<PagerChar>()
@@ -100,7 +100,7 @@ object SpecialPagerChars {
         set.add(
             PagerChar.Special(
                 PagerCode("78"),
-                "⌚",
+                "時計",
                 """
          01110
          10101
@@ -115,7 +115,7 @@ object SpecialPagerChars {
         set.add(
             PagerChar.Special(
                 PagerCode("79"),
-                "☎",
+                "電話",
                 """
          00000
          00000
@@ -130,7 +130,7 @@ object SpecialPagerChars {
         set.add(
             PagerChar.Special(
                 PagerCode("70"),
-                "☕️",
+                "カップ",
                 """
          11100
          11110
@@ -139,6 +139,36 @@ object SpecialPagerChars {
          11101
          11110
          11100
+            """,
+            ),
+        )
+        set.add(
+            PagerChar.Special(
+                PagerCode("82"),
+                "(",
+                """
+         00001
+         00010
+         00100
+         00100
+         00100
+         00010
+         00001
+            """,
+            ),
+        )
+        set.add(
+            PagerChar.Special(
+                PagerCode("84"),
+                ")",
+                """
+         10000
+         01000
+         00100
+         00100
+         00100
+         01000
+         10000
             """,
             ),
         )
@@ -199,6 +229,36 @@ object SpecialPagerChars {
          11111
          01110
          00100
+            """,
+            ),
+        )
+        set.add(
+            PagerChar.Special(
+                PagerCode("04"),
+                "゛",
+                """
+         10100
+         01010
+         00000
+         00000
+         00000
+         00000
+         00000
+            """,
+            ),
+        )
+        set.add(
+            PagerChar.Special(
+                PagerCode("05"),
+                "゜",
+                """
+         01000
+         10100
+         01000
+         00000
+         00000
+         00000
+         00000
             """,
             ),
         )

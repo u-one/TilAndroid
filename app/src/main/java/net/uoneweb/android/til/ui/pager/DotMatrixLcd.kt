@@ -16,8 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.uoneweb.android.til.ui.pager.char.PagerChar
-import net.uoneweb.android.til.ui.pager.char.PagerCode
+import net.uoneweb.android.til.ui.pager.chars.PagerChar
+import net.uoneweb.android.til.ui.pager.chars.PagerCode
 
 @Stable
 interface DotMatrixLcdState {

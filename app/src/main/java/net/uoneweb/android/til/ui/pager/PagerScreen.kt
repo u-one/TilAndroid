@@ -37,7 +37,7 @@ fun PagerScreen() {
     var inputText by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        PagerLcd(Modifier.height(160.dp))
+        PagerLcd(Modifier.height(160.dp), inputText = inputText)
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = inputText,
@@ -172,7 +172,7 @@ fun PagerLcdPreview(modifier: Modifier = Modifier) {
         )
         PagerLcd(
             modifier = Modifier.height(160.dp),
-            inputText = "91929394958801020388",
+            inputText = "919293949588010203880405",
         )
         PagerLcd(
             modifier = Modifier.height(160.dp),
@@ -181,7 +181,7 @@ fun PagerLcdPreview(modifier: Modifier = Modifier) {
         )
         PagerLcd(
             modifier = Modifier.height(160.dp),
-            inputText = "67686960767778797086878889",
+            inputText = "676869607677787970828486878889",
         )
         PagerLcd(
             modifier = Modifier.height(160.dp),

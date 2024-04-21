@@ -4,12 +4,12 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import net.uoneweb.android.til.ui.pager.char.AlphabetPagerChars
-import net.uoneweb.android.til.ui.pager.char.KanaPagerChars
-import net.uoneweb.android.til.ui.pager.char.NumberPagerChars
-import net.uoneweb.android.til.ui.pager.char.PagerChar
-import net.uoneweb.android.til.ui.pager.char.PagerCode
-import net.uoneweb.android.til.ui.pager.char.SpecialPagerChars
+import net.uoneweb.android.til.ui.pager.chars.AlphabetPagerChars
+import net.uoneweb.android.til.ui.pager.chars.KanaPagerChars
+import net.uoneweb.android.til.ui.pager.chars.NumberPagerChars
+import net.uoneweb.android.til.ui.pager.chars.PagerChar
+import net.uoneweb.android.til.ui.pager.chars.PagerCode
+import net.uoneweb.android.til.ui.pager.chars.SpecialPagerChars
 
 @Composable
 fun rememberPagerLcdState(): PagerLcdState {

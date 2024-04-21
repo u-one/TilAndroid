@@ -7,9 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
-    private val _message = MutableLiveData<MainFragment.Message>(
-        MainFragment.Message("Android", "MainFragment")
-    )
-    val message: LiveData<MainFragment.Message> = _message
-}
+class MainViewModel
+    @Inject
+    constructor() : ViewModel() {
+        private val _message =
+            MutableLiveData<MainFragment.Message>(
+                MainFragment.Message("Android", "MainFragment"),
+            )
+        val message: LiveData<MainFragment.Message> = _message
+    }

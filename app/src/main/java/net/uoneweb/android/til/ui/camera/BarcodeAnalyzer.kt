@@ -24,13 +24,13 @@ class BarcodeAnalyzer(private val listener: BarcodeListener) : ImageAnalysis.Ana
                         listener(barcode)
                         Log.i(
                             TAG,
-                            "${barcode.format}, ${barcode.valueType}, ${barcode.displayValue}, ${barcode.boundingBox}"
+                            "${barcode.format}, ${barcode.valueType}, ${barcode.displayValue}, ${barcode.boundingBox}",
                         )
                     }
                     Log.d(TAG, barcodes.map { it.toString() }.joinToString())
                 }
                 .addOnFailureListener {
-                    //Log.e(TAG, "Failed to analyze ", it)
+                    // Log.e(TAG, "Failed to analyze ", it)
                 }
         }
         imageProxy.close()
@@ -39,5 +39,4 @@ class BarcodeAnalyzer(private val listener: BarcodeListener) : ImageAnalysis.Ana
     companion object {
         const val TAG = "BarcodeAnalyzer"
     }
-
 }

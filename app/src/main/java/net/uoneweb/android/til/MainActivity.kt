@@ -47,7 +47,6 @@ import net.uoneweb.android.til.ui.pager.PagerScreen
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,28 +62,31 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissions() {
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+                this,
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS,
             )
         }
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
-            baseContext, it
-        ) == PackageManager.PERMISSION_GRANTED
-    }
+    private fun allPermissionsGranted() =
+        REQUIRED_PERMISSIONS.all {
+            ContextCompat.checkSelfPermission(
+                baseContext, it,
+            ) == PackageManager.PERMISSION_GRANTED
+        }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (!allPermissionsGranted()) {
                 Toast.makeText(
                     this,
                     "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                 ).show()
                 finish()
             }
@@ -97,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         private val REQUIRED_PERMISSIONS =
             mutableListOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO
+                Manifest.permission.RECORD_AUDIO,
             ).apply {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                     add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -123,16 +125,16 @@ private fun BottomBar(navController: NavController) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         screens.forEach { screen ->
-            BottomBarItem(screen = screen,
+            BottomBarItem(
+                screen = screen,
                 selected = currentDestination?.isCurrentScreen(screen) ?: false,
-                onClick = { navController.navigate(screen) }
+                onClick = { navController.navigate(screen) },
             )
         }
     }
 }
 
-private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean =
-    hierarchy.any { it.route == screen.route }
+private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean = hierarchy.any { it.route == screen.route }
 
 private fun (NavController).navigate(screen: Screen) {
     navigate(screen.route) {
@@ -148,44 +150,54 @@ private fun (NavController).navigate(screen: Screen) {
 private fun (RowScope).BottomBarItem(
     screen: Screen,
     selected: Boolean = false,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     BottomNavigationItem(
         icon = { Icon(screen.icon, contentDescription = stringResource(screen.resourceId)) },
         label = { Text(stringResource(screen.resourceId)) },
         selected = selected,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
+sealed class Screen(
+    val route: String,
+    @StringRes val resourceId: Int,
+    val icon: ImageVector,
+) {
     data object Main : Screen("main", R.string.main, Icons.Filled.Home)
+
     data object Camera : Screen("camera", R.string.camera, Icons.Filled.AccountBox)
+
     data object HapticSample : Screen("haptic_sample", R.string.haptic_sample, Icons.Filled.Face)
+
     data object GraphQL : Screen("graphql", R.string.graphql, Icons.Filled.Face)
+
     data object Buttons : Screen("buttons", R.string.buttons, Icons.Filled.CheckCircle)
+
     data object Pager : Screen("pager", R.string.pager, Icons.Filled.AccountBox)
 }
 
-private val screens = listOf(
-    Screen.Main,
-    Screen.Camera,
-    Screen.HapticSample,
-    Screen.GraphQL,
-    Screen.Buttons,
-    Screen.Pager,
-)
+private val screens =
+    listOf(
+        Screen.Main,
+        Screen.Camera,
+        Screen.HapticSample,
+        Screen.GraphQL,
+        Screen.Buttons,
+        Screen.Pager,
+    )
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 private fun TilNavHost(
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     NavHost(
         navController = navController,
         startDestination = Screen.Pager.route,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable(Screen.Camera.route) {
             CameraScreen()

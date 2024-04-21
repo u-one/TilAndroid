@@ -22,27 +22,30 @@ fun DeveloperOptionsButton() {
         onClick = {
             val intent = createDeveloperOptionsIntent()
             context.startActivity(intent)
-        })
+        },
+    )
 }
 
 private fun isDeveloperOptionsEnabled(context: Context): Boolean {
     return Settings.Secure.getInt(
         context.contentResolver,
         Settings.Global.DEVELOPMENT_SETTINGS_ENABLED,
-        0
+        0,
     ) == 1
 }
-
 
 private fun createDeveloperOptionsIntent(): Intent {
     return Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
 }
 
 @Composable
-private fun OpenButton(onClick: () -> Unit, enabled: Boolean = true) {
+private fun OpenButton(
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+) {
     Button(
         enabled = enabled,
-        onClick = onClick
+        onClick = onClick,
     ) {
         if (enabled) {
             Text("開発者オプション")
@@ -60,7 +63,6 @@ fun CreateDeveloperOptionsShortcutButton() {
     }) {
         Text("ショートカット作成")
     }
-
 }
 
 private fun createAppShortCut(context: Context) {

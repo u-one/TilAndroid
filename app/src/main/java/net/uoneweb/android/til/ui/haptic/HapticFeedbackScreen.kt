@@ -25,22 +25,26 @@ fun HapticFeedbackScreen() {
             PredefinedVibration("Tick", VibrationEffect.EFFECT_TICK)
         }
     }
-
 }
 
 @Composable
-private fun PredefinedVibration(text: String, effectId: Int) {
+private fun PredefinedVibration(
+    text: String,
+    effectId: Int,
+) {
     val context = LocalContext.current
-    Text(text = text,
+    Text(
+        text = text,
         style = MaterialTheme.typography.body1,
-        modifier = Modifier.clickable {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager =
-                    context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                val vibrator = vibratorManager.defaultVibrator
-                vibrator.vibrate(VibrationEffect.createPredefined(effectId))
-            }
-        }
+        modifier =
+            Modifier.clickable {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val vibratorManager =
+                        context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                    val vibrator = vibratorManager.defaultVibrator
+                    vibrator.vibrate(VibrationEffect.createPredefined(effectId))
+                }
+            },
     )
 }
 

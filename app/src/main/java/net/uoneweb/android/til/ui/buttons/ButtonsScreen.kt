@@ -37,11 +37,10 @@ fun ButtonsScreen() {
             isDragging = dragging,
             dragOffset = dragOffset,
             onClickItem = {
-            }
+            },
         )
     }
 }
-
 
 @Composable
 private fun GridItem(
@@ -50,13 +49,14 @@ private fun GridItem(
     index: Int = 0,
     onClickItem: (item: String) -> Unit = {},
     isDragging: Boolean = false,
-    dragOffset: Offset = Offset.Zero
+    dragOffset: Offset = Offset.Zero,
 ) {
     val enableItemColor = true
     Box(
-        modifier = modifier
-            .background(if (isDragging) Color.Green else Color.Transparent)
-            .padding(8.dp),
+        modifier =
+            modifier
+                .background(if (isDragging) Color.Green else Color.Transparent)
+                .padding(8.dp),
     ) {
         if (!isDragging) {
             ItemButton(item, onClickItem, enableItemColor)
@@ -73,36 +73,42 @@ private fun ItemButton(
     onClickItem: (String) -> Unit = {},
     enableItemColor: Boolean = false,
 ) {
-    val itemColor = remember(item) {
-        val hash = item.toSHA256ToInt()
-        Color(hash or 0xFF000000.toInt())
-    }
+    val itemColor =
+        remember(item) {
+            val hash = item.toSHA256ToInt()
+            Color(hash or 0xFF000000.toInt())
+        }
     Button(
         modifier = Modifier.size(56.dp),
-        colors = if (enableItemColor) {
-            ButtonDefaults.buttonColors(
-                backgroundColor = itemColor,
-            )
-        } else {
-            ButtonDefaults.buttonColors()
-        },
-        onClick = { onClickItem(item) })
-    {
+        colors =
+            if (enableItemColor) {
+                ButtonDefaults.buttonColors(
+                    backgroundColor = itemColor,
+                )
+            } else {
+                ButtonDefaults.buttonColors()
+            },
+        onClick = { onClickItem(item) },
+    ) {
         Text(item)
     }
 }
 
 @Composable
-private fun DraggingItem(item: String, dragOffset: Offset = Offset.Zero) {
+private fun DraggingItem(
+    item: String,
+    dragOffset: Offset = Offset.Zero,
+) {
     val density = LocalDensity.current
     val offsetX = with(density) { dragOffset.x.toDp() }
     val offsetY = with(density) { dragOffset.y.toDp() }
     Box(
-        modifier = Modifier
-            .size(56.dp)
-            .offset(x = offsetX, y = offsetY)
-            .background(Color.Gray),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .size(56.dp)
+                .offset(x = offsetX, y = offsetY)
+                .background(Color.Gray),
+        contentAlignment = Alignment.Center,
     ) {
         Text(item)
     }
@@ -114,7 +120,6 @@ private fun String.toSHA256ToInt(): Int {
     // translate byte array to int (use first 4 bytes)
     return digest.slice(0..3).fold(0) { acc, byte -> (acc shl 8) or (byte.toInt() and 0xFF) }
 }
-
 
 @Preview(
     showBackground = true,
@@ -137,7 +142,6 @@ private fun GridItemPreview() {
             GridItem("Text", isDragging = true)
             GridItem("Text", isDragging = true)
         }
-
     }
 }
 
@@ -151,7 +155,6 @@ private fun ItemButtonPreview() {
             ItemButton("Text")
             ItemButton("Text", enableItemColor = true)
         }
-
     }
 }
 
@@ -165,6 +168,5 @@ private fun DraggingItemPreview() {
             DraggingItem("Text")
             DraggingItem("Text", dragOffset = Offset(20f, 20f))
         }
-
     }
 }

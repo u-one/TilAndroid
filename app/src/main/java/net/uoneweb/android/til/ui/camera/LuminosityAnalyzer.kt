@@ -7,7 +7,6 @@ import java.nio.ByteBuffer
 typealias LumaListener = (luma: Double) -> Unit
 
 class LuminosityAnalyzer(private val listener: LumaListener) : ImageAnalysis.Analyzer {
-
     private fun ByteBuffer.toByteArray(): ByteArray {
         rewind()
         val data = ByteArray(remaining())
@@ -25,5 +24,4 @@ class LuminosityAnalyzer(private val listener: LumaListener) : ImageAnalysis.Ana
 
         image.close()
     }
-
 }

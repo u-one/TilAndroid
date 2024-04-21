@@ -4,7 +4,6 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class MovableListTest {
-
     @Test
     fun moveToFirst() {
         val list = MovableList(mutableListOf(0, 1, 2, 3, 4))

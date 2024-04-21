@@ -19,7 +19,7 @@ data class CharacterLcdBuffer(
                 buffer,
                 dstOffset,
                 orgIndex,
-                orgIndex + bitmap.size.width
+                orgIndex + bitmap.size.width,
             )
         }
         currentPos++

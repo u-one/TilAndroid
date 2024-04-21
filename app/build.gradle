@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.apollographql.apollo3' version "3.8.2"
+    id 'com.diffplug.spotless'
 }
 
 android {
@@ -103,4 +104,12 @@ dependencies {
 
     kapt 'com.google.dagger:hilt-compiler:2.42'
 
+}
+
+spotless {
+    kotlin {
+        target '**/*.kt'
+        targetExclude '**/build/**/*.kt'
+        ktlint('1.0.1')
+    }
 }

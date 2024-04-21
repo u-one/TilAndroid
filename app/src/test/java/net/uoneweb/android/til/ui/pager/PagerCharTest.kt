@@ -4,12 +4,13 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class PagerCharTest {
-
     @Test
     fun testPagerChar() {
-        val chA = PagerChar.Alpha(
-            PagerCode("16"), "A",
-            """
+        val chA =
+            PagerChar.Alpha(
+                PagerCode("16"),
+                "A",
+                """
        01110
        10001
        10001
@@ -17,8 +18,8 @@ class PagerCharTest {
        10001
        10001
        10001
-    """
-        )
+    """,
+            )
 
         assertThat(chA.charData).isEqualTo(
             intArrayOf(
@@ -28,8 +29,8 @@ class PagerCharTest {
                 1, 1, 1, 1, 1,
                 1, 0, 0, 0, 1,
                 1, 0, 0, 0, 1,
-                1, 0, 0, 0, 1
-            )
+                1, 0, 0, 0, 1,
+            ),
         )
     }
 }

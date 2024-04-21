@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -45,7 +44,7 @@ import net.uoneweb.android.til.ui.buttons.draggablegrid.internal.DebugOverlay
 class DraggableGridState(
     list: List<Any>,
     val lazyGridState: LazyGridState,
-    private val onListChanged: (List<Any>) -> Unit = {}
+    private val onListChanged: (List<Any>) -> Unit = {},
 ) {
     val tempList = MovableList(list.toMutableList())
 
@@ -67,10 +66,11 @@ class DraggableGridState(
     private fun itemUnderDrag(): LazyGridItemInfo? {
         val draggingCenter = draggingCenter()
         if (draggingCenter == Offset.Zero) return null
-        val currentItem = lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
-            val rect = Rect(info.offset.toOffset(), info.size.toSize())
-            rect.contains(draggingCenter)
-        }
+        val currentItem =
+            lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
+                val rect = Rect(info.offset.toOffset(), info.size.toSize())
+                rect.contains(draggingCenter)
+            }
         return currentItem
     }
 
@@ -84,10 +84,11 @@ class DraggableGridState(
     }
 
     fun onDragStart(offset: Offset) {
-        val itemDragging = lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
-            val rect = Rect(info.offset.toOffset(), info.size.toSize())
-            rect.contains(offset)
-        }
+        val itemDragging =
+            lazyGridState.layoutInfo.visibleItemsInfo.find { info ->
+                val rect = Rect(info.offset.toOffset(), info.size.toSize())
+                rect.contains(offset)
+            }
         draggingIndex = itemDragging?.index ?: -1
     }
 
@@ -131,7 +132,7 @@ class DraggableGridState(
 @Composable
 fun rememberDraggableGridState(
     list: List<Any>,
-    onListChanged: (List<Any>) -> Unit
+    onListChanged: (List<Any>) -> Unit,
 ): DraggableGridState {
     val lazyGridState = rememberLazyGridState()
     return remember {
@@ -148,7 +149,7 @@ fun DraggableGrid(
     list: List<Any>,
     onListChanged: (List<Any>) -> Unit = {},
     enableDebug: Boolean = false,
-    itemContent: @Composable (index: Int, item: Any, dragging: Boolean, dragOffset: Offset) -> Unit
+    itemContent: @Composable (index: Int, item: Any, dragging: Boolean, dragOffset: Offset) -> Unit,
 ) {
     val draggableGridState = rememberDraggableGridState(list, onListChanged)
 
@@ -156,37 +157,40 @@ fun DraggableGrid(
         LazyVerticalGrid(
             columns = GridCells.Adaptive(64.dp),
             state = draggableGridState.lazyGridState,
-            userScrollEnabled = false, // needed to start dragging vertically
-            modifier = Modifier.pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = {
-                        draggableGridState.onDragStart(it)
-                    },
-                    onDragEnd = {
-                        draggableGridState.onDragEnd()
-                    },
-                    onDragCancel = {
-                        draggableGridState.onDragCancel()
-                    },
-                    onDrag = { change, dragAmount ->
-                        draggableGridState.onDrag(dragAmount)
-                        change.consume()
-                    }
-                )
-            },
+            // needed to start dragging vertically
+            userScrollEnabled = false,
+            modifier =
+                Modifier.pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = {
+                            draggableGridState.onDragStart(it)
+                        },
+                        onDragEnd = {
+                            draggableGridState.onDragEnd()
+                        },
+                        onDragCancel = {
+                            draggableGridState.onDragCancel()
+                        },
+                        onDrag = { change, dragAmount ->
+                            draggableGridState.onDrag(dragAmount)
+                            change.consume()
+                        },
+                    )
+                },
         ) {
             itemsIndexed(draggableGridState.tempList) { index, item ->
                 val dragging = draggableGridState.draggingIndex == index
-                val offset = if (dragging) {
-                    draggableGridState.dragOffset
-                } else {
-                    Offset.Zero
-                }
+                val offset =
+                    if (dragging) {
+                        draggableGridState.dragOffset
+                    } else {
+                        Offset.Zero
+                    }
                 itemContent(
                     index,
                     item,
                     (draggableGridState.draggingIndex == index),
-                    offset
+                    offset,
                 )
             }
         }
@@ -207,28 +211,33 @@ private fun DraggableGridPreview() {
                 Box(modifier = Modifier.padding(4.dp)) {
                     Button(
                         modifier = Modifier.size(56.dp),
-                        onClick = {})
-                    {
+                        onClick = {},
+                    ) {
                         Text(item as String)
                     }
                     Text(index.toString())
                 }
             } else {
                 Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .background(Color.Yellow)
+                    modifier =
+                        Modifier
+                            .size(64.dp)
+                            .background(Color.Yellow),
                 ) {
                     val density = LocalDensity.current
                     val offsetX = with(density) { dragOffset.x.toDp() }
                     val offsetY = with(density) { dragOffset.y.toDp() }
                     Button(
-                        modifier = Modifier.size(56.dp).offset(offsetX, offsetY),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.secondary,
-                        ),
-                        onClick = {})
-                    {
+                        modifier =
+                            Modifier
+                                .size(56.dp)
+                                .offset(offsetX, offsetY),
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.secondary,
+                            ),
+                        onClick = {},
+                    ) {
                         Text(item as String)
                     }
                 }

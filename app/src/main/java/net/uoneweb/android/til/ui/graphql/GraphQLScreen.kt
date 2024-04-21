@@ -17,14 +17,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun GraphQLScreen() {
     var code by remember { mutableStateOf("ZW") }
-    var country by remember { mutableStateOf<GetCountryQuery.Country?>(null)}
+    var country by remember { mutableStateOf<GetCountryQuery.Country?>(null) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(code) {
         scope.launch {
-            val appolloclient = ApolloClient.Builder()
-                .serverUrl("https://countries.trevorblades.com/graphql")
-                .build()
+            val appolloclient =
+                ApolloClient.Builder()
+                    .serverUrl("https://countries.trevorblades.com/graphql")
+                    .build()
             val response = appolloclient.query(GetCountryQuery(code)).execute()
             country = response.data?.country
             Log.d("GraphQLScreen", "Response: $country")
@@ -40,5 +41,4 @@ fun GraphQLScreen() {
             Text("Currency: ${it.currency}")
         }
     }
-
 }

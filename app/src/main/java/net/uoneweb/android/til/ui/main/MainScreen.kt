@@ -16,20 +16,21 @@ fun MainScreen() {
 
 @Composable
 private fun FragmentComposable(fragment: Fragment) {
-    val fragmentManager = when(val context = LocalContext.current) {
-        is FragmentActivity -> context.supportFragmentManager
-        else -> null
-    }
+    val fragmentManager =
+        when (val context = LocalContext.current) {
+            is FragmentActivity -> context.supportFragmentManager
+            else -> null
+        }
     AndroidView(factory = { ctx ->
         FragmentContainerView(ctx).apply {
             if (id == View.NO_ID) {
                 id = View.generateViewId()
-
             }
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
+            layoutParams =
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                )
             fragmentManager?.beginTransaction()?.replace(id, fragment)?.commit()
         }
     })

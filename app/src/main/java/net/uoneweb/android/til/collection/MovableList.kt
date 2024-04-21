@@ -7,7 +7,10 @@ class MovableList<T>(private val list: MutableList<T>) : MutableList<T> by list 
      * The item at [to] will be shifted to the right if it is smaller than from.
      * The item at [to] will be shifted to the left if it is larger than from.
      */
-    fun move(from: Int, to: Int): Int {
+    fun move(
+        from: Int,
+        to: Int,
+    ): Int {
         if (from < 0 || from >= size) return -1
         if (to < 0 || to > size) return -1
         if (to == from) return -1
@@ -23,5 +26,4 @@ class MovableList<T>(private val list: MutableList<T>) : MutableList<T> by list 
             indexToAdd
         }
     }
-
 }

@@ -14,16 +14,19 @@ import net.uoneweb.android.til.ui.buttons.draggablegrid.DraggableGridState
 @Composable
 internal fun DebugInfo(draggableGridState: DraggableGridState) {
     Text(
-        style = MaterialTheme.typography.body2, text =
-        "draggingIndex: ${draggableGridState.draggingIndex}"
+        style = MaterialTheme.typography.body2,
+        text =
+            "draggingIndex: ${draggableGridState.draggingIndex}",
     )
     Text(
-        style = MaterialTheme.typography.body2, text =
-        "draggingCenter: ${draggableGridState.draggingCenter()}"
+        style = MaterialTheme.typography.body2,
+        text =
+            "draggingCenter: ${draggableGridState.draggingCenter()}",
     )
     Text(
-        style = MaterialTheme.typography.body2, text =
-        "indexUnderDrag: ${draggableGridState.itemIndexUnderDrag()}"
+        style = MaterialTheme.typography.body2,
+        text =
+            "indexUnderDrag: ${draggableGridState.itemIndexUnderDrag()}",
     )
 }
 
@@ -31,20 +34,24 @@ internal fun DebugInfo(draggableGridState: DraggableGridState) {
 private fun LazyGridItemInfo(info: LazyGridItemInfo) {
     Column {
         Text(
-            style = MaterialTheme.typography.body1, text =
-            "draggingItem:"
+            style = MaterialTheme.typography.body1,
+            text =
+                "draggingItem:",
         )
         Text(
-            style = MaterialTheme.typography.body2, text =
-            "index: ${info.index}"
+            style = MaterialTheme.typography.body2,
+            text =
+                "index: ${info.index}",
         )
         Text(
-            style = MaterialTheme.typography.body2, text =
-            "offset: ${info.offset}"
+            style = MaterialTheme.typography.body2,
+            text =
+                "offset: ${info.offset}",
         )
         Text(
-            style = MaterialTheme.typography.body2, text =
-            "size: ${info.size}"
+            style = MaterialTheme.typography.body2,
+            text =
+                "size: ${info.size}",
         )
     }
 }

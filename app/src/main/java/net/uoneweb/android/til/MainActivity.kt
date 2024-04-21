@@ -43,6 +43,7 @@ import net.uoneweb.android.til.ui.camera.CameraScreen
 import net.uoneweb.android.til.ui.graphql.GraphQLScreen
 import net.uoneweb.android.til.ui.haptic.HapticFeedbackScreen
 import net.uoneweb.android.til.ui.main.MainScreen
+import net.uoneweb.android.til.ui.pager.PagerScreen
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -163,6 +164,7 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon:
     data object HapticSample : Screen("haptic_sample", R.string.haptic_sample, Icons.Filled.Face)
     data object GraphQL : Screen("graphql", R.string.graphql, Icons.Filled.Face)
     data object Buttons : Screen("buttons", R.string.buttons, Icons.Filled.CheckCircle)
+    data object Pager : Screen("pager", R.string.pager, Icons.Filled.AccountBox)
 }
 
 private val screens = listOf(
@@ -170,7 +172,8 @@ private val screens = listOf(
     Screen.Camera,
     Screen.HapticSample,
     Screen.GraphQL,
-    Screen.Buttons
+    Screen.Buttons,
+    Screen.Pager,
 )
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -181,7 +184,7 @@ private fun TilNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Buttons.route,
+        startDestination = Screen.Pager.route,
         modifier = modifier
     ) {
         composable(Screen.Camera.route) {
@@ -198,6 +201,9 @@ private fun TilNavHost(
         }
         composable(Screen.Buttons.route) {
             ButtonsScreen()
+        }
+        composable(Screen.Pager.route) {
+            PagerScreen()
         }
     }
 }

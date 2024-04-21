@@ -25,6 +25,11 @@ data class CharacterLcdBuffer(
         currentPos++
     }
 
+    fun reset() {
+        currentPos = 0
+        buffer.fill(0)
+    }
+
     private fun currentOffset(): Int {
         return if (needNewLine()) {
             val secondLineOffset = (displayWidth) * (charHeight + charMargin)

@@ -15,12 +15,39 @@ sealed class PagerChar(val code: PagerCode, val char: String, val size: IntSize,
         PagerChar(code, char, IntSize(5, 7), charData) {
     }
 
-    class Kana(code: PagerCode) : PagerChar(code, "", IntSize(5, 7), "")
-    class Number(code: PagerCode) : PagerChar(code, "", IntSize(5, 7), "")
+    class Kana(code: PagerCode, char: String, charData: String) : PagerChar(
+        code, char, IntSize(5, 7), charData
+    )
+
+    class Number(code: PagerCode, char: String, charData: String) : PagerChar(
+        code, char, IntSize(5, 7), charData
+    )
+
     class Special(code: PagerCode, char: String, charData: String) :
         PagerChar(code, char, IntSize(5, 7), charData)
 
-    class Emoji(code: PagerCode) : PagerChar(code, "", IntSize(11, 15), "")
+    class Emoji(code: PagerCode) : PagerChar(
+        code, "", IntSize(11, 15), """
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+         00000000000
+    """
+    )
+
+    class Control(code: PagerCode, char: String) :
+        PagerChar(code, char, IntSize.Zero, "")
 
 }
 

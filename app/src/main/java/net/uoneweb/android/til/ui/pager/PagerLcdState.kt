@@ -1,5 +1,6 @@
 package net.uoneweb.android.til.ui.pager
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -136,16 +137,181 @@ class PagerLcdState(val dotMatrixLcdState: DotMatrixLcdState) {
          00000
     """
     )
+    val ctrlBegin = PagerChar.Control(
+        PagerCode("*2*2"), "*2*2"
+    )
 
-    private val charset = setOf(emSmile, chA, chE, chG, chK, chL, chM, chO, chS, chT, chY, chSp)
+    private val numbers = mutableSetOf<PagerChar>()
+
+    private val charset =
+        mutableSetOf(emSmile, chA, chE, chG, chK, chL, chM, chO, chS, chT, chY, chSp, ctrlBegin)
+
+    init {
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("0"), "0", """
+         01110
+         10001
+         10001
+         10101
+         10001
+         10001
+         01110
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("1"), "1", """
+         01100
+         00100
+         00100
+         00100
+         00100
+         00100
+         11111
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("2"), "2", """
+         01110
+         10001
+         00010
+         00100
+         01000
+         10000
+         11111
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("3"), "3", """
+         01110
+         10001
+         00001
+         00110
+         00001
+         10001
+         01110
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("4"), "4", """
+         00010
+         00110
+         01010
+         10010
+         11111
+         00010
+         00010
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("5"), "5", """
+         11111
+         10000
+         10000
+         11110
+         00001
+         00001
+         11110
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("6"), "6", """
+         01110
+         10000
+         10000
+         11110
+         10001
+         10001
+         01110
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("7"), "7", """
+         11111
+         10001
+         00010
+         00100
+         00100
+         00100
+         00100
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("8"), "8", """
+         01110
+         10001
+         10001
+         01110
+         10001
+         10001
+         01110
+            """
+            )
+        )
+        numbers.add(
+            PagerChar.Number(
+                PagerCode("9"), "9", """
+         01110
+         10001
+         10001
+         01110
+         00001
+         00001
+         01110
+            """
+            )
+        )
+    }
+
+    fun updateWithText(text: String) {
+        dotMatrixLcdState.update(stringToChars(text))
+    }
+
 
     fun update(text: String) {
-        dotMatrixLcdState.update(stringToChars(text))
+        //dotMatrixLcdState.update(stringToChars(text))
+        dotMatrixLcdState.update(decode(text))
+
     }
 
     private fun stringToChars(text: String): List<PagerChar> {
         return text.map {
             charset.find { ch -> ch.char == it.toString() }
         }.filterNotNull()
+    }
+
+    private fun decode(code: String): List<PagerChar> {
+        var startIndex = 0
+        val chars = mutableListOf<PagerChar>()
+        while (startIndex < code.length) {
+            val pagerChar = charset.find {
+                code.startsWith(it.code.value, startIndex, ignoreCase = true)
+            } ?: numbers.find { it.char == code.substring(startIndex, startIndex + 1) }
+            ?: PagerChar.Control(PagerCode(code.substring(startIndex, startIndex + 1)), "")
+            Log.d("PagerLcdState", "decode: ${pagerChar.code}")
+            if (pagerChar == ctrlBegin) {
+                chars.clear()
+            } else {
+                chars.add(pagerChar)
+            }
+            startIndex += pagerChar.code.value.length
+        }
+        return chars
     }
 }

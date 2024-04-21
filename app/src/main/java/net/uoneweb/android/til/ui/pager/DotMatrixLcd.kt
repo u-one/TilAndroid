@@ -45,6 +45,7 @@ class DotMatrixLcdStateImpl() : DotMatrixLcdState {
     )
 
     override fun update(chars: List<PagerChar>) {
+        characterLcdBuffer.reset()
         chars.forEach {
             characterLcdBuffer.draw(LcdBitmap(data = it.charData, size = it.size))
         }

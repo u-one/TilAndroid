@@ -15,7 +15,6 @@ import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
 @Stable
@@ -115,51 +114,28 @@ private fun Rect.contains(other: Rect): Boolean {
             this.bottom >= other.bottom
 }
 
-private class LcdBitmap(val data: IntArray, val size: IntSize)
-
 private class PreviewStateImpl : DotMatrixLcdState {
     override val dotWidth: Int = 11
     override val dotHeight: Int = 15
-    val charWidth = 5
-    val charHeight = 7
-    val charMargin = 1
-    val maxCharCountInLine = 2
 
-    override var data = mutableStateOf(IntArray(dotWidth * dotHeight) { 0 })
+    val characterLcdBuffer = CharacterLcdBuffer(
+        displayWidth = dotWidth,
+        displayHeight = dotHeight,
+        charWidth = 5,
+        charHeight = 7,
+        charMargin = 1,
+    )
 
-    private var currentPos = 0
+    override var data = mutableStateOf(characterLcdBuffer.buffer)
 
     override fun update(chars: List<PagerChar>) {
         val buffer = IntArray(dotWidth * dotHeight) { 0 }
         chars.forEach { char ->
             val bitmap = LcdBitmap(char.charData, char.size)
-            transfer(buffer, bitmap)
+            characterLcdBuffer.draw(bitmap)
         }
+        characterLcdBuffer.buffer.copyInto(buffer)
         update(buffer)
-    }
-
-    private fun transfer(buffer: IntArray, initialData: LcdBitmap): IntArray {
-        for (y in 0 until initialData.size.height) {
-            val orgIndex = initialData.size.width * y
-            val dstOffset = dotWidth * y + currentOffset(0, y)
-            initialData.data.copyInto(
-                buffer,
-                dstOffset,
-                orgIndex,
-                orgIndex + initialData.size.width
-            )
-        }
-        currentPos++
-        return buffer
-    }
-
-    private fun currentOffset(x: Int, y: Int): Int {
-        return if (currentPos < maxCharCountInLine) {
-            0 + (charWidth + charMargin) * currentPos
-        } else {
-            val secondLineOffset = (dotWidth) * (charHeight + charMargin)
-            secondLineOffset + (charWidth + charMargin) * (currentPos - maxCharCountInLine)
-        }
     }
 }
 

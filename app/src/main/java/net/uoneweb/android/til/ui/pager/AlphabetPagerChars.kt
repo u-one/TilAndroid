@@ -1,0 +1,404 @@
+package net.uoneweb.android.til.ui.pager
+
+object AlphabetPagerChars {
+    val chA =
+        PagerChar.Alpha(
+            PagerCode("16"),
+            "A",
+            """
+       01110
+       10001
+       10001
+       11111
+       10001
+       10001
+       10001
+    """,
+        )
+    val chB =
+        PagerChar.Alpha(
+            PagerCode("17"),
+            "B",
+            """
+       11110
+       10001
+       10001
+       11110
+       10001
+       10001
+       11110
+    """,
+        )
+    val chC =
+        PagerChar.Alpha(
+            PagerCode("18"),
+            "C",
+            """
+   01110
+   10000
+   10000
+   10000
+   10000
+   10000
+   01110
+""",
+        )
+    val chD =
+        PagerChar.Alpha(
+            PagerCode("19"),
+            "D",
+            """
+   11110
+   10001
+   10001
+   10001
+   10001
+   10001
+   11110
+""",
+        )
+    val chE =
+        PagerChar.Alpha(
+            PagerCode("10"),
+            "E",
+            """
+       11111
+       10000
+       10000
+       11110
+       10000
+       10000
+       11111
+    """,
+        )
+
+    val chF =
+        PagerChar.Alpha(
+            PagerCode("26"),
+            "F",
+            """
+   11111
+   10000
+   10000
+   11110
+   10000
+   10000
+   10000
+""",
+        )
+
+    val chG =
+        PagerChar.Alpha(
+            PagerCode("27"),
+            "G",
+            """
+       01110
+       10001
+       10000
+       10111
+       10001
+       10001
+       01111
+    """,
+        )
+
+    val chH =
+        PagerChar.Alpha(
+            PagerCode("28"),
+            "H",
+            """
+   10001
+   10001
+   10001
+   11111
+   10001
+   10001
+   10001
+""",
+        )
+    val chI =
+        PagerChar.Alpha(
+            PagerCode("29"),
+            "I",
+            """
+   00100
+   00100
+   00100
+   00100
+   00100
+   00100
+   00100
+""",
+        )
+    val chJ =
+        PagerChar.Alpha(
+            PagerCode("20"),
+            "J",
+            """
+   00001
+   00001
+   00001
+   00001
+   00001
+   10001
+   01110
+""",
+        )
+    val chK =
+        PagerChar.Alpha(
+            PagerCode("36"),
+            "K",
+            """
+       10001
+       10010
+       10100
+       11000
+       10100
+       10010
+       10001
+    """,
+        )
+    val chL =
+        PagerChar.Alpha(
+            PagerCode("37"),
+            "L",
+            """
+       10000
+       10000
+       10000
+       10000
+       10000
+       10000
+       11111
+    """,
+        )
+    val chM =
+        PagerChar.Alpha(
+            PagerCode("38"),
+            "M",
+            """
+       10001
+       11011
+       10101
+       10101
+       10001
+       10001
+       10001
+    """,
+        )
+
+    val chN =
+        PagerChar.Alpha(
+            PagerCode("39"),
+            "N",
+            """
+   10001
+   11001
+   10101
+   10011
+   10001
+   10001
+   10001
+""",
+        )
+    val chO =
+        PagerChar.Alpha(
+            PagerCode("30"),
+            "O",
+            """
+       01110
+       10001
+       10001
+       10001
+       10001
+       10001
+       01110
+    """,
+        )
+
+    val chP =
+        PagerChar.Alpha(
+            PagerCode("46"),
+            "P",
+            """
+   11110
+   10001
+   10001
+   11110
+   10000
+   10000
+   10000
+""",
+        )
+    val chQ =
+        PagerChar.Alpha(
+            PagerCode("47"),
+            "Q",
+            """
+   01110
+   10001
+   10001
+   10001
+   10101
+   10011
+   01111
+""",
+        )
+    val chR =
+        PagerChar.Alpha(
+            PagerCode("48"),
+            "R",
+            """
+   11110
+   10001
+   10001
+   11110
+   10100
+   10010
+   10001
+""",
+        )
+    val chS =
+        PagerChar.Alpha(
+            PagerCode("49"),
+            "S",
+            """
+       01110
+       10001
+       10000
+       01110
+       00001
+       10001
+       01110
+    """,
+        )
+    val chT =
+        PagerChar.Alpha(
+            PagerCode("40"),
+            "T",
+            """
+       11111
+       00100
+       00100
+       00100
+       00100
+       00100
+       00100
+    """,
+        )
+
+    val chU =
+        PagerChar.Alpha(
+            PagerCode("56"),
+            "U",
+            """
+   10001
+   10001
+   10001
+   10001
+   10001
+   10001
+   01110
+""",
+        )
+    val chV =
+        PagerChar.Alpha(
+            PagerCode("57"),
+            "V",
+            """
+   10001
+   10001
+   10001
+   01010
+   01010
+   00100
+   00100
+""",
+        )
+    val chW =
+        PagerChar.Alpha(
+            PagerCode("58"),
+            "W",
+            """
+   10001
+   10001
+   10101
+   10101
+   10101
+   11011
+   10001
+""",
+        )
+    val chX =
+        PagerChar.Alpha(
+            PagerCode("59"),
+            "X",
+            """
+   10001
+   10001
+   01010
+   00100
+   01010
+   10001
+   10001
+""",
+        )
+    val chY =
+        PagerChar.Alpha(
+            PagerCode("50"),
+            "Y",
+            """
+       10001
+       10001
+       01010
+       00100
+       00100
+       00100
+       00100
+    """,
+        )
+    val chZ =
+        PagerChar.Alpha(
+            PagerCode("66"),
+            "Z",
+            """
+   11111
+   00001
+   00010
+   00100
+   01000
+   10000
+   11111
+""",
+        )
+
+    val set =
+        mutableSetOf<PagerChar>(
+            chA,
+            chB,
+            chC,
+            chD,
+            chE,
+            chF,
+            chG,
+            chH,
+            chI,
+            chJ,
+            chK,
+            chL,
+            chM,
+            chN,
+            chO,
+            chP,
+            chQ,
+            chR,
+            chS,
+            chT,
+            chU,
+            chV,
+            chW,
+            chX,
+            chY,
+            chZ,
+        )
+}

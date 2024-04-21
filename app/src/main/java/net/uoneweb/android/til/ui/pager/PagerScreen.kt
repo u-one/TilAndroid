@@ -2,7 +2,6 @@ package net.uoneweb.android.til.ui.pager
 
 import android.media.AudioManager
 import android.media.ToneGenerator
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -17,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -37,46 +34,40 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PagerScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        PagerLcd(Modifier.height(160.dp))
-    }
-}
-
-
-@Composable
-fun PagerLcd(modifier: Modifier = Modifier) {
-    val state = rememberPagerLcdState()
-    val str1 = "TOKYO"
-    val str2 = "TELEMESSAGE"
     var inputText by remember { mutableStateOf("") }
-    val toneGenerator = remember { ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME) }
-    LaunchedEffect(Unit) {
-        state.updateWithText(str1 + "        " + str2)
-    }
-    LaunchedEffect(inputText) {
-        state.update(inputText)
-    }
-    Column {
-        PagerLcdHeader()
-        Row {
-            PagerLcdLeft()
-            DotMatrixLcd(state.dotMatrixLcdState, modifier.background(Color(0xFF446644)))
-        }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        PagerLcd(Modifier.height(160.dp))
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = inputText,
             style = MaterialTheme.typography.subtitle1,
             color = Color.Black,
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val labels = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
-            val dtmfs = listOf(
+        DialPad(
+            onButtonPress = { key ->
+                inputText += key
+            },
+        )
+        PagerLcdPreview(Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+fun DialPad(
+    modifier: Modifier = Modifier,
+    onButtonPress: (String) -> Unit,
+) {
+    val toneGenerator =
+        remember { ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME) }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        val labels = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
+        val dtmfs =
+            listOf(
                 ToneGenerator.TONE_DTMF_1,
                 ToneGenerator.TONE_DTMF_2,
                 ToneGenerator.TONE_DTMF_3,
@@ -88,71 +79,115 @@ fun PagerLcd(modifier: Modifier = Modifier) {
                 ToneGenerator.TONE_DTMF_9,
                 ToneGenerator.TONE_DTMF_S,
                 ToneGenerator.TONE_DTMF_0,
-                ToneGenerator.TONE_DTMF_P
+                ToneGenerator.TONE_DTMF_P,
             )
-            items(12) { key ->
-                Box(modifier =
-                Modifier.padding(10.dp)
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onPress = {
-                                inputText += labels[key]
-                                toneGenerator.startTone(dtmfs[key])
-                                //playDTMFTone(dtmfs[key])
-                                tryAwaitRelease()
-                                toneGenerator.stopTone()
-                            }
-                        )
-                    }) {
-                    Card{
-                        Text(
-                            text = labels[key],
-                            modifier.size(100.dp).align(
-                                alignment = Alignment.Center
-                            ),
-                            style = MaterialTheme.typography.h3,
-                            color = Color.Gray
-                        )
-                    }
-
+        items(12) { key ->
+            Box(
+                modifier =
+                    Modifier
+                        .padding(10.dp)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onPress = {
+                                    toneGenerator.startTone(dtmfs[key])
+                                    onButtonPress(labels[key])
+                                    tryAwaitRelease()
+                                    toneGenerator.stopTone()
+                                },
+                            )
+                        },
+            ) {
+                Card(modifier = Modifier.size(100.dp), elevation = 10.dp) {
+                    Text(
+                        text = labels[key],
+                        modifier.align(
+                            alignment = Alignment.Center,
+                        ),
+                        style = MaterialTheme.typography.h3,
+                        color = Color.Gray,
+                    )
                 }
             }
         }
     }
 }
 
-private fun playDTMFTone(dtmfTone: Int) {
-    val toneGenerator = ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME)
-    toneGenerator.startTone(dtmfTone)
-    toneGenerator.stopTone()
-    toneGenerator.release()
+@Composable
+fun PagerLcd(
+    modifier: Modifier = Modifier,
+    inputText: String = "",
+) {
+    val state = rememberPagerLcdState()
+    val str1 = "TOKYO"
+    val str2 = "TELEMESSAGE"
+
+    LaunchedEffect(Unit) {
+        state.updateWithText(str1 + "        " + str2)
+    }
+    LaunchedEffect(inputText) {
+        state.update(inputText)
+    }
+    Column(modifier = modifier) {
+        PagerLcdHeader()
+        Row {
+            PagerLcdLeft()
+            DotMatrixLcd(state.dotMatrixLcdState, modifier.background(Color(0xFF446644)))
+        }
+    }
 }
 
 @Composable
 fun PagerLcdHeader() {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(20.dp)
-            .background(Color(0xFF446644))
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .background(Color(0xFF446644)),
     )
 }
 
 @Composable
 fun PagerLcdLeft() {
     Box(
-        modifier = Modifier
-            .height(160.dp)
-            .width(20.dp)
-            .background(Color(0xFF446644))
+        modifier =
+            Modifier
+                .height(160.dp)
+                .width(20.dp)
+                .background(Color(0xFF446644)),
     )
 }
 
-
 @Composable
-@Preview(showBackground = true, widthDp = 320, heightDp = 160)
-fun PagerLcdPreview() {
-    PagerLcd()
+@Preview(showBackground = true, widthDp = 500, heightDp = 1000)
+fun PagerLcdPreview(modifier: Modifier = Modifier) {
+    Column {
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "*2*2111213141588212223242588883132333435884142434445",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "515253545588616263646588887172737475888182838485",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "91929394958801020388",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+            inputText = "1617181910262728292036373839304647484940565758595066",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "67686960767778797086878889",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "96979899900607080900",
+        )
+    }
 }
 
 @Composable

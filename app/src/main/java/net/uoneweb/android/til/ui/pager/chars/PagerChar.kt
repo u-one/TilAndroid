@@ -31,27 +31,18 @@ sealed class PagerChar(val code: PagerCode, val char: String, val size: IntSize,
     class Special(code: PagerCode, char: String, charData: String) :
         PagerChar(code, char, IntSize(5, 7), charData)
 
-    class Emoji(code: PagerCode) : PagerChar(
+    class LargeChar(code: PagerCode, char: String, charData: String) : PagerChar(
         code,
-        "",
+        char,
         IntSize(11, 15),
-        """
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-         00000000000
-    """,
+        charData,
+    )
+
+    class Emoji(code: PagerCode, char: String, charData: String) : PagerChar(
+        code,
+        char,
+        IntSize(11, 15),
+        charData,
     )
 
     class Control(code: PagerCode, char: String) :

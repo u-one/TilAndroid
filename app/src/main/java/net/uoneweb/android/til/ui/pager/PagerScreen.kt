@@ -159,6 +159,95 @@ fun PagerLcdLeft() {
 }
 
 @Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 160)
+fun PagerLcdLargePreview(modifier: Modifier = Modifier) {
+    Column {
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "1*21*41*61*011",
+        )
+
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "3*23*43*63*0",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "4*24*44*64*0",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "5*25*45*65*0",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "6*26*46*66*0",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "7*27*47*67*0",
+        )
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "8*28*48*68*0",
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 100)
+fun PagerLcdLargePreview2(modifier: Modifier = Modifier) {
+    Column {
+        PagerLcd(
+            modifier = Modifier.height(160.dp),
+            inputText = "2*22*42*62*0",
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 100)
+fun PagerLcdLargePreview3(modifier: Modifier = Modifier) {
+    Column {
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 100)
+fun PagerLcdLargePreview4(modifier: Modifier = Modifier) {
+    Column {
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 100)
+fun PagerLcdLargePreview5(modifier: Modifier = Modifier) {
+    Column {
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 100)
+fun PagerLcdLargePreview6(modifier: Modifier = Modifier) {
+    Column {
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 100)
+fun PagerLcdLargePreview7(modifier: Modifier = Modifier) {
+    Column {
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 500, heightDp = 1000)
+fun PagerLcdLargePreview8(modifier: Modifier = Modifier) {
+    Column {
+    }
+}
+
+@Composable
 @Preview(showBackground = true, widthDp = 500, heightDp = 1000)
 fun PagerLcdPreview(modifier: Modifier = Modifier) {
     Column {

@@ -1,11 +1,11 @@
 package net.uoneweb.android.til.ui.pager
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import net.uoneweb.android.til.ui.pager.chars.AlphabetPagerChars
 import net.uoneweb.android.til.ui.pager.chars.KanaPagerChars
+import net.uoneweb.android.til.ui.pager.chars.LargeChars
 import net.uoneweb.android.til.ui.pager.chars.NumberPagerChars
 import net.uoneweb.android.til.ui.pager.chars.PagerChar
 import net.uoneweb.android.til.ui.pager.chars.PagerCode
@@ -19,20 +19,19 @@ fun rememberPagerLcdState(): PagerLcdState {
 
 @Stable
 class PagerLcdState(val dotMatrixLcdState: DotMatrixLcdState) {
-    val emSmile = PagerChar.Emoji(PagerCode("1*2"))
-
     val ctrlBegin =
         PagerChar.Control(
             PagerCode("*2*2"),
             "*2*2",
         )
 
-    private val charset = mutableSetOf(emSmile, ctrlBegin)
+    private val charset = mutableSetOf<PagerChar>(ctrlBegin)
 
     init {
         charset.addAll(KanaPagerChars.set)
         charset.addAll(AlphabetPagerChars.set)
         charset.addAll(SpecialPagerChars.set)
+        charset.addAll(LargeChars.set)
         charset.addAll(NumberPagerChars.set)
     }
 
@@ -59,13 +58,13 @@ class PagerLcdState(val dotMatrixLcdState: DotMatrixLcdState) {
                 charset.find {
                     code.startsWith(it.code.value, startIndex, ignoreCase = true)
                 } ?: NumberPagerChars.set.find {
-                    it.char == code.substring(
-                        startIndex,
-                        startIndex + 1,
-                    )
+                    it.char ==
+                        code.substring(
+                            startIndex,
+                            startIndex + 1,
+                        )
                 }
-                ?: PagerChar.Control(PagerCode(code.substring(startIndex, startIndex + 1)), "?")
-            Log.d("PagerLcdState", "decode: ${pagerChar.code}")
+                    ?: PagerChar.Control(PagerCode(code.substring(startIndex, startIndex + 1)), "?")
             if (pagerChar == ctrlBegin) {
                 chars.clear()
             } else {

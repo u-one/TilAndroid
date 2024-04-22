@@ -1,6 +1,6 @@
 package net.uoneweb.android.til.ui.pager
 
-data class CharacterLcdBuffer(
+data class TwoLineCharacterLcdBuffer(
     val displayWidth: Int = 11,
     val displayHeight: Int = 15,
     val charWidth: Int = 5,

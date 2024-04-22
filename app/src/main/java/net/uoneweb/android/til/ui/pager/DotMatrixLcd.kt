@@ -32,12 +32,18 @@ interface DotMatrixLcdState {
     }
 }
 
-class DotMatrixLcdStateImpl() : DotMatrixLcdState {
+class DotMatrixLcdStateImpl : DotMatrixLcdState {
     override val dotWidth: Int = 80
     override val dotHeight: Int = 15
     override var data = mutableStateOf(IntArray(dotWidth * dotHeight) { 0 })
-    private val characterLcdBuffer =
-        CharacterLcdBuffer(
+    private val singleLineCharacterLcdBuffer =
+        SingleLineCharacterLcdBuffer(
+            displayWidth = dotWidth,
+            displayHeight = dotHeight,
+            charMargin = 1,
+        )
+    private val twoLineCharacterLcdBuffer =
+        TwoLineCharacterLcdBuffer(
             displayWidth = dotWidth,
             displayHeight = dotHeight,
             charWidth = 5,
@@ -46,11 +52,21 @@ class DotMatrixLcdStateImpl() : DotMatrixLcdState {
         )
 
     override fun update(chars: List<PagerChar>) {
-        characterLcdBuffer.reset()
-        chars.forEach {
-            characterLcdBuffer.draw(LcdBitmap(data = it.charData, size = it.size))
-        }
-        update(characterLcdBuffer.buffer)
+        val data =
+            if (chars.find { it is PagerChar.LargeChar || it is PagerChar.Emoji } != null) {
+                singleLineCharacterLcdBuffer.reset()
+                chars.forEach {
+                    singleLineCharacterLcdBuffer.draw(LcdBitmap(data = it.charData, size = it.size))
+                }
+                singleLineCharacterLcdBuffer.buffer
+            } else {
+                twoLineCharacterLcdBuffer.reset()
+                chars.forEach {
+                    twoLineCharacterLcdBuffer.draw(LcdBitmap(data = it.charData, size = it.size))
+                }
+                twoLineCharacterLcdBuffer.buffer
+            }
+        update(data)
     }
 }
 
@@ -88,10 +104,10 @@ fun DotMatrixLcd(
 
                 val topLeft =
                     offset +
-                            Offset(
-                                x * (dotSize.width + dotMargin),
-                                y * (dotSize.height + dotMargin),
-                            )
+                        Offset(
+                            x * (dotSize.width + dotMargin),
+                            y * (dotSize.height + dotMargin),
+                        )
                 val rect = Rect(topLeft, dotSize)
                 if (size.toRect().contains(rect)) {
                     drawRect(
@@ -107,17 +123,24 @@ fun DotMatrixLcd(
 
 private fun Rect.contains(other: Rect): Boolean {
     return this.left <= other.left &&
-            this.top <= other.top &&
-            this.right >= other.right &&
-            this.bottom >= other.bottom
+        this.top <= other.top &&
+        this.right >= other.right &&
+        this.bottom >= other.bottom
 }
 
 private class PreviewStateImpl : DotMatrixLcdState {
     override val dotWidth: Int = 11
     override val dotHeight: Int = 15
 
-    val characterLcdBuffer =
-        CharacterLcdBuffer(
+    private val singleLineCharacterLcdBuffer =
+        SingleLineCharacterLcdBuffer(
+            displayWidth = dotWidth,
+            displayHeight = dotHeight,
+            charMargin = 1,
+        )
+
+    val twoLineCharacterLcdBuffer =
+        TwoLineCharacterLcdBuffer(
             displayWidth = dotWidth,
             displayHeight = dotHeight,
             charWidth = 5,
@@ -125,16 +148,24 @@ private class PreviewStateImpl : DotMatrixLcdState {
             charMargin = 1,
         )
 
-    override var data = mutableStateOf(characterLcdBuffer.buffer)
+    override var data = mutableStateOf(twoLineCharacterLcdBuffer.buffer)
 
     override fun update(chars: List<PagerChar>) {
-        val buffer = IntArray(dotWidth * dotHeight) { 0 }
-        chars.forEach { char ->
-            val bitmap = LcdBitmap(char.charData, char.size)
-            characterLcdBuffer.draw(bitmap)
-        }
-        characterLcdBuffer.buffer.copyInto(buffer)
-        update(buffer)
+        val data =
+            if (chars.find { it is PagerChar.LargeChar || it is PagerChar.Emoji } != null) {
+                singleLineCharacterLcdBuffer.reset()
+                chars.forEach {
+                    singleLineCharacterLcdBuffer.draw(LcdBitmap(data = it.charData, size = it.size))
+                }
+                singleLineCharacterLcdBuffer.buffer
+            } else {
+                twoLineCharacterLcdBuffer.reset()
+                chars.forEach {
+                    twoLineCharacterLcdBuffer.draw(LcdBitmap(data = it.charData, size = it.size))
+                }
+                twoLineCharacterLcdBuffer.buffer
+            }
+        update(data)
     }
 }
 
@@ -157,6 +188,41 @@ private fun DotMatrixLcdPreview() {
         )
     val state = PreviewStateImpl()
     state.update(listOf(chA, chA, chA, chA))
+    DotMatrixLcd(
+        state,
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF446644)),
+    )
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 320, heightDp = 160)
+private fun DotMatrixLcdLargePreview() {
+    val ch =
+        PagerChar.Emoji(
+            PagerCode("1*2"),
+            "Smile",
+            """
+            00011111000
+            00100000100
+            01000000010
+            10000000001
+            10010001001
+            10101010101
+            10000000001
+            10000000001
+            10111111101
+            10100000101
+            10100000101
+            10010001001
+            01001110010
+            00100000100
+            00011111000
+            """,
+        )
+    val state = PreviewStateImpl()
+    state.update(listOf(ch, ch, ch, ch))
     DotMatrixLcd(
         state,
         Modifier

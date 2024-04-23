@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +38,7 @@ fun PagerScreen() {
             color = Color.Black,
             modifier = Modifier.padding(10.dp),
         )
+        Switch(checked = outputTone, onCheckedChange = { outputTone = it })
         DialPad(
             onButtonPress = { key ->
                 inputText += key
@@ -74,10 +76,10 @@ fun PagerLcd(
 fun PagerLcdHeader() {
     Box(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(20.dp)
-                .background(Color(0xFF446644)),
+        Modifier
+            .fillMaxWidth()
+            .height(20.dp)
+            .background(Color(0xFF446644)),
     )
 }
 
@@ -85,10 +87,10 @@ fun PagerLcdHeader() {
 fun PagerLcdLeft() {
     Box(
         modifier =
-            Modifier
-                .height(160.dp)
-                .width(20.dp)
-                .background(Color(0xFF446644)),
+        Modifier
+            .height(160.dp)
+            .width(20.dp)
+            .background(Color(0xFF446644)),
     )
 }
 

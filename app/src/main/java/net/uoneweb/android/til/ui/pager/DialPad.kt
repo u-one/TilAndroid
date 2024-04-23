@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun rememberDialPadState(outputTone: Boolean = false): DialPadState {
-    return remember {
+    return remember(outputTone) {
         if (outputTone) {
-            DefaultDialPadState()
-        } else {
             DialPadStateImpl()
+        } else {
+            DefaultDialPadState()
         }
     }
 }
@@ -72,6 +72,7 @@ class DialPadStateImpl() : DialPadState {
     }
 }
 
+@Stable
 class DefaultDialPadState : DialPadState {
     override val labels = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
 

@@ -1,9 +1,6 @@
 package net.uoneweb.android.til.ui.pager
 
-import android.media.AudioManager
-import android.media.ToneGenerator
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,11 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,16 +18,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun PagerScreen() {
     var inputText by remember { mutableStateOf("") }
+    var outputTone by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         PagerLcd(Modifier.height(160.dp), inputText = inputText)
@@ -49,66 +41,8 @@ fun PagerScreen() {
             onButtonPress = { key ->
                 inputText += key
             },
+            state = rememberDialPadState(outputTone),
         )
-        PagerLcdPreview(Modifier.fillMaxSize())
-    }
-}
-
-@Composable
-fun DialPad(
-    modifier: Modifier = Modifier,
-    onButtonPress: (String) -> Unit,
-) {
-    val toneGenerator =
-        remember { ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME) }
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        val labels = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
-        val dtmfs =
-            listOf(
-                ToneGenerator.TONE_DTMF_1,
-                ToneGenerator.TONE_DTMF_2,
-                ToneGenerator.TONE_DTMF_3,
-                ToneGenerator.TONE_DTMF_4,
-                ToneGenerator.TONE_DTMF_5,
-                ToneGenerator.TONE_DTMF_6,
-                ToneGenerator.TONE_DTMF_7,
-                ToneGenerator.TONE_DTMF_8,
-                ToneGenerator.TONE_DTMF_9,
-                ToneGenerator.TONE_DTMF_S,
-                ToneGenerator.TONE_DTMF_0,
-                ToneGenerator.TONE_DTMF_P,
-            )
-        items(12) { key ->
-            Box(
-                modifier =
-                    Modifier
-                        .padding(10.dp)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onPress = {
-                                    toneGenerator.startTone(dtmfs[key])
-                                    onButtonPress(labels[key])
-                                    tryAwaitRelease()
-                                    toneGenerator.stopTone()
-                                },
-                            )
-                        },
-            ) {
-                Card(modifier = Modifier.size(100.dp), elevation = 10.dp) {
-                    Text(
-                        text = labels[key],
-                        modifier.align(
-                            alignment = Alignment.Center,
-                        ),
-                        style = MaterialTheme.typography.h3,
-                        color = Color.Gray,
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -161,7 +95,7 @@ fun PagerLcdLeft() {
 @Composable
 @Preview(showBackground = true, widthDp = 500, heightDp = 160)
 fun PagerLcdLargePreview(modifier: Modifier = Modifier) {
-    Column {
+    Column(modifier = modifier) {
         PagerLcd(
             modifier = Modifier.height(160.dp),
             inputText = "1*21*41*61*011",
@@ -197,7 +131,7 @@ fun PagerLcdLargePreview(modifier: Modifier = Modifier) {
 @Composable
 @Preview(showBackground = true, widthDp = 500, heightDp = 100)
 fun PagerLcdLargePreview2(modifier: Modifier = Modifier) {
-    Column {
+    Column(modifier = modifier) {
         PagerLcd(
             modifier = Modifier.height(160.dp),
             inputText = "2*22*42*62*0",
@@ -206,51 +140,9 @@ fun PagerLcdLargePreview2(modifier: Modifier = Modifier) {
 }
 
 @Composable
-@Preview(showBackground = true, widthDp = 500, heightDp = 100)
-fun PagerLcdLargePreview3(modifier: Modifier = Modifier) {
-    Column {
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 500, heightDp = 100)
-fun PagerLcdLargePreview4(modifier: Modifier = Modifier) {
-    Column {
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 500, heightDp = 100)
-fun PagerLcdLargePreview5(modifier: Modifier = Modifier) {
-    Column {
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 500, heightDp = 100)
-fun PagerLcdLargePreview6(modifier: Modifier = Modifier) {
-    Column {
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 500, heightDp = 100)
-fun PagerLcdLargePreview7(modifier: Modifier = Modifier) {
-    Column {
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 500, heightDp = 1000)
-fun PagerLcdLargePreview8(modifier: Modifier = Modifier) {
-    Column {
-    }
-}
-
-@Composable
 @Preview(showBackground = true, widthDp = 500, heightDp = 1000)
 fun PagerLcdPreview(modifier: Modifier = Modifier) {
-    Column {
+    Column(modifier = modifier) {
         PagerLcd(
             modifier = Modifier.height(160.dp),
             inputText = "*2*2111213141588212223242588883132333435884142434445",

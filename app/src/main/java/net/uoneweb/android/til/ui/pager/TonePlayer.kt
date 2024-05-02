@@ -9,7 +9,7 @@ interface TonePlayer {
     fun stopTone()
 }
 
-class TonePlayerImpl : TonePlayer {
+object TonePlayerImpl : TonePlayer {
     private val toneGenerator = ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME)
     private val dtmfs =
         mapOf(

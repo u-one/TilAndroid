@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryImpl(TonePlayerImpl())) {
+fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryImpl(TonePlayerImpl)) {
     var inputText by remember { mutableStateOf("") }
     val dialPadState = remember { dialPadStateFactory.create() }
 

@@ -11,6 +11,11 @@ sealed class PagerChar(val code: PagerCode, val char: String, val size: IntSize,
             line.trim().map { if (it == '1') 1 else 0 }
         }.toIntArray()
 
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun toString(): String {
+        return "PagerChar(code=$code char=$char addr=${this.hashCode().toHexString()})"
+    }
+
     class Alpha(code: PagerCode, char: String, charData: String) :
         PagerChar(code, char, IntSize(5, 7), charData)
 

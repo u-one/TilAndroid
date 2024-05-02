@@ -34,18 +34,7 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
     Column(modifier = Modifier.fillMaxSize()) {
         PagerLcd(Modifier.height(160.dp), inputText = sentText)
         Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "メッセージを入力して#を押してください",
-            style = MaterialTheme.typography.body1,
-            color = Color.Black,
-            modifier = Modifier.padding(10.dp),
-        )
-        OutlinedTextField(
-            value = inputText,
-            onValueChange = {},
-            modifier = Modifier.padding(10.dp),
-            readOnly = true,
-        )
+        InputText(inputText = inputText, Modifier.fillMaxWidth())
         SoundSwitch(
             checked = dialPadState.playTone,
             onCheckedChange = { dialPadState.playTone = it },
@@ -63,6 +52,27 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
                 }
             },
             state = dialPadState,
+        )
+    }
+}
+
+@Composable
+private fun InputText(
+    inputText: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "メッセージを入力して#を押してください",
+            style = MaterialTheme.typography.body1,
+            color = Color.Black,
+            modifier = Modifier.padding(10.dp),
+        )
+        OutlinedTextField(
+            value = inputText,
+            onValueChange = {},
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true,
         )
     }
 }

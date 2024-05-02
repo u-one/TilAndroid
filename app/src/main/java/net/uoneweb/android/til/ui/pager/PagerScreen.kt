@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,26 +26,51 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PagerScreen() {
+fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryImpl(TonePlayerImpl())) {
     var inputText by remember { mutableStateOf("") }
-    var outputTone by remember { mutableStateOf(false) }
+    val dialPadState = remember { dialPadStateFactory.create() }
 
     Column(modifier = Modifier.fillMaxSize()) {
         PagerLcd(Modifier.height(160.dp), inputText = inputText)
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = inputText,
-            style = MaterialTheme.typography.subtitle1,
+            text = "メッセージを入力して#を押してください",
+            style = MaterialTheme.typography.body1,
             color = Color.Black,
             modifier = Modifier.padding(10.dp),
         )
-        Switch(checked = outputTone, onCheckedChange = { outputTone = it })
+        OutlinedTextField(
+            value = inputText,
+            onValueChange = {},
+            modifier = Modifier.padding(10.dp),
+            readOnly = true,
+        )
+        SoundSwitch(
+            checked = dialPadState.playTone,
+            onCheckedChange = { dialPadState.playTone = it },
+        )
         DialPad(
             onButtonPress = { key ->
                 inputText += key
             },
-            state = rememberDialPadState(outputTone),
+            state = dialPadState,
         )
+    }
+}
+
+@Composable
+private fun SoundSwitch(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row {
+        Text(
+            text = "ダイヤル音",
+            style = MaterialTheme.typography.body1,
+            color = Color.Black,
+            modifier = Modifier.padding(10.dp),
+        )
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
@@ -76,10 +102,10 @@ fun PagerLcd(
 fun PagerLcdHeader() {
     Box(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .height(20.dp)
-            .background(Color(0xFF446644)),
+            Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .background(Color(0xFF446644)),
     )
 }
 
@@ -87,10 +113,10 @@ fun PagerLcdHeader() {
 fun PagerLcdLeft() {
     Box(
         modifier =
-        Modifier
-            .height(160.dp)
-            .width(20.dp)
-            .background(Color(0xFF446644)),
+            Modifier
+                .height(160.dp)
+                .width(20.dp)
+                .background(Color(0xFF446644)),
     )
 }
 
@@ -176,5 +202,5 @@ fun PagerLcdPreview(modifier: Modifier = Modifier) {
 @Composable
 @Preview(showBackground = true)
 fun PagerScreenPreview() {
-    PagerScreen()
+    PagerScreen(DialPadStateFactoryImpl(DummyTonePlayer()))
 }

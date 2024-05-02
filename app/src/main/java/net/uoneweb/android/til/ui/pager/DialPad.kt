@@ -1,7 +1,5 @@
 package net.uoneweb.android.til.ui.pager
 
-import android.media.AudioManager
-import android.media.ToneGenerator
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +12,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,70 +22,50 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@Composable
-fun rememberDialPadState(outputTone: Boolean = false): DialPadState {
-    return remember(outputTone) {
-        if (outputTone) {
-            DialPadStateImpl()
-        } else {
-            DefaultDialPadState()
-        }
+interface DialPadStateFactory {
+    fun create(): DialPadState
+}
+
+class DialPadStateFactoryImpl(private val tonePlayer: TonePlayer) : DialPadStateFactory {
+    override fun create(): DialPadState {
+        return DialPadStateImpl(tonePlayer)
     }
 }
 
 @Stable
 interface DialPadState {
-    val labels: List<String>
+    val labels: List<Char>
+    var playTone: Boolean
 
-    fun onButtonPress(index: Int)
+    fun onButtonPress(char: Char)
 
     fun onButtonRelease()
 }
 
 @Stable
-class DialPadStateImpl() : DialPadState {
-    override val labels = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
+class DialPadStateImpl(private val tonePlayer: TonePlayer = DummyTonePlayer()) : DialPadState {
+    override var playTone by mutableStateOf(false)
 
-    private val toneGenerator = ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME)
-    private val dtmfs =
-        listOf(
-            ToneGenerator.TONE_DTMF_1,
-            ToneGenerator.TONE_DTMF_2,
-            ToneGenerator.TONE_DTMF_3,
-            ToneGenerator.TONE_DTMF_4,
-            ToneGenerator.TONE_DTMF_5,
-            ToneGenerator.TONE_DTMF_6,
-            ToneGenerator.TONE_DTMF_7,
-            ToneGenerator.TONE_DTMF_8,
-            ToneGenerator.TONE_DTMF_9,
-            ToneGenerator.TONE_DTMF_S,
-            ToneGenerator.TONE_DTMF_0,
-            ToneGenerator.TONE_DTMF_P,
-        )
+    override val labels = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#')
 
-    override fun onButtonPress(index: Int) {
-        toneGenerator.startTone(dtmfs[index])
+    override fun onButtonPress(char: Char) {
+        if (playTone) {
+            tonePlayer.startTone(char)
+        }
     }
 
     override fun onButtonRelease() {
-        toneGenerator.stopTone()
+        if (playTone) {
+            tonePlayer.stopTone()
+        }
     }
-}
-
-@Stable
-class DefaultDialPadState : DialPadState {
-    override val labels = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
-
-    override fun onButtonPress(index: Int) {}
-
-    override fun onButtonRelease() {}
 }
 
 @Composable
 fun DialPad(
     modifier: Modifier = Modifier,
-    onButtonPress: (String) -> Unit,
-    state: DialPadState = rememberDialPadState(),
+    onButtonPress: (Char) -> Unit,
+    state: DialPadState = DialPadStateImpl(),
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -99,8 +79,9 @@ fun DialPad(
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onPress = {
-                                    state.onButtonPress(index)
-                                    onButtonPress(state.labels[index])
+                                    val char = state.labels[index]
+                                    state.onButtonPress(char)
+                                    onButtonPress(char)
                                     tryAwaitRelease()
                                     state.onButtonRelease()
                                 },
@@ -109,7 +90,7 @@ fun DialPad(
             ) {
                 Card(modifier = Modifier.size(100.dp), elevation = 10.dp) {
                     Text(
-                        text = state.labels[index],
+                        text = state.labels[index].toString(),
                         modifier.align(
                             alignment = Alignment.Center,
                         ),
@@ -128,13 +109,6 @@ fun DialPadPreview() {
     DialPad(
         onButtonPress = { _ ->
         },
-        state =
-            object : DialPadState {
-                override val labels = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#")
-
-                override fun onButtonPress(index: Int) {}
-
-                override fun onButtonRelease() {}
-            },
+        state = DialPadStateImpl(),
     )
 }

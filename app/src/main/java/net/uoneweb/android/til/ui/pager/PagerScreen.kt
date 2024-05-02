@@ -27,11 +27,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryImpl(TonePlayerImpl)) {
+    var sentText by remember { mutableStateOf("") }
     var inputText by remember { mutableStateOf("") }
     val dialPadState = remember { dialPadStateFactory.create() }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        PagerLcd(Modifier.height(160.dp), inputText = inputText)
+        PagerLcd(Modifier.height(160.dp), inputText = sentText)
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = "メッセージを入力して#を押してください",
@@ -52,6 +53,14 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
         DialPad(
             onButtonPress = { key ->
                 inputText += key
+
+                if (key == '#') {
+                    // #の2度押しに対応
+                    if (inputText.isNotEmpty() && inputText != "#") {
+                        sentText = inputText
+                    }
+                    inputText = ""
+                }
             },
             state = dialPadState,
         )

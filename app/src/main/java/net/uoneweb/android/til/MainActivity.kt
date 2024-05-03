@@ -138,8 +138,7 @@ private fun BottomBar(navController: NavController) {
     }
 }
 
-private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean =
-    hierarchy.any { it.route == screen.route }
+private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean = hierarchy.any { it.route == screen.route }
 
 private fun (NavController).navigate(screen: Screen) {
     navigate(screen.route) {

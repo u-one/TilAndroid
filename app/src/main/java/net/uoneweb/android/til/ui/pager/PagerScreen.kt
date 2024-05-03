@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Slider
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,8 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
     var inputText by remember { mutableStateOf("") }
     val dialPadState = remember { dialPadStateFactory.create() }
 
+    VolumeControlEffect()
+
     Column(modifier = Modifier.fillMaxSize()) {
         PagerLcd(Modifier.height(160.dp), inputText = sentText)
         Spacer(modifier = Modifier.height(20.dp))
@@ -39,8 +40,6 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
         SoundSwitch(
             checked = dialPadState.playTone,
             onCheckedChange = { dialPadState.playTone = it },
-            volume = dialPadState.volume,
-            onVolumeChange = { dialPadState.onVolumeChange(it) },
         )
         DialPad(
             onButtonPress = { key ->
@@ -84,8 +83,6 @@ private fun InputText(
 private fun SoundSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    volume: Float,
-    onVolumeChange: (Float) -> Unit,
 ) {
     Row {
         Text(
@@ -95,12 +92,6 @@ private fun SoundSwitch(
             modifier = Modifier.padding(10.dp),
         )
         Switch(checked = checked, onCheckedChange = onCheckedChange)
-        Slider(
-            value = volume,
-            valueRange = 0f..1f,
-            onValueChange = onVolumeChange,
-            enabled = checked,
-        )
     }
 }
 

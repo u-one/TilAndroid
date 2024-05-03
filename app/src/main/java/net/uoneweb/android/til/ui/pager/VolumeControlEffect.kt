@@ -1,10 +1,6 @@
-package net.uoneweb.android.til.ui.audio
+package net.uoneweb.android.til.ui.pager
 
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.media.AudioManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,38 +10,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 
 @Composable
-fun VolumeControlEffect(onVolumeChanged: () -> Unit) {
-    val context = LocalContext.current
+fun VolumeControlEffect() {
+    val activity = LocalContext.current
 
-    if (context !is Activity) {
+    if (activity !is Activity) {
         return
     }
 
-    val volumeReceiver =
-        object : BroadcastReceiver() {
-            override fun onReceive(
-                context: Context,
-                intent: Intent,
-            ) {
-                if (intent.action == "android.media.VOLUME_CHANGED_ACTION") {
-                    onVolumeChanged()
-                }
-            }
-        }
-
-    DisposableEffect(Unit) {
-        val intentFilter =
-            IntentFilter().apply {
-                addAction("android.media.VOLUME_CHANGED_ACTION")
-            }
-        context.registerReceiver(volumeReceiver, intentFilter)
-        onDispose {
-            context.unregisterReceiver(volumeReceiver)
-        }
-    }
-
     val lifecycleOwner = LocalLifecycleOwner.current
-    val activity = context
     DisposableEffect(lifecycleOwner) {
         val observer =
             LifecycleEventObserver { _, event ->

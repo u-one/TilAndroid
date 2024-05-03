@@ -36,15 +36,25 @@ class DialPadStateFactoryImpl(private val tonePlayer: TonePlayer) : DialPadState
 interface DialPadState {
     val labels: List<Char>
     var playTone: Boolean
+    var volume: Float
 
     fun onButtonPress(char: Char)
 
     fun onButtonRelease()
+
+    fun onVolumeChange(volume: Float) {
+        this.volume = volume
+    }
 }
 
 @Stable
 class DialPadStateImpl(private val tonePlayer: TonePlayer = DummyTonePlayer()) : DialPadState {
-    override var playTone by mutableStateOf(false)
+    override var playTone by mutableStateOf(true)
+    override var volume by mutableStateOf(0.5f)
+
+    init {
+        tonePlayer.changeVolume(volume)
+    }
 
     override val labels = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#')
 
@@ -58,6 +68,11 @@ class DialPadStateImpl(private val tonePlayer: TonePlayer = DummyTonePlayer()) :
         if (playTone) {
             tonePlayer.stopTone()
         }
+    }
+
+    override fun onVolumeChange(volume: Float) {
+        this.volume = volume
+        tonePlayer.changeVolume(volume)
     }
 }
 

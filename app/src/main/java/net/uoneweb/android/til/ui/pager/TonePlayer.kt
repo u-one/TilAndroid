@@ -7,10 +7,12 @@ interface TonePlayer {
     fun startTone(char: Char)
 
     fun stopTone()
+
+    fun changeVolume(volume: Float)
 }
 
 object TonePlayerImpl : TonePlayer {
-    private val toneGenerator = ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME)
+    private var toneGenerator = ToneGenerator(AudioManager.STREAM_DTMF, ToneGenerator.MAX_VOLUME)
     private val dtmfs =
         mapOf(
             '1' to ToneGenerator.TONE_DTMF_1,
@@ -36,10 +38,29 @@ object TonePlayerImpl : TonePlayer {
     override fun stopTone() {
         toneGenerator.stopTone()
     }
+
+    override fun changeVolume(volume: Float) {
+        val adjustedVolume =
+            if (volume > 1) {
+                1f
+            } else if (volume < 0) {
+                0f
+            } else {
+                volume
+            }
+        toneGenerator.release()
+        toneGenerator =
+            ToneGenerator(
+                AudioManager.STREAM_DTMF,
+                (adjustedVolume * ToneGenerator.MAX_VOLUME).toInt(),
+            )
+    }
 }
 
 class DummyTonePlayer : TonePlayer {
     override fun startTone(char: Char) {}
 
     override fun stopTone() {}
+
+    override fun changeVolume(volume: Float) {}
 }

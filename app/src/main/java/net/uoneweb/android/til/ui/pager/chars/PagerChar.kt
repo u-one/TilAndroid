@@ -2,9 +2,7 @@ package net.uoneweb.android.til.ui.pager.chars
 
 import androidx.compose.ui.unit.IntSize
 import net.uoneweb.android.til.ui.pager.LcdBitmap
-
-@JvmInline
-value class PagerCode(val value: String)
+import net.uoneweb.android.til.ui.pager.PagerCode
 
 private fun (String).toIntArray(): IntArray {
     return this.trim().split("\n").flatMap { line ->
@@ -31,25 +29,23 @@ sealed class PagerChar(
         return "PagerChar(code=$code char=$char addr=${this.hashCode().toHexString()})"
     }
 
-    class Alpha(code: PagerCode, char: String, charData: String) :
-        PagerChar(code, char, IntSize(5, 7), charData)
+    class Alpha(code: PagerCode, char: String, bitmap: LcdBitmap) :
+        PagerChar(code, char, bitmap)
 
-    class Kana(code: PagerCode, char: String, charData: String) : PagerChar(
+    class Kana(code: PagerCode, char: String, bitmap: LcdBitmap) : PagerChar(
         code,
         char,
-        IntSize(5, 7),
-        charData,
+        bitmap,
     )
 
-    class Number(code: PagerCode, char: String, charData: String) : PagerChar(
+    class Number(code: PagerCode, char: String, bitmap: LcdBitmap) : PagerChar(
         code,
         char,
-        IntSize(5, 7),
-        charData,
+        bitmap,
     )
 
-    class Special(code: PagerCode, char: String, charData: String) :
-        PagerChar(code, char, IntSize(5, 7), charData)
+    class Special(code: PagerCode, char: String, bitmap: LcdBitmap) :
+        PagerChar(code, char, bitmap)
 
     class LargeChar(code: PagerCode, char: String, charData: String) : PagerChar(
         code,
@@ -58,11 +54,10 @@ sealed class PagerChar(
         charData,
     )
 
-    class Emoji(code: PagerCode, char: String, charData: String) : PagerChar(
+    class Emoji(code: PagerCode, char: String, bitmap: LcdBitmap) : PagerChar(
         code,
         char,
-        IntSize(11, 15),
-        charData,
+        bitmap,
     )
 
     class Control(code: PagerCode, char: String) :

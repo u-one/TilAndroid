@@ -521,7 +521,7 @@ object LcdCharData {
      01000
     """.toLcdBitmap()
 
-    val chKanaShi =
+    val chKanaSi =
         """
      00001
      11001
@@ -576,7 +576,7 @@ object LcdCharData {
      01000
     """.toLcdBitmap()
 
-    val chKanaChi =
+    val chKanaTi =
         """
      00011
      11100
@@ -587,7 +587,7 @@ object LcdCharData {
      10000
     """.toLcdBitmap()
 
-    val chKanaTsu =
+    val chKanaTu =
         """
      10101
      10101
@@ -697,7 +697,7 @@ object LcdCharData {
      01111
     """.toLcdBitmap()
 
-    val chKanaFu =
+    val chKanaHu =
         """
      11111
      00001
@@ -904,6 +904,193 @@ object LcdCharData {
      00010
      00100
      11000
+    """.toLcdBitmap()
+
+    val chQuestionMark =
+        """
+         01110
+         10001
+         00001
+         00010
+         00100
+         00000
+         00100
+    """.toLcdBitmap()
+
+    val chExclamationMark =
+        """
+         00100
+         00100
+         00100
+         00100
+         00100
+         00000
+         00100
+    """.toLcdBitmap()
+
+    val chHyphen =
+        """
+         00000
+         00000
+         00000
+         11111
+         00000
+         00000
+         00000
+    """.toLcdBitmap()
+
+    val chSlash =
+        """
+         00001
+         00010
+         00010
+         00100
+         01000
+         01000
+         10000
+    """.toLcdBitmap()
+
+    val chYen =
+        """
+         10001
+         01010
+         00100
+         11111
+         00100
+         11111
+         00100
+    """.toLcdBitmap()
+
+    val chAmpersand =
+        """
+         01110
+         10001
+         01000
+         10101
+         10010
+         10010
+         01101
+    """.toLcdBitmap()
+
+    val chClock =
+        """
+         01110
+         10101
+         10101
+         10111
+         10001
+         10001
+         01110
+    """.toLcdBitmap()
+
+    val chTelephone =
+        """
+         00000
+         00000
+         00000
+         00000
+         00000
+         00000
+         00000
+    """.toLcdBitmap()
+
+    val chCup =
+        """
+         11100
+         11110
+         11101
+         11101
+         11101
+         11110
+         11100
+    """.toLcdBitmap()
+
+    val chOpenParenthesis =
+        """
+         00001
+         00010
+         00100
+         00100
+         00100
+         00010
+         00001
+    """.toLcdBitmap()
+
+    val chCloseParenthesis =
+        """
+         10000
+         01000
+         00100
+         00100
+         00100
+         01000
+         10000
+    """.toLcdBitmap()
+
+    val chAsterisk =
+        """
+         00100
+         10101
+         01110
+         00100
+         01110
+         10101
+         00100
+    """.toLcdBitmap()
+
+    val chHash =
+        """
+         01010
+         01010
+         11111
+         01010
+         11111
+         01010
+         01010
+    """.toLcdBitmap()
+
+    val chSpace =
+        """
+         00000
+         00000
+         00000
+         00000
+         00000
+         00000
+         00000
+    """.toLcdBitmap()
+
+    val chHeart =
+        """
+         01010
+         11111
+         11111
+         11111
+         11111
+         01110
+         00100
+    """.toLcdBitmap()
+
+    val chDakuten =
+        """
+         10100
+         01010
+         00000
+         00000
+         00000
+         00000
+         00000
+    """.toLcdBitmap()
+
+    val chHandakuten =
+        """
+         01000
+         10100
+         01000
+         00000
+         00000
+         00000
+         00000
     """.toLcdBitmap()
 
     private fun (String).toLcdBitmap(): LcdBitmap {

@@ -1,21 +1,18 @@
 package net.uoneweb.android.til.ui.pager.chars
 
-object ControlChars {
-    val set = mutableSetOf<PagerChar>()
+import net.uoneweb.android.til.ui.pager.TlmPagerCodes
 
-    val ctrlBeginFreeWord =
+object ControlChars {
+    val CtrlBeginFreeWord =
         PagerChar.Control(
-            PagerCode("*2*2"),
+            TlmPagerCodes.ctrlBeginFreeWord,
             "<BeginFreeWord>",
         )
-    val ctrlEnd = PagerChar.Control(PagerCode("#"), "<End>")
+    val CtrlEnd = PagerChar.Control(TlmPagerCodes.ctrlEnd, "<End>")
+
+    val set = mutableSetOf<PagerChar>(CtrlBeginFreeWord, CtrlEnd)
 
     fun findByChar(char: Char): PagerChar? {
         return KanaPagerChars.set.find { it.char == char.toString() }
-    }
-
-    init {
-        set.add(ctrlBeginFreeWord)
-        set.add(ctrlEnd)
     }
 }

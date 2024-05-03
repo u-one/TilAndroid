@@ -16,8 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.uoneweb.android.til.ui.pager.chars.LargeChars
+import net.uoneweb.android.til.ui.pager.chars.LcdCharData
 import net.uoneweb.android.til.ui.pager.chars.PagerChar
-import net.uoneweb.android.til.ui.pager.chars.PagerCode
 
 @Stable
 interface DotMatrixLcdState {
@@ -176,15 +177,7 @@ private fun DotMatrixLcdPreview() {
         PagerChar.Alpha(
             PagerCode("16"),
             "A",
-            """
-       01110
-       10001
-       10001
-       11111
-       10001
-       10001
-       10001
-    """,
+            LcdCharData.chAlphaA,
         )
     val state = PreviewStateImpl()
     state.update(listOf(chA, chA, chA, chA))
@@ -199,28 +192,7 @@ private fun DotMatrixLcdPreview() {
 @Composable
 @Preview(showBackground = true, widthDp = 320, heightDp = 160)
 private fun DotMatrixLcdLargePreview() {
-    val ch =
-        PagerChar.Emoji(
-            PagerCode("1*2"),
-            "Smile",
-            """
-            00011111000
-            00100000100
-            01000000010
-            10000000001
-            10010001001
-            10101010101
-            10000000001
-            10000000001
-            10111111101
-            10100000101
-            10100000101
-            10010001001
-            01001110010
-            00100000100
-            00011111000
-            """,
-        )
+    val ch = LargeChars.IconHappy
     val state = PreviewStateImpl()
     state.update(listOf(ch, ch, ch, ch))
     DotMatrixLcd(

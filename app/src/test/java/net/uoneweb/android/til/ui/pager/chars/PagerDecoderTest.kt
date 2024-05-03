@@ -13,13 +13,13 @@ class PagerDecoderTest {
 
         assertThat(chars).isEqualTo(
             listOf(
-                ControlChars.ctrlBeginFreeWord,
+                ControlChars.CtrlBeginFreeWord,
                 KanaPagerChars.findByChar('ア'),
                 KanaPagerChars.findByChar('イ'),
                 KanaPagerChars.findByChar('ウ'),
                 KanaPagerChars.findByChar('エ'),
                 KanaPagerChars.findByChar('オ'),
-                ControlChars.ctrlEnd,
+                ControlChars.CtrlEnd,
             ),
         )
     }
@@ -43,7 +43,7 @@ class PagerDecoderTest {
                 NumberPagerChars.findByChar('4'),
                 NumberPagerChars.findByChar('1'),
                 NumberPagerChars.findByChar('5'),
-                ControlChars.ctrlEnd,
+                ControlChars.CtrlEnd,
             ),
         )
     }

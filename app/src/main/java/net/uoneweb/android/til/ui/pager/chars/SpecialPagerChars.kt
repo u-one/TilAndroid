@@ -1,266 +1,44 @@
 package net.uoneweb.android.til.ui.pager.chars
 
+import net.uoneweb.android.til.ui.pager.TlmPagerCodes
+
 object SpecialPagerChars {
-    val set = mutableSetOf<PagerChar>()
+    val SpQuestion = PagerChar.Special(TlmPagerCodes.SpQuestion, "?", LcdCharData.chQuestionMark)
+    val SpExclamation = PagerChar.Special(TlmPagerCodes.SpExclamation, "!", LcdCharData.chExclamationMark)
+    val SpHyphen = PagerChar.Special(TlmPagerCodes.SpHyphen, "-", LcdCharData.chHyphen)
+    val SpSlash = PagerChar.Special(TlmPagerCodes.SpSlash, "/", LcdCharData.chSlash)
+    val SpYen = PagerChar.Special(TlmPagerCodes.SpYen, "¥", LcdCharData.chYen)
+    val SpAnd = PagerChar.Special(TlmPagerCodes.SpAmpersand, "&", LcdCharData.chAmpersand)
+    val SpClock = PagerChar.Special(TlmPagerCodes.SpClock, "時計", LcdCharData.chClock)
+    val SpTel = PagerChar.Special(TlmPagerCodes.SpTel, "電話", LcdCharData.chTelephone)
+    val SpCup = PagerChar.Special(TlmPagerCodes.SpCup, "カップ", LcdCharData.chCup)
+    val SpLeftParen = PagerChar.Special(TlmPagerCodes.SpParenthesesLeft, "(", LcdCharData.chOpenParenthesis)
+    val SpRightParen = PagerChar.Special(TlmPagerCodes.SpParenthesesRight, ")", LcdCharData.chCloseParenthesis)
+    val SpAsterisk = PagerChar.Special(TlmPagerCodes.SpAsterisk, "*", LcdCharData.chAsterisk)
+    val SpHash = PagerChar.Special(TlmPagerCodes.SpSharp, "#", LcdCharData.chHash)
+    val SpSpace = PagerChar.Special(TlmPagerCodes.SpSpace, " ", LcdCharData.chSpace)
+    val SpHeart = PagerChar.Special(TlmPagerCodes.SpHeart, "♥", LcdCharData.chHeart)
+    val SpDakuten = PagerChar.Special(TlmPagerCodes.KanaDaku, "゛", LcdCharData.chDakuten)
+    val SpHandakuten = PagerChar.Special(TlmPagerCodes.KanaHanDaku, "゜", LcdCharData.chHandakuten)
 
-    init {
-        set.add(
-            PagerChar.Special(
-                PagerCode("67"),
-                "?",
-                """
-         01110
-         10001
-         00001
-         00010
-         00100
-         00000
-         00100
-            """,
-            ),
+    val set =
+        mutableSetOf<PagerChar>(
+            SpQuestion,
+            SpExclamation,
+            SpHyphen,
+            SpSlash,
+            SpYen,
+            SpAnd,
+            SpClock,
+            SpTel,
+            SpCup,
+            SpLeftParen,
+            SpRightParen,
+            SpAsterisk,
+            SpHash,
+            SpSpace,
+            SpHeart,
+            SpDakuten,
+            SpHandakuten,
         )
-
-        set.add(
-            PagerChar.Special(
-                PagerCode("68"),
-                "!",
-                """
-         00100
-         00100
-         00100
-         00100
-         00100
-         00000
-         00100
-            """,
-            ),
-        )
-
-        set.add(
-            PagerChar.Special(
-                PagerCode("69"),
-                "-",
-                """
-         00000
-         00000
-         00000
-         11111
-         00000
-         00000
-         00000
-            """,
-            ),
-        )
-
-        set.add(
-            PagerChar.Special(
-                PagerCode("60"),
-                "/",
-                """
-         00001
-         00010
-         00010
-         00100
-         01000
-         01000
-         10000
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("76"),
-                "¥",
-                """
-         10001
-         01010
-         00100
-         11111
-         00100
-         11111
-         00100
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("77"),
-                "&",
-                """
-         01110
-         10001
-         01000
-         10101
-         10010
-         10010
-         01101
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("78"),
-                "時計",
-                """
-         01110
-         10101
-         10101
-         10111
-         10001
-         10001
-         01110
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("79"),
-                "電話",
-                """
-         00000
-         00000
-         00000
-         00000
-         00000
-         00000
-         00000
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("70"),
-                "カップ",
-                """
-         11100
-         11110
-         11101
-         11101
-         11101
-         11110
-         11100
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("82"),
-                "(",
-                """
-         00001
-         00010
-         00100
-         00100
-         00100
-         00010
-         00001
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("84"),
-                ")",
-                """
-         10000
-         01000
-         00100
-         00100
-         00100
-         01000
-         10000
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("86"),
-                "*",
-                """
-         00100
-         10101
-         01110
-         00100
-         01110
-         10101
-         00100
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("87"),
-                "#",
-                """
-         01010
-         01010
-         11111
-         01010
-         11111
-         01010
-         01010
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("88"),
-                " ",
-                """
-         00000
-         00000
-         00000
-         00000
-         00000
-         00000
-         00000
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("89"),
-                "♥",
-                """
-         01010
-         11111
-         11111
-         11111
-         11111
-         01110
-         00100
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("04"),
-                "゛",
-                """
-         10100
-         01010
-         00000
-         00000
-         00000
-         00000
-         00000
-            """,
-            ),
-        )
-        set.add(
-            PagerChar.Special(
-                PagerCode("05"),
-                "゜",
-                """
-         01000
-         10100
-         01000
-         00000
-         00000
-         00000
-         00000
-            """,
-            ),
-        )
-    }
 }

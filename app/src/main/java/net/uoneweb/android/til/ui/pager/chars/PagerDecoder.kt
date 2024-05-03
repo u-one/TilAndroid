@@ -1,11 +1,13 @@
 package net.uoneweb.android.til.ui.pager.chars
 
+import net.uoneweb.android.til.ui.pager.PagerCode
+
 class PagerDecoder {
     private val simpleNumberCharset = mutableSetOf<PagerChar>()
     private val freeWordCharset = mutableSetOf<PagerChar>()
 
     init {
-        simpleNumberCharset.add(ControlChars.ctrlEnd)
+        simpleNumberCharset.add(ControlChars.CtrlEnd)
 
         freeWordCharset.addAll(KanaPagerChars.set)
         freeWordCharset.addAll(AlphabetPagerChars.set)
@@ -16,7 +18,7 @@ class PagerDecoder {
     }
 
     fun decode(code: String): List<PagerChar> {
-        if (code.startsWith(ControlChars.ctrlBeginFreeWord.code.value)) {
+        if (code.startsWith(ControlChars.CtrlBeginFreeWord.code.value)) {
             return decodeFreeWord(code)
         }
         return decodeNumber(code)
@@ -28,7 +30,7 @@ class PagerDecoder {
         while (startIndex < code.length) {
             val pagerChar = findNextPagerCharNumber(code.substring(startIndex))
             chars.add(pagerChar)
-            if (pagerChar == ControlChars.ctrlEnd) {
+            if (pagerChar == ControlChars.CtrlEnd) {
                 break
             }
             startIndex += 1
@@ -57,7 +59,7 @@ class PagerDecoder {
         while (startIndex < code.length) {
             val pagerChar = findNextPagerChar(code.substring(startIndex))
             chars.add(pagerChar)
-            if (pagerChar == ControlChars.ctrlEnd) {
+            if (pagerChar == ControlChars.CtrlEnd) {
                 break
             }
             startIndex += pagerChar.code.value.length

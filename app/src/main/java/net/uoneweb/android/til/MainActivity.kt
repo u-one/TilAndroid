@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -38,6 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import net.uoneweb.android.til.ui.audio.AudioScreen
 import net.uoneweb.android.til.ui.buttons.ButtonsScreen
 import net.uoneweb.android.til.ui.camera.CameraScreen
 import net.uoneweb.android.til.ui.graphql.GraphQLScreen
@@ -112,9 +114,11 @@ class MainActivity : AppCompatActivity() {
 @Composable
 private fun TilApp() {
     val navController = rememberNavController()
-    Scaffold(bottomBar = {
-        BottomBar(navController)
-    }) { innerPadding ->
+    Scaffold(
+        bottomBar = {
+            BottomBar(navController)
+        },
+    ) { innerPadding ->
         TilNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
     }
 }
@@ -134,7 +138,8 @@ private fun BottomBar(navController: NavController) {
     }
 }
 
-private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean = hierarchy.any { it.route == screen.route }
+private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean =
+    hierarchy.any { it.route == screen.route }
 
 private fun (NavController).navigate(screen: Screen) {
     navigate(screen.route) {
@@ -176,6 +181,8 @@ sealed class Screen(
     data object Buttons : Screen("buttons", R.string.buttons, Icons.Filled.CheckCircle)
 
     data object Pager : Screen("pager", R.string.pager, Icons.Filled.AccountBox)
+
+    data object Audio : Screen("audio", R.string.audio, Icons.Filled.PlayArrow)
 }
 
 private val screens =
@@ -186,6 +193,7 @@ private val screens =
         Screen.GraphQL,
         Screen.Buttons,
         Screen.Pager,
+        Screen.Audio,
     )
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -216,6 +224,9 @@ private fun TilNavHost(
         }
         composable(Screen.Pager.route) {
             PagerScreen()
+        }
+        composable(Screen.Audio.route) {
+            AudioScreen()
         }
     }
 }

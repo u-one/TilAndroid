@@ -6,4 +6,5 @@
     <string name="graphql">GraphQL</string>
     <string name="buttons">buttons</string>
     <string name="pager">ポケベル</string>
+    <string name="audio">音</string>
 </resources>

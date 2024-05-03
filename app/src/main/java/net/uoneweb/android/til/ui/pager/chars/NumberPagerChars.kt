@@ -3,6 +3,10 @@ package net.uoneweb.android.til.ui.pager.chars
 object NumberPagerChars {
     val set = mutableSetOf<PagerChar>()
 
+    fun findByChar(char: Char): PagerChar? {
+        return set.find { it.char == char.toString() }
+    }
+
     init {
         set.add(
             PagerChar.Number(

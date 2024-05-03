@@ -1,49 +1,86 @@
 package net.uoneweb.android.til.ui.pager.chars
 
 class PagerDecoder {
-    val ctrlBegin =
-        PagerChar.Control(
-            PagerCode("*2*2"),
-            "*2*2",
-        )
-    private val ctrlEnd = PagerChar.Control(PagerCode("#"), "<END>")
-
-    private val charset = mutableSetOf<PagerChar>(ctrlBegin, ctrlEnd)
+    private val simpleNumberCharset = mutableSetOf<PagerChar>()
+    private val freeWordCharset = mutableSetOf<PagerChar>()
 
     init {
-        charset.addAll(KanaPagerChars.set)
-        charset.addAll(AlphabetPagerChars.set)
-        charset.addAll(SpecialPagerChars.set)
-        charset.addAll(LargeChars.set)
-        charset.addAll(NumberPagerChars.set)
+        simpleNumberCharset.add(ControlChars.ctrlEnd)
+
+        freeWordCharset.addAll(KanaPagerChars.set)
+        freeWordCharset.addAll(AlphabetPagerChars.set)
+        freeWordCharset.addAll(SpecialPagerChars.set)
+        freeWordCharset.addAll(LargeChars.set)
+        freeWordCharset.addAll(NumberPagerChars.set)
+        freeWordCharset.addAll(ControlChars.set)
     }
 
     fun decode(code: String): List<PagerChar> {
+        if (code.startsWith(ControlChars.ctrlBeginFreeWord.code.value)) {
+            return decodeFreeWord(code)
+        }
+        return decodeNumber(code)
+    }
+
+    private fun decodeNumber(code: String): List<PagerChar> {
         var startIndex = 0
         val chars = mutableListOf<PagerChar>()
         while (startIndex < code.length) {
-            val pagerChar =
-                charset.find {
-                    code.startsWith(it.code.value, startIndex, ignoreCase = true)
-                } ?: NumberPagerChars.set.find {
-                    it.char ==
-                        code.substring(
-                            startIndex,
-                            startIndex + 1,
-                        )
-                }
-                    ?: PagerChar.Control(PagerCode(code.substring(startIndex, startIndex + 1)), "?")
-            if (pagerChar == ctrlBegin) {
-                chars.clear()
-            } else if (pagerChar == ctrlEnd) {
+            val pagerChar = findNextPagerCharNumber(code.substring(startIndex))
+            chars.add(pagerChar)
+            if (pagerChar == ControlChars.ctrlEnd) {
                 break
-            } else {
-                chars.add(pagerChar)
+            }
+            startIndex += 1
+        }
+        return chars
+    }
+
+    private fun findNextPagerCharNumber(codes: String): PagerChar {
+        val nextCode = codes.take(1)
+
+        simpleNumberCharset.find {
+            it.code.value == nextCode
+        }?.let { return it }
+
+        // TODO: Create SingleNumberPagerChars
+        NumberPagerChars.set.find {
+            it.char == nextCode
+        }?.let { return it }
+
+        return unknownCode(nextCode)
+    }
+
+    private fun decodeFreeWord(code: String): List<PagerChar> {
+        var startIndex = 0
+        val chars = mutableListOf<PagerChar>()
+        while (startIndex < code.length) {
+            val pagerChar = findNextPagerChar(code.substring(startIndex))
+            chars.add(pagerChar)
+            if (pagerChar == ControlChars.ctrlEnd) {
+                break
             }
             startIndex += pagerChar.code.value.length
         }
         return chars
     }
+
+    private fun findNextPagerChar(codes: String): PagerChar {
+        freeWordCharset.find {
+            codes.startsWith(it.code.value, ignoreCase = true)
+        }?.let { return it }
+
+        val nextCode = codes.take(1)
+
+        // TODO: Create SingleNumberPagerChars
+        NumberPagerChars.set.find {
+            it.char == nextCode
+        }?.let { return it }
+
+        return unknownCode(nextCode)
+    }
+
+    private fun unknownCode(code: String): PagerChar = PagerChar.Control(PagerCode(code), "?")
 
     fun fromText(text: String): List<PagerChar> {
         return stringToChars(text)
@@ -51,7 +88,7 @@ class PagerDecoder {
 
     private fun stringToChars(text: String): List<PagerChar> {
         return text.map {
-            charset.find { ch -> ch.char == it.toString() }
+            freeWordCharset.find { ch -> ch.char == it.toString() }
         }.filterNotNull()
     }
 }

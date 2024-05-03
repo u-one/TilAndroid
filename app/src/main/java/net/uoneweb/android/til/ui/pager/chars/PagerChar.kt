@@ -1,15 +1,30 @@
 package net.uoneweb.android.til.ui.pager.chars
 
 import androidx.compose.ui.unit.IntSize
+import net.uoneweb.android.til.ui.pager.LcdBitmap
 
 @JvmInline
 value class PagerCode(val value: String)
 
-sealed class PagerChar(val code: PagerCode, val char: String, val size: IntSize, charData: String) {
-    val charData: IntArray =
-        charData.trim().split("\n").flatMap { line ->
-            line.trim().map { if (it == '1') 1 else 0 }
-        }.toIntArray()
+private fun (String).toIntArray(): IntArray {
+    return this.trim().split("\n").flatMap { line ->
+        line.trim().map { if (it == '1') 1 else 0 }
+    }.toIntArray()
+}
+
+sealed class PagerChar(
+    val code: PagerCode,
+    val char: String,
+    val bitmap: LcdBitmap,
+) {
+    val size: IntSize = bitmap.size
+    val charData: IntArray = bitmap.data
+
+    constructor(code: PagerCode, char: String, size: IntSize, charData: String) : this(
+        code,
+        char,
+        LcdBitmap(charData.toIntArray(), size),
+    )
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun toString(): String {

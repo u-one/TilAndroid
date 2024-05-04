@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.pager
+package net.uoneweb.android.til.ui.pager.lcd
 
 data class SingleLineCharacterLcdBuffer(
     val displayWidth: Int = 23,

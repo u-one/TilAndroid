@@ -1,7 +1,7 @@
 package net.uoneweb.android.til.ui.pager.chars
 
 import androidx.compose.ui.unit.IntSize
-import net.uoneweb.android.til.ui.pager.LcdBitmap
+import net.uoneweb.android.til.ui.pager.lcd.LcdBitmap
 
 object LcdFullCharData {
     val chFullHappy =

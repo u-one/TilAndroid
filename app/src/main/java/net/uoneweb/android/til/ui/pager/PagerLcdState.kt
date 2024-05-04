@@ -5,6 +5,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import net.uoneweb.android.til.ui.pager.chars.PagerChar
 import net.uoneweb.android.til.ui.pager.chars.PagerDecoder
+import net.uoneweb.android.til.ui.pager.lcd.DotMatrixLcdState
+import net.uoneweb.android.til.ui.pager.lcd.DotMatrixLcdStateImpl
 
 @Composable
 fun rememberPagerLcdState(): PagerLcdState {

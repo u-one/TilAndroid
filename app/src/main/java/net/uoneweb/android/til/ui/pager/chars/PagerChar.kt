@@ -1,8 +1,7 @@
 package net.uoneweb.android.til.ui.pager.chars
 
 import androidx.compose.ui.unit.IntSize
-import net.uoneweb.android.til.ui.pager.LcdBitmap
-import net.uoneweb.android.til.ui.pager.PagerCode
+import net.uoneweb.android.til.ui.pager.lcd.LcdBitmap
 
 private fun (String).toIntArray(): IntArray {
     return this.trim().split("\n").flatMap { line ->
@@ -47,19 +46,12 @@ sealed class PagerChar(
     class Special(code: PagerCode, char: String, bitmap: LcdBitmap) :
         PagerChar(code, char, bitmap)
 
-    class LargeChar(code: PagerCode, char: String, charData: String) : PagerChar(
-        code,
-        char,
-        IntSize(11, 15),
-        charData,
-    )
-
-    class Emoji(code: PagerCode, char: String, bitmap: LcdBitmap) : PagerChar(
+    class LargeChar(code: PagerCode, char: String, bitmap: LcdBitmap) : PagerChar(
         code,
         char,
         bitmap,
     )
 
     class Control(code: PagerCode, char: String) :
-        PagerChar(code, char, IntSize.Zero, "")
+        PagerChar(code, char, LcdBitmap(intArrayOf(), IntSize.Zero))
 }

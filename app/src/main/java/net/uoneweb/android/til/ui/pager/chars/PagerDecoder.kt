@@ -7,18 +7,18 @@ class PagerDecoder {
     private val freeWordCharset = mutableSetOf<PagerChar>()
 
     init {
-        simpleNumberCharset.add(ControlChars.CtrlEnd)
+        simpleNumberCharset.add(PagerChars.CtrlEnd)
 
-        freeWordCharset.addAll(KanaPagerChars.set)
-        freeWordCharset.addAll(AlphabetPagerChars.set)
-        freeWordCharset.addAll(SpecialPagerChars.set)
-        freeWordCharset.addAll(LargeChars.set)
-        freeWordCharset.addAll(NumberPagerChars.set)
-        freeWordCharset.addAll(ControlChars.set)
+        freeWordCharset.addAll(PagerChars.kanas)
+        freeWordCharset.addAll(PagerChars.alphas)
+        freeWordCharset.addAll(PagerChars.specials)
+        freeWordCharset.addAll(PagerChars.icons)
+        freeWordCharset.addAll(PagerChars.numbers)
+        freeWordCharset.addAll(PagerChars.ctrls)
     }
 
     fun decode(code: String): List<PagerChar> {
-        if (code.startsWith(ControlChars.CtrlBeginFreeWord.code.value)) {
+        if (code.startsWith(PagerChars.CtrlBeginFreeWord.code.value)) {
             return decodeFreeWord(code)
         }
         return decodeNumber(code)
@@ -30,7 +30,7 @@ class PagerDecoder {
         while (startIndex < code.length) {
             val pagerChar = findNextPagerCharNumber(code.substring(startIndex))
             chars.add(pagerChar)
-            if (pagerChar == ControlChars.CtrlEnd) {
+            if (pagerChar == PagerChars.CtrlEnd) {
                 break
             }
             startIndex += 1
@@ -46,7 +46,7 @@ class PagerDecoder {
         }?.let { return it }
 
         // TODO: Create SingleNumberPagerChars
-        NumberPagerChars.set.find {
+        PagerChars.numbers.find {
             it.char == nextCode
         }?.let { return it }
 
@@ -59,7 +59,7 @@ class PagerDecoder {
         while (startIndex < code.length) {
             val pagerChar = findNextPagerChar(code.substring(startIndex))
             chars.add(pagerChar)
-            if (pagerChar == ControlChars.CtrlEnd) {
+            if (pagerChar == PagerChars.CtrlEnd) {
                 break
             }
             startIndex += pagerChar.code.value.length
@@ -75,7 +75,7 @@ class PagerDecoder {
         val nextCode = codes.take(1)
 
         // TODO: Create SingleNumberPagerChars
-        NumberPagerChars.set.find {
+        PagerChars.numbers.find {
             it.char == nextCode
         }?.let { return it }
 

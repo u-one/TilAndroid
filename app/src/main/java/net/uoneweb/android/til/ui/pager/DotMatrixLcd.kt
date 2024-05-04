@@ -16,9 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.uoneweb.android.til.ui.pager.chars.LargeChars
 import net.uoneweb.android.til.ui.pager.chars.LcdCharData
 import net.uoneweb.android.til.ui.pager.chars.PagerChar
+import net.uoneweb.android.til.ui.pager.chars.PagerChars
 
 @Stable
 interface DotMatrixLcdState {
@@ -192,7 +192,7 @@ private fun DotMatrixLcdPreview() {
 @Composable
 @Preview(showBackground = true, widthDp = 320, heightDp = 160)
 private fun DotMatrixLcdLargePreview() {
-    val ch = LargeChars.IconHappy
+    val ch = PagerChars.IconHappy
     val state = PreviewStateImpl()
     state.update(listOf(ch, ch, ch, ch))
     DotMatrixLcd(

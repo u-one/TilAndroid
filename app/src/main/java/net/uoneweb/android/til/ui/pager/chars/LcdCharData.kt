@@ -400,6 +400,11 @@ object LcdCharData {
        11111
     """.toLcdBitmap()
 
+    /*
+     * カナ文字
+     * 全てオリジナル
+     */
+
     val chKanaA =
         """
      11111

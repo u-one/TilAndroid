@@ -13,13 +13,13 @@ class PagerDecoderTest {
 
         assertThat(chars).isEqualTo(
             listOf(
-                ControlChars.CtrlBeginFreeWord,
-                KanaPagerChars.findByChar('ア'),
-                KanaPagerChars.findByChar('イ'),
-                KanaPagerChars.findByChar('ウ'),
-                KanaPagerChars.findByChar('エ'),
-                KanaPagerChars.findByChar('オ'),
-                ControlChars.CtrlEnd,
+                PagerChars.CtrlBeginFreeWord,
+                PagerChars.KanaA,
+                PagerChars.KanaI,
+                PagerChars.KanaU,
+                PagerChars.KanaE,
+                PagerChars.KanaO,
+                PagerChars.CtrlEnd,
             ),
         )
     }
@@ -33,17 +33,35 @@ class PagerDecoderTest {
 
         assertThat(chars).isEqualTo(
             listOf(
-                NumberPagerChars.findByChar('1'),
-                NumberPagerChars.findByChar('1'),
-                NumberPagerChars.findByChar('1'),
-                NumberPagerChars.findByChar('2'),
-                NumberPagerChars.findByChar('1'),
-                NumberPagerChars.findByChar('3'),
-                NumberPagerChars.findByChar('1'),
-                NumberPagerChars.findByChar('4'),
-                NumberPagerChars.findByChar('1'),
-                NumberPagerChars.findByChar('5'),
-                ControlChars.CtrlEnd,
+                PagerChars.Num1,
+                PagerChars.Num1,
+                PagerChars.Num1,
+                PagerChars.Num2,
+                PagerChars.Num1,
+                PagerChars.Num3,
+                PagerChars.Num1,
+                PagerChars.Num4,
+                PagerChars.Num1,
+                PagerChars.Num5,
+                PagerChars.CtrlEnd,
+            ),
+        )
+    }
+
+    @Test
+    fun decodeFreeWordWithUnknownCode() {
+        val sut = PagerDecoder()
+        val code = "*2*21180#"
+
+        val chars = sut.decode(code)
+
+        assertThat(chars).isEqualTo(
+            listOf(
+                PagerChars.CtrlBeginFreeWord,
+                PagerChars.KanaA,
+                PagerChars.Num8,
+                PagerChars.Num0,
+                PagerChars.CtrlEnd,
             ),
         )
     }

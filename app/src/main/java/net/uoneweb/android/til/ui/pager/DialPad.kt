@@ -2,9 +2,9 @@ package net.uoneweb.android.til.ui.pager
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.Card
@@ -88,7 +88,7 @@ fun DialPad(
                             )
                         },
             ) {
-                Card(modifier = Modifier.size(100.dp), elevation = 10.dp) {
+                Card(modifier = Modifier.fillMaxSize(), elevation = 10.dp) {
                     Text(
                         text = state.labels[index].toString(),
                         modifier.align(

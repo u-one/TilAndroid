@@ -13,11 +13,12 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.uoneweb.android.til.ui.pager.chars.PagerChar
 import net.uoneweb.android.til.ui.pager.chars.PagerChars
+import kotlin.math.min
 
 @Stable
 interface DotMatrixLcdState {
@@ -75,23 +76,45 @@ fun DotMatrixLcd(
     state: DotMatrixLcdState,
     modifier: Modifier = Modifier,
 ) {
-    val density = LocalDensity.current
-    val dotSize =
-        with(density) {
-            Size(5.dp.toPx(), 5.dp.toPx())
-        }
-    val dotMargin =
-        with(density) {
-            0.4.dp.toPx()
-        }
-    val offset =
-        with(density) {
-            Offset(10.dp.toPx(), 10.dp.toPx())
-        }
-
     Canvas(
-        modifier = modifier.fillMaxSize(),
+        modifier =
+            modifier
+                .layout { measurables, constraints ->
+                    val dotMargin = 0.4.dp.toPx().toInt()
+                    val placeable =
+                        if (constraints.maxWidth < constraints.maxHeight) {
+                            val pixelSizeX = constraints.maxWidth / (state.dotWidth + 5 + 5)
+                            val height = pixelSizeX * (state.dotHeight + 5) + dotMargin * (state.dotHeight - 1)
+                            measurables.measure(
+                                constraints.copy(
+                                    minHeight = height,
+                                    maxHeight = height,
+                                ),
+                            )
+                        } else {
+                            val pixelSizeY = constraints.maxHeight / (state.dotHeight + 5)
+                            val width = pixelSizeY * (state.dotWidth + 5 + 5) + dotMargin * (state.dotWidth - 1)
+                            measurables.measure(
+                                constraints.copy(
+                                    minWidth = width,
+                                    maxWidth = width,
+                                ),
+                            )
+                        }
+
+                    layout(placeable.width, placeable.height) {
+                        placeable.placeRelative(0, 0)
+                    }
+                },
     ) {
+        val pixelSizeX = size.width / (state.dotWidth + 5 + 5)
+        val pixelSizeY = size.height / (state.dotHeight + 5)
+        val pixelSize = min(pixelSizeX, pixelSizeY)
+        val dotMargin = 0.4.dp.toPx().toInt()
+        val dotSize = Size(pixelSize - dotMargin, pixelSize - dotMargin)
+
+        val offset = Offset(pixelSize * 1, pixelSize * 1)
+
         (0 until state.dotHeight).forEach { y ->
             (0 until state.dotWidth).forEach { x ->
                 val index = x + state.dotWidth * y
@@ -177,7 +200,6 @@ private fun DotMatrixLcdPreview() {
     DotMatrixLcd(
         state,
         Modifier
-            .fillMaxSize()
             .background(Color(0xFF446644)),
     )
 }
@@ -190,7 +212,6 @@ private fun DotMatrixLcdWithControlCharPreview() {
     DotMatrixLcd(
         state,
         Modifier
-            .fillMaxSize()
             .background(Color(0xFF446644)),
     )
 }

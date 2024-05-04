@@ -1,7 +1,6 @@
 package net.uoneweb.android.til.ui.pager
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Switch
@@ -35,7 +33,7 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
     VolumeControlEffect()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        PagerLcd(Modifier.height(160.dp), inputText = sentText)
+        PagerLcd(Modifier.fillMaxWidth(), inputText = sentText)
         Spacer(modifier = Modifier.height(20.dp))
         InputText(inputText = inputText, Modifier.fillMaxWidth())
         SoundSwitch(
@@ -112,34 +110,10 @@ fun PagerLcd(
         state.update(inputText)
     }
     Column(modifier = modifier) {
-        PagerLcdHeader()
         Row {
-            PagerLcdLeft()
             DotMatrixLcd(state.dotMatrixLcdState, modifier.background(Color(0xFF446644)))
         }
     }
-}
-
-@Composable
-fun PagerLcdHeader() {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(20.dp)
-                .background(Color(0xFF446644)),
-    )
-}
-
-@Composable
-fun PagerLcdLeft() {
-    Box(
-        modifier =
-            Modifier
-                .height(160.dp)
-                .width(20.dp)
-                .background(Color(0xFF446644)),
-    )
 }
 
 @Composable

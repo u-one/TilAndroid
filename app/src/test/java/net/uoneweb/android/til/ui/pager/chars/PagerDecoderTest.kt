@@ -25,30 +25,6 @@ class PagerDecoderTest {
     }
 
     @Test
-    fun decode() {
-        val sut = PagerDecoder()
-        val code = "1112131415#"
-
-        val chars = sut.decode(code)
-
-        assertThat(chars).isEqualTo(
-            listOf(
-                PagerChars.Num1,
-                PagerChars.Num1,
-                PagerChars.Num1,
-                PagerChars.Num2,
-                PagerChars.Num1,
-                PagerChars.Num3,
-                PagerChars.Num1,
-                PagerChars.Num4,
-                PagerChars.Num1,
-                PagerChars.Num5,
-                PagerChars.CtrlEnd,
-            ),
-        )
-    }
-
-    @Test
     fun decodeFreeWordWithUnknownCode() {
         val sut = PagerDecoder()
         val code = "*2*21180#"
@@ -59,8 +35,32 @@ class PagerDecoderTest {
             listOf(
                 PagerChars.CtrlBeginFreeWord,
                 PagerChars.KanaA,
-                PagerChars.Num8,
-                PagerChars.Num0,
+                PagerChars.SingleNum8,
+                PagerChars.SingleNum0,
+                PagerChars.CtrlEnd,
+            ),
+        )
+    }
+
+    @Test
+    fun decode() {
+        val sut = PagerDecoder()
+        val code = "1112131415#"
+
+        val chars = sut.decode(code)
+
+        assertThat(chars).isEqualTo(
+            listOf(
+                PagerChars.SingleNum1,
+                PagerChars.SingleNum1,
+                PagerChars.SingleNum1,
+                PagerChars.SingleNum2,
+                PagerChars.SingleNum1,
+                PagerChars.SingleNum3,
+                PagerChars.SingleNum1,
+                PagerChars.SingleNum4,
+                PagerChars.SingleNum1,
+                PagerChars.SingleNum5,
                 PagerChars.CtrlEnd,
             ),
         )

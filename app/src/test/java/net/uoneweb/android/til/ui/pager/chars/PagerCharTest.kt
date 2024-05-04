@@ -10,15 +10,7 @@ class PagerCharTest {
             PagerChar.Alpha(
                 PagerCode("16"),
                 "A",
-                """
-       01110
-       10001
-       10001
-       11111
-       10001
-       10001
-       10001
-    """,
+                LcdCharData.chAlphaA,
             )
 
         assertThat(chA.charData).isEqualTo(

@@ -1,8 +1,30 @@
 package net.uoneweb.android.til.ui.pager.chars
 
-import net.uoneweb.android.til.ui.pager.TlmPagerCodes
-
 object PagerChars {
+    val SingleNum1 = PagerChar.Number(TlmPagerCodes.SingleNum1, "1", LcdCharData.num1)
+    val SingleNum2 = PagerChar.Number(TlmPagerCodes.SingleNum2, "2", LcdCharData.num2)
+    val SingleNum3 = PagerChar.Number(TlmPagerCodes.SingleNum3, "3", LcdCharData.num3)
+    val SingleNum4 = PagerChar.Number(TlmPagerCodes.SingleNum4, "4", LcdCharData.num4)
+    val SingleNum5 = PagerChar.Number(TlmPagerCodes.SingleNum5, "5", LcdCharData.num5)
+    val SingleNum6 = PagerChar.Number(TlmPagerCodes.SingleNum6, "6", LcdCharData.num6)
+    val SingleNum7 = PagerChar.Number(TlmPagerCodes.SingleNum7, "7", LcdCharData.num7)
+    val SingleNum8 = PagerChar.Number(TlmPagerCodes.SingleNum8, "8", LcdCharData.num8)
+    val SingleNum9 = PagerChar.Number(TlmPagerCodes.SingleNum9, "9", LcdCharData.num9)
+    val SingleNum0 = PagerChar.Number(TlmPagerCodes.SingleNum0, "0", LcdCharData.num0)
+    val singleNumbers =
+        mutableSetOf<PagerChar>(
+            SingleNum1,
+            SingleNum2,
+            SingleNum3,
+            SingleNum4,
+            SingleNum5,
+            SingleNum6,
+            SingleNum7,
+            SingleNum8,
+            SingleNum9,
+            SingleNum0,
+        )
+
     val CtrlBeginFreeWord = PagerChar.Control(TlmPagerCodes.CtrlBeginFreeWord, "<BeginFreeWord>")
     val CtrlBeginFixedWord = PagerChar.Control(TlmPagerCodes.CtrlBeginFixedWord, "<BeginFixedWord>")
     val CtrlEnd = PagerChar.Control(TlmPagerCodes.CtrlEnd, "<End>")
@@ -227,38 +249,38 @@ object PagerChars {
             SpHandakuten,
         )
 
-    val IconHappy = PagerChar.Emoji(TlmPagerCodes.IconHappy, "Happy", LcdFullCharData.chFullHappy)
-    val IconSmile = PagerChar.Emoji(TlmPagerCodes.IconSmile, "Smile", LcdFullCharData.chFullSmile)
-    val IconCry = PagerChar.Emoji(TlmPagerCodes.IconCry, "Cry", LcdFullCharData.chFullCry)
-    val IconSad = PagerChar.Emoji(TlmPagerCodes.IconSad, "Sad", LcdFullCharData.chFullSad)
-    val IconScream = PagerChar.Emoji(TlmPagerCodes.IconScream, "Scream", LcdFullCharData.chFullScream)
-    val IconWink = PagerChar.Emoji(TlmPagerCodes.IconWink, "Wink", LcdFullCharData.chFullWink)
-    val IconAngry = PagerChar.Emoji(TlmPagerCodes.IconAngry, "Angry", LcdFullCharData.chFullAngry)
-    val IconUpset = PagerChar.Emoji(TlmPagerCodes.IconUpset, "Upset", LcdFullCharData.chFullUpset)
-    val IconGood = PagerChar.Emoji(TlmPagerCodes.IconGood, "Good", LcdFullCharData.chFullGood)
-    val IconHandScissors = PagerChar.Emoji(TlmPagerCodes.IconHandScissors, "HandScissors", LcdFullCharData.chFullHandScissors)
-    val IconHandPaper = PagerChar.Emoji(TlmPagerCodes.IconHandPaper, "HandPaper", LcdFullCharData.chFullHandPaper)
-    val IconHandRock = PagerChar.Emoji(TlmPagerCodes.IconHandRock, "HandRock", LcdFullCharData.chFullHandRock)
-    val IconSunny = PagerChar.Emoji(TlmPagerCodes.IconSunny, "Sunny", LcdFullCharData.chFullSunny)
-    val IconCloudy = PagerChar.Emoji(TlmPagerCodes.IconCloudy, "Cloudy", LcdFullCharData.chFullCloudy)
-    val IconRainy = PagerChar.Emoji(TlmPagerCodes.IconRainy, "Rainy", LcdFullCharData.chFullRainy)
-    val IconSnowy = PagerChar.Emoji(TlmPagerCodes.IconSnowy, "Snowy", LcdFullCharData.chFullSnowy)
-    val IconHeart = PagerChar.Emoji(TlmPagerCodes.IconHeart, "Heart", LcdFullCharData.chFullHeart)
-    val IconBrokenHeart = PagerChar.Emoji(TlmPagerCodes.IconBrokenHeart, "BrokenHeart", LcdFullCharData.chFullBrokenHeart)
-    val IconSuper = PagerChar.Emoji(TlmPagerCodes.IconSuper, "Super", LcdFullCharData.chFullSuper)
-    val IconMuscle = PagerChar.Emoji(TlmPagerCodes.IconMuscle, "Muscle", LcdFullCharData.chFullMuscle)
-    val IconTrain = PagerChar.Emoji(TlmPagerCodes.IconTrain, "Train", LcdFullCharData.chFullTrain)
-    val IconCar = PagerChar.Emoji(TlmPagerCodes.IconCar, "Car", LcdFullCharData.chFullCar)
-    val IconHome = PagerChar.Emoji(TlmPagerCodes.IconHome, "Home", LcdFullCharData.chFullHome)
-    val IconPhone = PagerChar.Emoji(TlmPagerCodes.IconPhone, "Phone", LcdFullCharData.chFullPhone)
-    val IconBeer = PagerChar.Emoji(TlmPagerCodes.IconBeer, "Beer", LcdFullCharData.chFullBeer)
-    val IconCutlery = PagerChar.Emoji(TlmPagerCodes.IconCutlery, "Cutlery", LcdFullCharData.chFullCutlery)
-    val IconCake = PagerChar.Emoji(TlmPagerCodes.IconCake, "Cake", LcdFullCharData.chFullCake)
-    val IconPager = PagerChar.Emoji(TlmPagerCodes.IconPager, "Pager", LcdFullCharData.chFullPager)
-    val IconKaraoke = PagerChar.Emoji(TlmPagerCodes.IconKaraoke, "Karaoke", LcdFullCharData.chFullKaraoke)
-    val IconTv = PagerChar.Emoji(TlmPagerCodes.IconTv, "Tv", LcdFullCharData.chFullTv)
-    val IconFlower = PagerChar.Emoji(TlmPagerCodes.IconFlower, "Flower", LcdFullCharData.chFullFlower)
-    val IconPoop = PagerChar.Emoji(TlmPagerCodes.IconPoop, "Poop", LcdFullCharData.chFullPoop)
+    val IconHappy = PagerChar.LargeChar(TlmPagerCodes.IconHappy, "Happy", LcdFullCharData.chFullHappy)
+    val IconSmile = PagerChar.LargeChar(TlmPagerCodes.IconSmile, "Smile", LcdFullCharData.chFullSmile)
+    val IconCry = PagerChar.LargeChar(TlmPagerCodes.IconCry, "Cry", LcdFullCharData.chFullCry)
+    val IconSad = PagerChar.LargeChar(TlmPagerCodes.IconSad, "Sad", LcdFullCharData.chFullSad)
+    val IconScream = PagerChar.LargeChar(TlmPagerCodes.IconScream, "Scream", LcdFullCharData.chFullScream)
+    val IconWink = PagerChar.LargeChar(TlmPagerCodes.IconWink, "Wink", LcdFullCharData.chFullWink)
+    val IconAngry = PagerChar.LargeChar(TlmPagerCodes.IconAngry, "Angry", LcdFullCharData.chFullAngry)
+    val IconUpset = PagerChar.LargeChar(TlmPagerCodes.IconUpset, "Upset", LcdFullCharData.chFullUpset)
+    val IconGood = PagerChar.LargeChar(TlmPagerCodes.IconGood, "Good", LcdFullCharData.chFullGood)
+    val IconHandScissors = PagerChar.LargeChar(TlmPagerCodes.IconHandScissors, "HandScissors", LcdFullCharData.chFullHandScissors)
+    val IconHandPaper = PagerChar.LargeChar(TlmPagerCodes.IconHandPaper, "HandPaper", LcdFullCharData.chFullHandPaper)
+    val IconHandRock = PagerChar.LargeChar(TlmPagerCodes.IconHandRock, "HandRock", LcdFullCharData.chFullHandRock)
+    val IconSunny = PagerChar.LargeChar(TlmPagerCodes.IconSunny, "Sunny", LcdFullCharData.chFullSunny)
+    val IconCloudy = PagerChar.LargeChar(TlmPagerCodes.IconCloudy, "Cloudy", LcdFullCharData.chFullCloudy)
+    val IconRainy = PagerChar.LargeChar(TlmPagerCodes.IconRainy, "Rainy", LcdFullCharData.chFullRainy)
+    val IconSnowy = PagerChar.LargeChar(TlmPagerCodes.IconSnowy, "Snowy", LcdFullCharData.chFullSnowy)
+    val IconHeart = PagerChar.LargeChar(TlmPagerCodes.IconHeart, "Heart", LcdFullCharData.chFullHeart)
+    val IconBrokenHeart = PagerChar.LargeChar(TlmPagerCodes.IconBrokenHeart, "BrokenHeart", LcdFullCharData.chFullBrokenHeart)
+    val IconSuper = PagerChar.LargeChar(TlmPagerCodes.IconSuper, "Super", LcdFullCharData.chFullSuper)
+    val IconMuscle = PagerChar.LargeChar(TlmPagerCodes.IconMuscle, "Muscle", LcdFullCharData.chFullMuscle)
+    val IconTrain = PagerChar.LargeChar(TlmPagerCodes.IconTrain, "Train", LcdFullCharData.chFullTrain)
+    val IconCar = PagerChar.LargeChar(TlmPagerCodes.IconCar, "Car", LcdFullCharData.chFullCar)
+    val IconHome = PagerChar.LargeChar(TlmPagerCodes.IconHome, "Home", LcdFullCharData.chFullHome)
+    val IconPhone = PagerChar.LargeChar(TlmPagerCodes.IconPhone, "Phone", LcdFullCharData.chFullPhone)
+    val IconBeer = PagerChar.LargeChar(TlmPagerCodes.IconBeer, "Beer", LcdFullCharData.chFullBeer)
+    val IconCutlery = PagerChar.LargeChar(TlmPagerCodes.IconCutlery, "Cutlery", LcdFullCharData.chFullCutlery)
+    val IconCake = PagerChar.LargeChar(TlmPagerCodes.IconCake, "Cake", LcdFullCharData.chFullCake)
+    val IconPager = PagerChar.LargeChar(TlmPagerCodes.IconPager, "Pager", LcdFullCharData.chFullPager)
+    val IconKaraoke = PagerChar.LargeChar(TlmPagerCodes.IconKaraoke, "Karaoke", LcdFullCharData.chFullKaraoke)
+    val IconTv = PagerChar.LargeChar(TlmPagerCodes.IconTv, "Tv", LcdFullCharData.chFullTv)
+    val IconFlower = PagerChar.LargeChar(TlmPagerCodes.IconFlower, "Flower", LcdFullCharData.chFullFlower)
+    val IconPoop = PagerChar.LargeChar(TlmPagerCodes.IconPoop, "Poop", LcdFullCharData.chFullPoop)
 
     val icons =
         mutableSetOf<PagerChar>(
@@ -304,11 +326,5 @@ object PagerChars {
         all.addAll(icons)
     }
 
-    fun findByChar(char: Char): PagerChar? {
-        return all.find { it.char == char.toString() }
-    }
-
-    fun (Set<PagerChar>).findByChar(char: Char): PagerChar? {
-        return this.find { it.char == char.toString() }
-    }
+    fun unknownCode(code: String): PagerChar = PagerChar.Control(PagerCode(code), "?")
 }

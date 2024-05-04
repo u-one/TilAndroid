@@ -1,5 +1,7 @@
 package net.uoneweb.android.til.ui.pager.lcd
 
+import androidx.compose.ui.unit.IntSize
+
 data class TwoLineCharacterLcdBuffer(
     val displayWidth: Int = 11,
     val displayHeight: Int = 15,
@@ -38,6 +40,7 @@ data class TwoLineCharacterLcdBuffer(
     }
 
     private fun canDraw(bitmap: LcdBitmap): Boolean {
+        if (bitmap.size == IntSize.Zero) return false
         val orgHeight =
             if (bitmap.size.height > displayHeight) displayHeight else bitmap.size.height
         val orgWidth = if (bitmap.size.width > displayWidth) displayWidth else bitmap.size.width

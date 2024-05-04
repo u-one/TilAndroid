@@ -1,6 +1,6 @@
 package net.uoneweb.android.til.ui.pager.chars
 
-import net.uoneweb.android.til.ui.pager.PagerCode
+import net.uoneweb.android.til.ui.pager.chars.PagerChars.unknownCode
 
 class PagerDecoder {
     private val simpleNumberCharset = mutableSetOf<PagerChar>()
@@ -45,9 +45,8 @@ class PagerDecoder {
             it.code.value == nextCode
         }?.let { return it }
 
-        // TODO: Create SingleNumberPagerChars
-        PagerChars.numbers.find {
-            it.char == nextCode
+        PagerChars.singleNumbers.find {
+            it.code.value == nextCode
         }?.let { return it }
 
         return unknownCode(nextCode)
@@ -74,15 +73,12 @@ class PagerDecoder {
 
         val nextCode = codes.take(1)
 
-        // TODO: Create SingleNumberPagerChars
-        PagerChars.numbers.find {
-            it.char == nextCode
+        PagerChars.singleNumbers.find {
+            it.code.value == nextCode
         }?.let { return it }
 
         return unknownCode(nextCode)
     }
-
-    private fun unknownCode(code: String): PagerChar = PagerChar.Control(PagerCode(code), "?")
 
     fun fromText(text: String): List<PagerChar> {
         return stringToChars(text)

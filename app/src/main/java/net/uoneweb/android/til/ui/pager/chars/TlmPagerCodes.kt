@@ -1,9 +1,20 @@
-package net.uoneweb.android.til.ui.pager
+package net.uoneweb.android.til.ui.pager.chars
 
 object TlmPagerCodes {
     val CtrlBeginFreeWord = PagerCode("*2*2")
     val CtrlBeginFixedWord = PagerCode("*4*4")
     val CtrlEnd = PagerCode("#")
+
+    val SingleNum1 = PagerCode("1")
+    val SingleNum2 = PagerCode("2")
+    val SingleNum3 = PagerCode("3")
+    val SingleNum4 = PagerCode("4")
+    val SingleNum5 = PagerCode("5")
+    val SingleNum6 = PagerCode("6")
+    val SingleNum7 = PagerCode("7")
+    val SingleNum8 = PagerCode("8")
+    val SingleNum9 = PagerCode("9")
+    val SingleNum0 = PagerCode("0")
 
     val Num1 = PagerCode("96")
     val Num2 = PagerCode("97")

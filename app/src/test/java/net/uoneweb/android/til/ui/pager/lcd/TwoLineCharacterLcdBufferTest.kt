@@ -46,6 +46,31 @@ class TwoLineCharacterLcdBufferTest {
     }
 
     @Test
+    fun emptyBitmapWillBeSkipped() {
+        val sut = TwoLineCharacterLcdBuffer(5, 7, 2, 3, 1)
+
+        val empty = LcdBitmap(intArrayOf(), IntSize.Zero)
+        val size = IntSize(2, 3)
+        val data = IntArray(size.width * size.height) { 1 }
+        val bitmap = LcdBitmap(data, size)
+
+        sut.draw(empty)
+        sut.draw(bitmap)
+
+        assertThat(sut.buffer).isEqualTo(
+            intArrayOf(
+                1, 1, 0, 0, 0,
+                1, 1, 0, 0, 0,
+                1, 1, 0, 0, 0,
+                0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0,
+            ),
+        )
+    }
+
+    @Test
     fun drawLastOnFirstLine() {
         val sut = TwoLineCharacterLcdBuffer(5, 7, 2, 3, 1)
 

@@ -95,7 +95,8 @@ dependencies {
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
 
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation(platform('org.junit:junit-bom:5.10.2'))
+    testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "com.google.truth:truth:1.4.2"
 
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'

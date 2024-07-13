@@ -80,7 +80,7 @@ fun DotMatrixLcd(
         modifier =
             modifier
                 .layout { measurables, constraints ->
-                    val dotMargin = 0.4.dp.toPx().toInt()
+                    val dotMargin = 0.5.dp.toPx().toInt()
                     val placeable =
                         if (constraints.maxWidth < constraints.maxHeight) {
                             val pixelSizeX = constraints.maxWidth / (state.dotWidth + 5 + 5)
@@ -110,7 +110,7 @@ fun DotMatrixLcd(
         val pixelSizeX = size.width / (state.dotWidth + 5 + 5)
         val pixelSizeY = size.height / (state.dotHeight + 5)
         val pixelSize = min(pixelSizeX, pixelSizeY)
-        val dotMargin = 0.4.dp.toPx().toInt()
+        val dotMargin = 0.5.dp.toPx().toInt()
         val dotSize = Size(pixelSize - dotMargin, pixelSize - dotMargin)
 
         val offset = Offset(pixelSize * 1, pixelSize * 1)

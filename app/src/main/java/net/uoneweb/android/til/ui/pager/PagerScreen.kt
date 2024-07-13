@@ -49,6 +49,7 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
             )
         }
         DialPad(
+            modifier = Modifier.fillMaxSize(),
             onButtonPress = { key ->
                 inputText += key
 

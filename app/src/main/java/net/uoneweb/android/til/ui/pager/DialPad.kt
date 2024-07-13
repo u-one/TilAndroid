@@ -4,14 +4,17 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.VibratorManager
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.Card
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -84,34 +91,52 @@ fun DialPad(
     onButtonPress: (Char) -> Unit,
     state: DialPadState = DialPadStateImpl(),
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        items(12) { index ->
-            Box(
-                modifier =
-                    Modifier
-                        .padding(10.dp)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onPress = {
-                                    val char = state.labels[index]
-                                    state.onButtonPress(char)
-                                    onButtonPress(char)
-                                    tryAwaitRelease()
-                                    state.onButtonRelease()
-                                },
-                            )
-                        },
-            ) {
-                Card(modifier = Modifier.fillMaxSize(), elevation = 10.dp) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val boxWidth = maxWidth / 3
+        val boxHeight = minOf(maxHeight / 4, boxWidth)
+        val padding = minOf(maxHeight / 20, 16.dp)
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = modifier.fillMaxSize(),
+        ) {
+            items(12) { index ->
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            // .heightIn(boxHeight, boxWidth)
+                            .height(boxHeight)
+                            .padding(padding)
+                            .background(Color.LightGray, CircleShape)
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onPress = {
+                                        val char = state.labels[index]
+                                        state.onButtonPress(char)
+                                        onButtonPress(char)
+                                        tryAwaitRelease()
+                                        state.onButtonRelease()
+                                    },
+                                )
+                            },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    val fontSize = with(LocalDensity.current) { (boxHeight / 3).toSp() }
                     Text(
                         text = state.labels[index].toString(),
-                        modifier.align(
-                            alignment = Alignment.Center,
-                        ),
-                        style = MaterialTheme.typography.h3,
+                        style =
+                            MaterialTheme.typography.h3.merge(
+                                TextStyle(
+                                    fontSize = fontSize,
+                                    lineHeightStyle =
+                                        LineHeightStyle(
+                                            alignment = LineHeightStyle.Alignment.Center,
+                                            trim = LineHeightStyle.Trim.Both,
+                                        ),
+                                ),
+                            ),
+                        textAlign = TextAlign.Center,
                         color = Color.Gray,
                     )
                 }
@@ -120,10 +145,14 @@ fun DialPad(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 600)
+@Preview(showBackground = true, heightDp = 500)
+@Preview(showBackground = true, heightDp = 300)
+@Preview(showBackground = true, heightDp = 200)
 @Composable
 fun DialPadPreview() {
     DialPad(
+        modifier = Modifier.fillMaxSize(),
         onButtonPress = { _ ->
         },
         state = DialPadStateImpl(),

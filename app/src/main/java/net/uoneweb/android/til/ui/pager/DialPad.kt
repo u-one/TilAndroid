@@ -23,17 +23,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 interface DialPadStateFactory {
-    fun create(): DialPadState
+    fun create(context: Context?): DialPadState
 }
 
 class DialPadStateFactoryImpl(private val tonePlayer: TonePlayer) : DialPadStateFactory {
-    override fun create(): DialPadState {
-        return DialPadStateImpl(tonePlayer)
+    override fun create(context: Context?): DialPadState {
+        return DialPadStateImpl(tonePlayer, context)
     }
 }
 
@@ -41,6 +40,7 @@ class DialPadStateFactoryImpl(private val tonePlayer: TonePlayer) : DialPadState
 interface DialPadState {
     val labels: List<Char>
     var playTone: Boolean
+    var enableHapticFeedback: Boolean
 
     fun onButtonPress(char: Char)
 
@@ -48,8 +48,9 @@ interface DialPadState {
 }
 
 @Stable
-class DialPadStateImpl(private val tonePlayer: TonePlayer = DummyTonePlayer()) : DialPadState {
+class DialPadStateImpl(private val tonePlayer: TonePlayer = DummyTonePlayer(), private val context: Context? = null) : DialPadState {
     override var playTone by mutableStateOf(true)
+    override var enableHapticFeedback by mutableStateOf(true)
 
     override val labels = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#')
 
@@ -57,11 +58,22 @@ class DialPadStateImpl(private val tonePlayer: TonePlayer = DummyTonePlayer()) :
         if (playTone) {
             tonePlayer.startTone(char)
         }
+        if (enableHapticFeedback) {
+            hapticFeedback()
+        }
     }
 
     override fun onButtonRelease() {
         if (playTone) {
             tonePlayer.stopTone()
+        }
+    }
+
+    private fun hapticFeedback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = context?.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager?
+            val vibrator = vibratorManager?.defaultVibrator
+            vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK))
         }
     }
 }
@@ -72,12 +84,6 @@ fun DialPad(
     onButtonPress: (Char) -> Unit,
     state: DialPadState = DialPadStateImpl(),
 ) {
-    val context = LocalContext.current
-    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-        vibratorManager.defaultVibrator
-    } else null
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = modifier.fillMaxWidth(),
@@ -85,22 +91,19 @@ fun DialPad(
         items(12) { index ->
             Box(
                 modifier =
-                Modifier
-                    .padding(10.dp)
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onPress = {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK))
-                                }
-                                val char = state.labels[index]
-                                state.onButtonPress(char)
-                                onButtonPress(char)
-                                tryAwaitRelease()
-                                state.onButtonRelease()
-                            },
-                        )
-                    },
+                    Modifier
+                        .padding(10.dp)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onPress = {
+                                    val char = state.labels[index]
+                                    state.onButtonPress(char)
+                                    onButtonPress(char)
+                                    tryAwaitRelease()
+                                    state.onButtonRelease()
+                                },
+                            )
+                        },
             ) {
                 Card(modifier = Modifier.fillMaxSize(), elevation = 10.dp) {
                     Text(
@@ -115,10 +118,6 @@ fun DialPad(
             }
         }
     }
-}
-
-private fun hapticFeedback() {
-
 }
 
 @Preview(showBackground = true)

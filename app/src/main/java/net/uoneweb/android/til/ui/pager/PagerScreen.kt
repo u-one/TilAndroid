@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.uoneweb.android.til.ui.pager.lcd.DotMatrixLcd
@@ -28,7 +29,8 @@ import net.uoneweb.android.til.ui.pager.lcd.DotMatrixLcd
 fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryImpl(TonePlayerImpl)) {
     var sentText by remember { mutableStateOf("") }
     var inputText by remember { mutableStateOf("") }
-    val dialPadState = remember { dialPadStateFactory.create() }
+    val context = LocalContext.current
+    val dialPadState = remember { dialPadStateFactory.create(context) }
 
     VolumeControlEffect()
 
@@ -36,10 +38,16 @@ fun PagerScreen(dialPadStateFactory: DialPadStateFactory = DialPadStateFactoryIm
         PagerLcd(Modifier.fillMaxWidth(), inputText = sentText)
         Spacer(modifier = Modifier.height(20.dp))
         InputText(inputText = inputText, Modifier.fillMaxWidth())
-        SoundSwitch(
-            checked = dialPadState.playTone,
-            onCheckedChange = { dialPadState.playTone = it },
-        )
+        Row {
+            SoundSwitch(
+                checked = dialPadState.playTone,
+                onCheckedChange = { dialPadState.playTone = it },
+            )
+            HapticFeedbackSwitch(
+                checked = dialPadState.enableHapticFeedback,
+                onCheckedChange = { dialPadState.enableHapticFeedback = it },
+            )
+        }
         DialPad(
             onButtonPress = { key ->
                 inputText += key
@@ -86,6 +94,22 @@ private fun SoundSwitch(
     Row {
         Text(
             text = "ダイヤル音",
+            style = MaterialTheme.typography.body1,
+            color = Color.Black,
+            modifier = Modifier.padding(10.dp),
+        )
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+@Composable
+private fun HapticFeedbackSwitch(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row {
+        Text(
+            text = "振動",
             style = MaterialTheme.typography.body1,
             color = Color.Black,
             modifier = Modifier.padding(10.dp),
@@ -193,6 +217,18 @@ fun PagerLcdPreview(modifier: Modifier = Modifier) {
             inputText = "96979899900607080900",
         )
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SoundSwitchPreview() {
+    SoundSwitch(true) {}
+}
+
+@Composable
+@Preview(showBackground = true)
+fun HapticFeedbackSwitchPreview() {
+    HapticFeedbackSwitch(true) {}
 }
 
 @Composable

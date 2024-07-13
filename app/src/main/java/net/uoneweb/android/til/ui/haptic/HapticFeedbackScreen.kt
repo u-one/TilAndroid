@@ -30,7 +30,6 @@ fun HapticFeedbackScreen() {
                 PredefinedVibration("Tick", VibrationEffect.EFFECT_TICK)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                HapticFeedbackConstantsButton(label = "NO_HAPTICS", effect = HapticFeedbackConstants.NO_HAPTICS)
                 HapticFeedbackConstantsButton(label = "LONG_PRESS", effect = HapticFeedbackConstants.LONG_PRESS)
                 HapticFeedbackConstantsButton(label = "VIRTUAL_KEY", effect = HapticFeedbackConstants.VIRTUAL_KEY)
                 HapticFeedbackConstantsButton(label = "KEYBOARD_TAP", effect = HapticFeedbackConstants.KEYBOARD_TAP)
@@ -44,6 +43,9 @@ fun HapticFeedbackScreen() {
                 HapticFeedbackConstantsButton(label = "GESTURE_END", effect = HapticFeedbackConstants.GESTURE_END)
                 HapticFeedbackConstantsButton(label = "CONFIRM", effect = HapticFeedbackConstants.CONFIRM)
                 HapticFeedbackConstantsButton(label = "REJECT", effect = HapticFeedbackConstants.REJECT)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                HapticFeedbackConstantsButton(label = "NO_HAPTICS", effect = HapticFeedbackConstants.NO_HAPTICS)
                 HapticFeedbackConstantsButton(label = "TOGGLE_ON", effect = HapticFeedbackConstants.TOGGLE_ON)
                 HapticFeedbackConstantsButton(label = "TOGGLE_OFF", effect = HapticFeedbackConstants.TOGGLE_OFF)
                 HapticFeedbackConstantsButton(label = "GESTURE_THRESHOLD_ACTIVATE", effect = HapticFeedbackConstants.GESTURE_THRESHOLD_ACTIVATE)
@@ -58,14 +60,6 @@ fun HapticFeedbackScreen() {
                     effect = VibrationEffect.Composition.PRIMITIVE_CLICK,
                 )
                 CompositionPrimitivesButton(
-                    label = "PRIMITIVE_THUD",
-                    effect = VibrationEffect.Composition.PRIMITIVE_THUD,
-                )
-                CompositionPrimitivesButton(
-                    label = "PRIMITIVE_SPIN",
-                    effect = VibrationEffect.Composition.PRIMITIVE_SPIN,
-                )
-                CompositionPrimitivesButton(
                     label = "PRIMITIVE_SLOW_RISE",
                     effect = VibrationEffect.Composition.PRIMITIVE_SLOW_RISE,
                 )
@@ -76,6 +70,16 @@ fun HapticFeedbackScreen() {
                 CompositionPrimitivesButton(
                     label = "PRIMITIVE_TICK",
                     effect = VibrationEffect.Composition.PRIMITIVE_TICK,
+                )
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                CompositionPrimitivesButton(
+                    label = "PRIMITIVE_THUD",
+                    effect = VibrationEffect.Composition.PRIMITIVE_THUD,
+                )
+                CompositionPrimitivesButton(
+                    label = "PRIMITIVE_SPIN",
+                    effect = VibrationEffect.Composition.PRIMITIVE_SPIN,
                 )
                 CompositionPrimitivesButton(
                     label = "PRIMITIVE_LOW_TICK",
@@ -97,13 +101,12 @@ private fun PredefinedVibration(
             text = text,
             style = MaterialTheme.typography.h1,
             modifier =
-            Modifier.clickable {
-
-                val vibratorManager =
-                    context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                val vibrator = vibratorManager.defaultVibrator
-                vibrator.vibrate(VibrationEffect.createPredefined(effectId))
-            },
+                Modifier.clickable {
+                    val vibratorManager =
+                        context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                    val vibrator = vibratorManager.defaultVibrator
+                    vibrator.vibrate(VibrationEffect.createPredefined(effectId))
+                },
         )
     } else {
         Text("Not supported on this device.")
@@ -111,7 +114,10 @@ private fun PredefinedVibration(
 }
 
 @Composable
-private fun HapticFeedbackConstantsButton(label: String, effect: Int) {
+private fun HapticFeedbackConstantsButton(
+    label: String,
+    effect: Int,
+) {
     val view = LocalView.current
     TextButton(
         onClick = {
@@ -166,4 +172,3 @@ private fun HapticFeedbackScreenPreview() {
         HapticFeedbackScreen()
     }
 }
-

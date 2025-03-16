@@ -1,5 +1,6 @@
 package net.uoneweb.android.til
 
+import ReceiptScreen
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -182,6 +183,8 @@ sealed class Screen(
     data object Pager : Screen("pager", R.string.pager, Icons.Filled.AccountBox)
 
     data object Audio : Screen("audio", R.string.audio, Icons.Filled.PlayArrow)
+
+    data object Receipt : Screen("receipt", R.string.receipt, Icons.Filled.AccountBox)
 }
 
 private val screens =
@@ -193,6 +196,7 @@ private val screens =
         Screen.Buttons,
         Screen.Pager,
         Screen.Audio,
+        Screen.Receipt,
     )
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -227,5 +231,9 @@ private fun TilNavHost(
         composable(Screen.Audio.route) {
             AudioScreen()
         }
+        composable(Screen.Receipt.route) {
+            ReceiptScreen()
+        }
     }
 }
+

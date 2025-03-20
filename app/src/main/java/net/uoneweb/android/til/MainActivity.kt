@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +44,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.uoneweb.android.til.ui.audio.AudioScreen
 import net.uoneweb.android.til.ui.buttons.ButtonsScreen
 import net.uoneweb.android.til.ui.camera.CameraScreen
+import net.uoneweb.android.til.ui.drive.DriveScreen
 import net.uoneweb.android.til.ui.graphql.GraphQLScreen
 import net.uoneweb.android.til.ui.haptic.HapticFeedbackScreen
 import net.uoneweb.android.til.ui.main.MainScreen
@@ -185,6 +187,8 @@ sealed class Screen(
     data object Audio : Screen("audio", R.string.audio, Icons.Filled.PlayArrow)
 
     data object Receipt : Screen("receipt", R.string.receipt, Icons.Filled.AccountBox)
+
+    data object Drive : Screen("drive", R.string.drive, Icons.Filled.Menu)
 }
 
 private val screens =
@@ -197,6 +201,7 @@ private val screens =
         Screen.Pager,
         Screen.Audio,
         Screen.Receipt,
+        Screen.Drive,
     )
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -207,7 +212,7 @@ private fun TilNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Pager.route,
+        startDestination = Screen.Drive.route,
         modifier = modifier,
     ) {
         composable(Screen.Camera.route) {
@@ -233,6 +238,9 @@ private fun TilNavHost(
         }
         composable(Screen.Receipt.route) {
             ReceiptScreen()
+        }
+        composable(Screen.Drive.route) {
+            DriveScreen()
         }
     }
 }

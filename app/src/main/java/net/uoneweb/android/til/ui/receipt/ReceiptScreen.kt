@@ -16,8 +16,13 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import net.uoneweb.android.til.ui.receipt.ChatRequest
 import net.uoneweb.android.til.ui.receipt.ChatResponse
+import net.uoneweb.android.til.ui.receipt.Content
+import net.uoneweb.android.til.ui.receipt.FileUploadResponse
 import net.uoneweb.android.til.ui.receipt.Message
 import net.uoneweb.android.til.ui.receipt.RetrofitInstance
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,6 +32,7 @@ import java.io.InputStream
 fun ReceiptScreen() {
     val context = LocalContext.current
     val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
+    val fileId = remember { mutableStateOf<String?>(null) }
     val responseText = remember { mutableStateOf("No response yet") }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -45,15 +51,16 @@ fun ReceiptScreen() {
         }
     }
 
-    fun makeApiRequest(data: String) {
+    fun makeApiRequest(fileId: String) {
         val request = ChatRequest(
             model = "gpt-4",
             messages = listOf(
-                Message(role = "system", content = "You are a helpful assistant."),
                 Message(
                     role = "user",
-                    content = "[{\"type\":\"text\", \"text\":\"画像の内容をレシートの情報を表現するjsonにしてください\"}" +
-                            "{\"type\":\"image_url\", \"image_url\":\"{\"url\":\"data:image/jpeg;base64," + data + "\"}\"}]",
+                    content = listOf(
+                        Content(type = "text", text = "画像の内容をレシートの情報を表現するjsonにしてください"),
+                        Content(type = "file", fileId = fileId),
+                    ),
                 ),
             ),
         )
@@ -82,6 +89,34 @@ fun ReceiptScreen() {
         )
     }
 
+    fun uploadImage(imageUri: Uri, callback: (String?) -> Unit) {
+        val inputStream = context.contentResolver.openInputStream(imageUri)
+        val imagePart = inputStream?.readBytes()?.let {
+            MultipartBody.Part.createFormData("file", "receipt.jpg", it.toRequestBody("image/*".toMediaTypeOrNull()))
+        }
+        val purpose = "assistants".toRequestBody("text/plain".toMediaTypeOrNull())
+        RetrofitInstance.fileUploadApi.uploadFile(imagePart!!, purpose).enqueue(
+            object : Callback<FileUploadResponse> {
+                override fun onResponse(call: Call<FileUploadResponse>, response: Response<FileUploadResponse>) {
+                    if (response.isSuccessful) {
+                        val fileUploadResponse = response.body()
+                        println(fileUploadResponse)
+                        callback(fileUploadResponse?.id)
+                    } else {
+                        println("${response.errorBody()?.string()}")
+                        callback(null)
+                    }
+                }
+
+                override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
+                    println("Failed to upload file: ${t.message}")
+                    callback(null)
+                }
+            },
+        )
+
+    }
+
     Column {
         Text("Receipt")
 
@@ -99,8 +134,20 @@ fun ReceiptScreen() {
 
         Button(
             onClick = {
-                encodeImageToBase64(selectedImageUri.value!!)?.let {
-                    //TODO: APIエラー。画像のサイズを小さくする必要がありそう
+                selectedImageUri.value?.let { uri ->
+                    uploadImage(uri) {
+                        fileId.value = it
+                    }
+                }
+            },
+        ) {
+            Text("Upload Image")
+        }
+
+        Button(
+            onClick = {
+                //TODO: APIエラー。画像のサイズを小さくする必要がありそう
+                fileId.value?.let {
                     makeApiRequest(it)
                 }
             },

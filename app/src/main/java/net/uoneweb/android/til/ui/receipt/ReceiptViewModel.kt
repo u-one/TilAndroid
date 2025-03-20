@@ -1,6 +1,8 @@
 package net.uoneweb.android.til.ui.receipt
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -8,11 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
+import com.google.firebase.vertexai.type.content
+import com.google.firebase.vertexai.vertexAI
 
 
 class ReceiptViewModel(application: Application) : AndroidViewModel(application) {
     private val _uploadedFileUrl: MutableState<Uri?> = mutableStateOf(null)
     val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
+    private val _json: MutableState<String> = mutableStateOf("")
+    val json: State<String> = _json
 
 
     fun uploadImage(localFileUri: Uri?) {
@@ -48,5 +54,21 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
                 println("downloadUri: failed")
             }
         }
+    }
+
+    suspend fun generateJsonFromImage(localFileUri: Uri) {
+        val contentResolver = getApplication<Application>().contentResolver
+        val bitmap: Bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(localFileUri))
+        val prompt = content {
+            image(bitmap)
+            text(GeminiReceiptPrompt.text)
+        }
+
+        val model = Firebase.vertexAI.generativeModel("gemini-2.0-flash")
+        val response = model.generateContent(prompt)
+        print(response.text)
+        val parser = GeminiReceiptResponse(response.text)
+        print(parser.json())
+        _json.value = parser.json()
     }
 }

@@ -23,14 +23,4 @@ object RetrofitInstance {
             .build()
             .create(OpenAiApi::class.java)
     }
-
-    val fileUploadApi: FileUploadApi by lazy {
-        Retrofit.Builder()
-            .baseUrl("https://api.openai.com/")
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(FileUploadApi::class.java)
-    }
-
 }

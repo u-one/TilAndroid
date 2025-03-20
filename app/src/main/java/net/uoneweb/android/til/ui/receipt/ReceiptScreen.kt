@@ -95,7 +95,7 @@ fun ReceiptScreen() {
             MultipartBody.Part.createFormData("file", "receipt.jpg", it.toRequestBody("image/*".toMediaTypeOrNull()))
         }
         val purpose = "assistants".toRequestBody("text/plain".toMediaTypeOrNull())
-        RetrofitInstance.fileUploadApi.uploadFile(imagePart!!, purpose).enqueue(
+        RetrofitInstance.api.uploadFile(imagePart!!, purpose).enqueue(
             object : Callback<FileUploadResponse> {
                 override fun onResponse(call: Call<FileUploadResponse>, response: Response<FileUploadResponse>) {
                     if (response.isSuccessful) {

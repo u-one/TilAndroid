@@ -1,11 +1,14 @@
 package net.uoneweb.android.til.ui.receipt
 
-import org.json.JSONException
-import org.json.JSONObject
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
 
 data class ResponseParser(
     val text: String?,
 ) {
+    private val gson = GsonBuilder().setPrettyPrinting().create()
+
     fun json(): String {
         if (text == null) {
             return ""
@@ -18,9 +21,9 @@ data class ResponseParser(
             return ""
         }
         return try {
-            val jsonObj = JSONObject(text)
-            jsonObj.toString(4)
-        } catch (e: JSONException) {
+            val jsonElem = JsonParser.parseString(text)
+            gson.toJson(jsonElem)
+        } catch (e: JsonSyntaxException) {
             e.printStackTrace()
             text
         }

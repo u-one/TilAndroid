@@ -1,3 +1,4 @@
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
@@ -68,8 +70,31 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
             }
         }
         Text(text = receiptJson)
+        ShareButton(receiptJson)
     }
 
 }
 
+@Composable
+fun ShareButton(text: String) {
+    val context = LocalContext.current
+    if (text.isEmpty()) {
+        return
+    }
+    Button(
+        onClick = {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, text)
+                type = "text/plain"
+            }
 
+            val shareIntent = Intent.createChooser(sendIntent, null).apply {
+                putExtra(Intent.EXTRA_CHOOSER_TARGETS, arrayOf(Intent.EXTRA_TEXT))
+            }
+            context.startActivity(shareIntent)
+        },
+    ) {
+        Text("Share")
+    }
+}

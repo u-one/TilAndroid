@@ -12,20 +12,22 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.vertexAI
+import net.uoneweb.android.til.ui.receipt.ReceiptViewModel
 import net.uoneweb.android.til.ui.receipt.ResponseParser
 
 @Composable
-fun ReceiptScreen() {
+fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val context = LocalContext.current
     val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
     //OpenAiUi()
@@ -39,7 +41,7 @@ fun ReceiptScreen() {
     }
 
     val uploaded = remember { mutableStateOf(false) }
-    val uploadedImageUrl = remember { mutableStateOf<String?>(null) }
+    val uploadedImageUrl by viewModel.uploadedFileUrl
 
     val scrollState = rememberScrollState()
 
@@ -57,36 +59,7 @@ fun ReceiptScreen() {
 
             Button(
                 onClick = {
-                    selectedImageUri.value?.let { uri ->
-                        val storage = Firebase.storage
-                        val storageRef = storage.reference
-                        val imagesRef = storageRef.child("images")
-                        println("storageRef:: $storageRef")
-                        val fileRef = imagesRef.child(uri.lastPathSegment!!)
-                        val uploadTask = fileRef.putFile(uri)
-                        uploadTask.addOnSuccessListener {
-                            println("Upload successful")
-                            uploaded.value = true
-                        }.addOnFailureListener {
-                            println("Upload failed")
-                        }
-                        uploadTask.continueWithTask { task ->
-                            if (!task.isSuccessful) {
-                                task.exception?.let {
-                                    throw it
-                                }
-                            }
-                            fileRef.downloadUrl
-                        }.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val downloadUri = task.result
-                                uploadedImageUrl.value = downloadUri.toString()
-                                println("downloadUri: $downloadUri")
-                            } else {
-                                println("downloadUri: failed")
-                            }
-                        }
-                    }
+                    viewModel.uploadImage(uri)
                 },
                 enabled = !uploaded.value,
             ) {
@@ -97,7 +70,7 @@ fun ReceiptScreen() {
                 }
             }
 
-            Text("Image url: ${uploadedImageUrl.value}")
+            Text("Image url: ${uploadedImageUrl?.toString() ?: ""}")
         }
 
         AiResult(imageUrl = selectedImageUri.value)

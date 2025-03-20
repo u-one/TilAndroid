@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 
-class ResponseParserTest {
+class GeminiReceiptResponseTest {
 
     val text = """
     ```json
@@ -24,8 +24,8 @@ class ResponseParserTest {
 
     @Test
     fun testJson() {
-        val responseParser = ResponseParser(text)
-        val result = responseParser.json()
+        val geminiReceiptResponse = GeminiReceiptResponse(text)
+        val result = geminiReceiptResponse.json()
         assertEquals(
             """
             {

@@ -79,8 +79,14 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 
 @Composable
 fun ReceiptInfo(receipt: Receipt) {
+    if (receipt == Receipt.Empty) {
+        return
+    }
     Column {
         ShareButton(receipt)
+        Text(text = receipt.store())
+        Text(text = receipt.total().toString() + "円")
+        Text(text = receipt.title())
         Text(text = receipt.json)
     }
 }
@@ -109,7 +115,7 @@ fun ShareButton(receipt: Receipt) {
 }
 
 @Composable
-@Preview(showBackground = true, widthDp = 720, heightDp = 1024)
+@Preview(showBackground = true, widthDp = 320)
 fun ReceiptInfoPreview() {
     val json = """
             {
@@ -125,4 +131,10 @@ fun ReceiptInfoPreview() {
             }
         """.trimIndent()
     ReceiptInfo(Receipt(json))
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 320)
+fun EmptyReceiptInfoPreview() {
+    ReceiptInfo(Receipt.Empty)
 }

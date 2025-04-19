@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 class Receipt(val json: String) {
 
     fun title(): String {
+        if (json.isBlank()) return ""
         val jsonObj = JsonParser.parseString(json).asJsonObject
         val storeObj = jsonObj.get("store")?.asJsonObject
         val receiptObj = jsonObj.get("receipt")?.asJsonObject
@@ -28,6 +29,7 @@ class Receipt(val json: String) {
     }
 
     fun store(): String {
+        if (json.isBlank()) return ""
         val jsonObj = JsonParser.parseString(json).asJsonObject
         val storeObj = jsonObj.get("store")?.asJsonObject
         val storeName = storeObj?.get("name")?.asString ?: "NA"
@@ -40,6 +42,7 @@ class Receipt(val json: String) {
     }
 
     fun total(): Int {
+        if (json.isBlank()) return 0
         val jsonObj = JsonParser.parseString(json).asJsonObject
         return jsonObj.get("total")?.asInt ?: 0
     }

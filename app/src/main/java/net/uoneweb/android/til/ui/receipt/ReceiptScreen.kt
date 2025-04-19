@@ -33,6 +33,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 
     val uploadedImageUrl by viewModel.uploadedFileUrl
     val receiptJson by viewModel.json
+    val receipt by viewModel.receipt
 
     //OpenAiUi()
     //AiResult()
@@ -72,30 +73,30 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 viewModel.generateJsonFromImage(selectedImageUri.value!!)
             }
         }
-        ReceiptInfo(receiptJson)
+        ReceiptInfo(receipt)
     }
 }
 
 @Composable
-fun ReceiptInfo(receiptJson: String) {
+fun ReceiptInfo(receipt: Receipt) {
     Column {
-        ShareButton(receiptJson)
-        Text(text = receiptJson)
+        ShareButton(receipt)
+        Text(text = receipt.json)
     }
 }
 
 @Composable
-fun ShareButton(text: String) {
+fun ShareButton(receipt: Receipt) {
     val context = LocalContext.current
-    if (text.isEmpty()) {
+    if (receipt == Receipt.Empty) {
         return
     }
     Button(
         onClick = {
-            val title = Receipt(text).title()
+            val title = receipt.title()
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, text)
+                putExtra(Intent.EXTRA_TEXT, receipt.json)
                 putExtra(Intent.EXTRA_SUBJECT, title)
                 type = "text/plain"
             }
@@ -123,5 +124,5 @@ fun ReceiptInfoPreview() {
               "total": 5678 
             }
         """.trimIndent()
-    ReceiptInfo(receiptJson = json)
+    ReceiptInfo(Receipt(json))
 }

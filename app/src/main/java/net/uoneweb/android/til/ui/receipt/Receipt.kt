@@ -2,7 +2,7 @@ package net.uoneweb.android.til.ui.receipt
 
 import com.google.gson.JsonParser
 
-class Receipt(private val json: String) {
+class Receipt(val json: String) {
 
     fun title(): String {
         val jsonObj = JsonParser.parseString(json).asJsonObject
@@ -26,4 +26,27 @@ class Receipt(private val json: String) {
         }
         return "${date}_${time}_${total}_${storeName}.json"
     }
+
+    fun store(): String {
+        val jsonObj = JsonParser.parseString(json).asJsonObject
+        val storeObj = jsonObj.get("store")?.asJsonObject
+        val storeName = storeObj?.get("name")?.asString ?: "NA"
+        val storeBranch = storeObj?.get("branch")?.asString ?: ""
+        return if (storeBranch.isNotBlank()) {
+            "$storeName $storeBranch"
+        } else {
+            storeName
+        }
+    }
+
+    fun total(): Int {
+        val jsonObj = JsonParser.parseString(json).asJsonObject
+        return jsonObj.get("total")?.asInt ?: 0
+    }
+
+    companion object {
+        val Empty = Receipt("")
+    }
+
 }
+

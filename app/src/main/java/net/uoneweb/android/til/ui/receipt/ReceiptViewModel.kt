@@ -19,10 +19,13 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
     private val _json: MutableState<String> = mutableStateOf("")
     val json: State<String> = _json
+    private val _receipt: MutableState<Receipt> = mutableStateOf(Receipt.Empty)
+    val receipt: State<Receipt> = _receipt
 
     fun reset() {
         _uploadedFileUrl.value = null
         _json.value = ""
+        _receipt.value = Receipt.Empty
     }
 
     fun uploadImage(localFileUri: Uri?) {
@@ -74,6 +77,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         val parser = GeminiReceiptResponse(response.text)
         print(parser.json())
         _json.value = parser.json()
+        _receipt.value = Receipt(parser.json())
     }
 
 

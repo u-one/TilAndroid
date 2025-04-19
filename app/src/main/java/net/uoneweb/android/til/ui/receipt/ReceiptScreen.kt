@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
@@ -71,10 +72,16 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 viewModel.generateJsonFromImage(selectedImageUri.value!!)
             }
         }
+        ReceiptInfo(receiptJson)
+    }
+}
+
+@Composable
+fun ReceiptInfo(receiptJson: String) {
+    Column {
         ShareButton(receiptJson)
         Text(text = receiptJson)
     }
-
 }
 
 @Composable
@@ -98,4 +105,23 @@ fun ShareButton(text: String) {
     ) {
         Text("Share")
     }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 720, heightDp = 1024)
+fun ReceiptInfoPreview() {
+    val json = """
+            {
+              "store": {
+                "name": "store",
+                "branch": "branch"
+              },
+              "receipt": {
+                "date": "2025-01-01",
+                "time": "12:34"
+              },
+              "total": 5678 
+            }
+        """.trimIndent()
+    ReceiptInfo(receiptJson = json)
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import net.uoneweb.android.til.ui.receipt.Receipt
 import net.uoneweb.android.til.ui.receipt.ReceiptViewModel
 
 @Composable
@@ -26,6 +27,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val selectedImageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
     val imagePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri.value = uri
+        viewModel.reset()
     }
 
     val uploadedImageUrl by viewModel.uploadedFileUrl
@@ -69,8 +71,8 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 viewModel.generateJsonFromImage(selectedImageUri.value!!)
             }
         }
-        Text(text = receiptJson)
         ShareButton(receiptJson)
+        Text(text = receiptJson)
     }
 
 }
@@ -83,15 +85,14 @@ fun ShareButton(text: String) {
     }
     Button(
         onClick = {
+            val title = Receipt(text).title()
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, text)
+                putExtra(Intent.EXTRA_SUBJECT, title)
                 type = "text/plain"
             }
-
-            val shareIntent = Intent.createChooser(sendIntent, null).apply {
-                putExtra(Intent.EXTRA_CHOOSER_TARGETS, arrayOf(Intent.EXTRA_TEXT))
-            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
             context.startActivity(shareIntent)
         },
     ) {

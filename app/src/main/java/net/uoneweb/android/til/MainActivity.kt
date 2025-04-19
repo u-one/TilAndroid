@@ -212,7 +212,7 @@ private fun TilNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Drive.route,
+        startDestination = Screen.Receipt.route,
         modifier = modifier,
     ) {
         composable(Screen.Camera.route) {

@@ -20,6 +20,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     private val _json: MutableState<String> = mutableStateOf("")
     val json: State<String> = _json
 
+    fun reset() {
+        _uploadedFileUrl.value = null
+        _json.value = ""
+    }
 
     fun uploadImage(localFileUri: Uri?) {
         if (localFileUri == null) {
@@ -71,4 +75,6 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         print(parser.json())
         _json.value = parser.json()
     }
+
+
 }

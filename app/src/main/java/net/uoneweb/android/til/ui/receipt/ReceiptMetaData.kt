@@ -3,11 +3,8 @@ package net.uoneweb.android.til.ui.receipt
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import net.uoneweb.android.til.ui.location.Location
 
-data class Location(
-    val latitude: Double,
-    val longitude: Double,
-)
 
 data class ReceiptMetaData(
     val content: Receipt,

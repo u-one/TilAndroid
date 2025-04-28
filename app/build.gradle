@@ -109,6 +109,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     implementation 'com.google.android.gms:play-services-location:21.3.0'
+    implementation 'org.maplibre.gl:android-sdk:11.8.5'
 
     testImplementation(platform('org.junit:junit-bom:5.10.2'))
     testImplementation "org.junit.jupiter:junit-jupiter"

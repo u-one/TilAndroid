@@ -203,7 +203,7 @@ fun ReceiptInfo(receipt: Receipt, imageUri: Uri?, location: Location?) {
         return
     }
     val metaLocation = if (location?.latitude != null && location?.longitude != null) {
-        net.uoneweb.android.til.ui.receipt.Location(location.latitude, location.longitude)
+        net.uoneweb.android.til.ui.location.Location(location.latitude, location.longitude)
     } else null
 
     val metadata = ReceiptMetaData(receipt, metaLocation, imageUri?.lastPathSegment)

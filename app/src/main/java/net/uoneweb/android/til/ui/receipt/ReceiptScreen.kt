@@ -3,11 +3,15 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -171,16 +175,42 @@ fun ReceiptImageUploader(selectedImageUri: Uri?, uploadedImageUri: Uri?, onClick
 }
 
 @Composable
+@Preview(showBackground = true, widthDp = 320)
+fun ReceiptImageSelectorPreview() {
+    ReceiptImageSelector(selectedImageUri = null) {}
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 320)
+fun ReceiptImageUploaderPreview() {
+    ReceiptImageUploader(selectedImageUri = Uri.Builder().build(), uploadedImageUri = null) {}
+}
+
+@Composable
 fun ReceiptInfo(receipt: Receipt) {
     if (receipt == Receipt.Empty) {
         return
     }
     Column {
         ShareButton(receipt)
-        Text(text = receipt.store())
-        Text(text = receipt.total().toString() + "円")
+        Row {
+            Text(text = "店舗")
+            Text(text = receipt.store())
+        }
+        Row {
+            Text("合計")
+            Text(text = receipt.total().toString() + "円")
+        }
+        Row {
+            Text("住所")
+            Text(text = receipt.address())
+        }
+        Text("ファイル名:")
         Text(text = receipt.title())
-        Text(text = receipt.json)
+        Text("json:")
+        Text(modifier = Modifier.fillMaxWidth()
+            .background(color = androidx.compose.ui.graphics.Color.LightGray),
+            text = receipt.json)
     }
 }
 
@@ -209,24 +239,17 @@ fun ShareButton(receipt: Receipt) {
 
 @Composable
 @Preview(showBackground = true, widthDp = 320)
-fun ReceiptImageSelectorPreview() {
-    ReceiptImageSelector(selectedImageUri = null) {}
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 320)
-fun ReceiptImageUploaderPreview() {
-    ReceiptImageUploader(selectedImageUri = Uri.Builder().build(), uploadedImageUri = null) {}
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 320)
 fun ReceiptInfoPreview() {
     val json = """
             {
               "store": {
-                "name": "store",
-                "branch": "branch"
+                "name": "◯◯◯",
+                "branch": "△△店",
+                "tel": "012-3456-7890",
+                "address": "東京都千代田区1-2-3",
+                "postalCode": "123-4567",
+                "website": "https://example.com",
+                "email": "test@example.com"
               },
               "receipt": {
                 "date": "2025-01-01",

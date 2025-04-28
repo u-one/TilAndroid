@@ -92,4 +92,27 @@ class ReceiptTest {
 
         assertEquals(5678, actual)
     }
+
+    @Test
+    fun testAddress() {
+        val json = """
+            {
+              "store": {
+                "name": "store",
+                "branch": "",
+                "address": "address 1-2-3"
+              },
+              "receipt": {
+                "date": "2025-01-01",
+                "time": "12:34"
+              },
+              "total": 5678
+            }
+        """.trimIndent()
+        val receipt = Receipt(json)
+
+        val actual = receipt.address()
+
+        assertEquals("address 1-2-3", actual)
+    }
 }

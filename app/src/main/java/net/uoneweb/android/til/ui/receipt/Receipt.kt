@@ -47,6 +47,13 @@ class Receipt(val json: String) {
         return jsonObj.get("total")?.asInt ?: 0
     }
 
+    fun address(): String {
+        if (json.isBlank()) return ""
+        val jsonObj = JsonParser.parseString(json).asJsonObject
+        val storeObj = jsonObj.get("store")?.asJsonObject
+        return storeObj?.get("address")?.asString ?: ""
+    }
+
     companion object {
         val Empty = Receipt("")
     }

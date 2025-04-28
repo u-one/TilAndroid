@@ -24,7 +24,7 @@ class ReceiptTest {
 
         val actual = receipt.title()
 
-        assertEquals("20250101_1234_5678_store_branch.json", actual)
+        assertEquals("20250101_1234_5678_v2_store_branch.json", actual)
     }
 
     @Test
@@ -46,7 +46,7 @@ class ReceiptTest {
 
         val actual = receipt.title()
 
-        assertEquals("20250101_1234_5678_store.json", actual)
+        assertEquals("20250101_1234_5678_v2_store.json", actual)
     }
 
     @Test

@@ -9,4 +9,6 @@
     <string name="audio">音</string>
     <string name="receipt">receipt</string>
     <string name="drive">drive</string>
+    <string name="location">location</string>
+    <string name="map">map</string>
 </resources>

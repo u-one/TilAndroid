@@ -1,4 +1,5 @@
 import android.content.Intent
+import android.location.Location
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,14 +18,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import net.uoneweb.android.til.ui.location.CurrentLocationComponent
 import net.uoneweb.android.til.ui.receipt.Receipt
+import net.uoneweb.android.til.ui.receipt.ReceiptMetaData
 import net.uoneweb.android.til.ui.receipt.ReceiptViewModel
 
 @Composable
@@ -67,6 +72,7 @@ fun ReceiptScreenMain(
     onClickImageUpload: () -> Unit,
     loading: Boolean,
 ) {
+    var location by remember { mutableStateOf<Location?>(null) }
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(scrollState)) {
 
@@ -74,11 +80,15 @@ fun ReceiptScreenMain(
 
         ReceiptImageUploader(selectedImageUri, uploadedImageUri) { onClickImageUpload() }
 
+        CurrentLocationComponent(location = null) {
+            location = it
+        }
+
         if (loading) {
             Text("Analyzing receipt info ...")
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
-        ReceiptInfo(receipt)
+        ReceiptInfo(receipt, selectedImageUri, location)
     }
 }
 
@@ -141,6 +151,7 @@ fun ReceiptImageSelector(selectedImageUri: Uri?, onImageSelected: (Uri?) -> Unit
             Text("Select Image")
         }
         selectedImageUri?.let { uri ->
+            Text(uri.toString())
             Image(
                 painter = rememberAsyncImagePainter(uri),
                 contentDescription = "Selected image",
@@ -187,10 +198,15 @@ fun ReceiptImageUploaderPreview() {
 }
 
 @Composable
-fun ReceiptInfo(receipt: Receipt) {
+fun ReceiptInfo(receipt: Receipt, imageUri: Uri?, location: Location?) {
     if (receipt == Receipt.Empty) {
         return
     }
+    val metaLocation = if (location?.latitude != null && location?.longitude != null) {
+        net.uoneweb.android.til.ui.receipt.Location(location.latitude, location.longitude)
+    } else null
+
+    val metadata = ReceiptMetaData(receipt, metaLocation, imageUri?.lastPathSegment)
     Column {
         ShareButton(receipt)
         Row {
@@ -208,9 +224,12 @@ fun ReceiptInfo(receipt: Receipt) {
         Text("ファイル名:")
         Text(text = receipt.title())
         Text("json:")
-        Text(modifier = Modifier.fillMaxWidth()
-            .background(color = androidx.compose.ui.graphics.Color.LightGray),
-            text = receipt.json)
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = androidx.compose.ui.graphics.Color.LightGray),
+            text = metadata.json(),
+        )
     }
 }
 
@@ -258,11 +277,11 @@ fun ReceiptInfoPreview() {
               "total": 5678 
             }
         """.trimIndent()
-    ReceiptInfo(Receipt(json))
+    ReceiptInfo(Receipt(json), null, null)
 }
 
 @Composable
 @Preview(showBackground = true, widthDp = 320)
 fun EmptyReceiptInfoPreview() {
-    ReceiptInfo(Receipt.Empty)
+    ReceiptInfo(Receipt.Empty, null, null)
 }

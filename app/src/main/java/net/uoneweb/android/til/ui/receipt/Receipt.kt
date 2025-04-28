@@ -3,7 +3,7 @@ package net.uoneweb.android.til.ui.receipt
 import com.google.gson.JsonParser
 
 class Receipt(val json: String) {
-    val version = "v2"
+    val version = "v3"
 
     fun title(): String {
         if (json.isBlank()) return ""

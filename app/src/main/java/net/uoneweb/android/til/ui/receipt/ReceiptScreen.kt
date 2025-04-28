@@ -29,6 +29,8 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val uploadedImageUri by viewModel.uploadedFileUrl
     val receipt by viewModel.receipt
 
+    val loading = (selectedImageUri.value != null && receipt == Receipt.Empty)
+
     //OpenAiUi()
     //AiResult()
     LaunchedEffect(selectedImageUri.value) {
@@ -49,6 +51,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 viewModel.uploadImage(it)
             }
         },
+        loading = loading,
     )
 
 }
@@ -58,6 +61,7 @@ fun ReceiptScreenMain(
     selectedImageUri: Uri?, uploadedImageUri: Uri?, receipt: Receipt,
     onImageSelected: (Uri?) -> Unit,
     onClickImageUpload: () -> Unit,
+    loading: Boolean,
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(scrollState)) {
@@ -66,6 +70,10 @@ fun ReceiptScreenMain(
 
         ReceiptImageUploader(selectedImageUri, uploadedImageUri) { onClickImageUpload() }
 
+        if (loading) {
+            Text("Analyzing receipt info ...")
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
         ReceiptInfo(receipt)
     }
 }
@@ -84,6 +92,7 @@ fun ReceiptScreenMainProgressPreview() {
         receipt,
         onImageSelected = {},
         onClickImageUpload = {},
+        loading = true,
     )
 }
 
@@ -114,6 +123,7 @@ fun ReceiptScreenMainPreview() {
         receipt,
         onImageSelected = {},
         onClickImageUpload = {},
+        loading = false,
     )
 }
 

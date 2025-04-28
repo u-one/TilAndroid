@@ -68,7 +68,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         val bitmap: Bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(localFileUri))
         val prompt = content {
             image(bitmap)
-            text(GeminiReceiptPrompt.text)
+            text(GeminiReceiptPrompt.loadPrompt(getApplication()))
         }
 
         val model = Firebase.vertexAI.generativeModel("gemini-2.0-flash")

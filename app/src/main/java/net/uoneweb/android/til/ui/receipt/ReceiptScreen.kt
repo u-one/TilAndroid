@@ -72,7 +72,11 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
             loading = loading,
         )
         if (chatAiResponse.isNotEmpty()) {
-            OpenStreetMapContent(chatAiResponse)
+            ReceiptMappingComponent(chatAiResponse)
+        } else {
+            val context = LocalContext.current
+            val t = SampleData.responseSample(context)
+            ReceiptMappingComponent(t)
         }
     }
 

@@ -1,0 +1,136 @@
+package net.uoneweb.android.til.ui.receipt
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.google.gson.Gson
+
+@Composable
+fun ReceiptMappingComponent(text: String) {
+    val scrollState = rememberScrollState()
+    Column(modifier = Modifier.verticalScroll(scrollState)) {
+        JsonContentViewer(text)
+        Text("AI Response:")
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.LightGray),
+            text = text,
+        )
+    }
+}
+
+@Composable
+fun JsonContentViewer(jsonString: String) {
+    val gson = Gson()
+    val receiptMappingInfo = gson.fromJson(jsonString, ReceiptMappingInfo::class.java)
+    if (receiptMappingInfo == null) {
+        Text("Invalid JSON")
+        return
+    }
+    ReceiptMapInfoViewer(receiptMappingInfo)
+}
+
+@Composable
+fun ReceiptMapInfoViewer(receiptMappingInfo: ReceiptMappingInfo) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        // Store Info Extracted
+        Text("Store Info Extracted")
+        LazyRow {
+            items(receiptMappingInfo.storeInfoExtracted) { item ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(2.dp),
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .background(color = Color.Green)
+                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                        ) {
+                            Text(item.basedOn)
+                        }
+                        Text(
+                            "${item.key}: ${item.value}",
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                        Text("${item.reason}")
+                        Text(" ${item.comment}")
+
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Existing Store Info")
+        LazyRow {
+            items(receiptMappingInfo.existingStoreInfo.tags) { tag ->
+                Card(modifier = Modifier.padding(2.dp)) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text("${tag.key}: ${tag.value}", modifier = Modifier.padding(bottom = 8.dp))
+                        Text("${tag.comment}")
+                    }
+                }
+
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Comparison
+        Text("Comparison")
+        LazyRow {
+            items(receiptMappingInfo.comparison) { comparison ->
+                Card(modifier = Modifier.padding(2.dp)) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .background(color = Color.Green)
+                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                        ) {
+                            Text(comparison.difference)
+                        }
+                        Text("${comparison.key}: ${comparison.existingValue} -> ${comparison.newValue}", modifier = Modifier.padding(bottom = 8.dp))
+                        Text("${comparison.comment}")
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Update Recommendation")
+        Card(modifier = Modifier.padding(2.dp)) {
+            Text(receiptMappingInfo.updateRecommendation, modifier = Modifier.padding(8.dp))
+        }
+    }
+}
+
+
+@Preview(showBackground = true, widthDp = 600)
+@Composable
+fun PreviewOpenStreetMapContent() {
+    val context = LocalContext.current
+    val json = SampleData.responseSample(context)
+
+    ReceiptMappingComponent(json)
+}

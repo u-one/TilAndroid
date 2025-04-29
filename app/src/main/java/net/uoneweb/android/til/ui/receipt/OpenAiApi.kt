@@ -12,19 +12,18 @@ import retrofit2.http.Part
 
 data class ChatRequest(
     val model: String,
+    val temperature: Double? = null,
     val messages: List<Message>,
-    val max_tokens: Int = 1000,
+    val response_format: ResponseFormat? = null,
+)
+
+data class ResponseFormat(
+    val type: String,
 )
 
 data class Message(
     val role: String,
-    val content: List<Content>,
-)
-
-data class Content(
-    val type: String,
-    val text: String? = null,
-    val fileId: String? = null,
+    val content: String,
 )
 
 data class ChatResponse(

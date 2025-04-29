@@ -1,0 +1,57 @@
+{
+  "store": {
+    "name": "廣榮堂",
+    "branch": "倉敷店",
+    "tel": "0864265888",
+    "address": "岡山県倉敷市中央1-1-8",
+    "postalCode": "710-0046",
+    "website": "https://koeido.co.jp/",
+    "email": "info@koeido.co.jp"
+  },
+  "receipt": {
+    "date": "2025-04-01",
+    "time": "12:00",
+    "registrationNumber": "T1260001002299"
+  },
+  "items": [
+    {
+      "name": "むかし吉備団子15個 ※",
+      "price": 1728
+    },
+    {
+      "name": "紙袋 小・縦小・中",
+      "price": 10
+    }
+  ],
+  "tax": {
+    "rate8": {
+      "target": 1728,
+      "amount": 128
+    },
+    "rate10": {
+      "target": 10,
+      "amount": 0
+    }
+  },
+  "total": 1738,
+  "breakdown": {
+    "consumptionTax8": 128,
+    "consumptionTax10": 0
+  },
+  "payment": {
+    "method": "電子マネー",
+    "amount": 1738,
+    "tendered": 1738,
+    "change": 0,
+    "card": {}
+  },
+  "points": {
+    "normal": {}
+  },
+  "remarks": [
+    "※は軽減税率(8%)適用"
+  ],
+  "transaction": {
+    "number": "12345"
+  }
+}

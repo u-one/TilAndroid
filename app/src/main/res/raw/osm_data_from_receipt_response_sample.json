@@ -1,0 +1,224 @@
+{
+  "store_info_extracted": [
+    {
+      "key": "name",
+      "value": "廣榮堂 倉敷店",
+      "based_on": "fact",
+      "reason": "store.nameとstore.branchから合成",
+      "comment": "店舗の正式名称。レシートJSONに記載されている。"
+    },
+    {
+      "key": "branch",
+      "value": "倉敷店",
+      "based_on": "fact",
+      "reason": "store.branch項目に明記されている",
+      "comment": "店舗の支店名を明示する情報。"
+    },
+    {
+      "key": "operator",
+      "value": "廣榮堂",
+      "based_on": "fact",
+      "reason": "フランチャイズではなく本社運営と判断（公式サイト・典型的和菓子店形態から）",
+      "comment": "運営主体名。"
+    },
+    {
+      "key": "phone",
+      "value": "+81-86-426-5888",
+      "based_on": "fact",
+      "reason": "store.telから国番号付与で正規化",
+      "comment": "店舗の電話番号。国際表記に変換。"
+    },
+    {
+      "key": "addr:full",
+      "value": "岡山県倉敷市中央1-1-8",
+      "based_on": "fact",
+      "reason": "store.addressをそのまま使用",
+      "comment": "日本語の正式なフル住所。"
+    },
+    {
+      "key": "addr:postcode",
+      "value": "710-0046",
+      "based_on": "fact",
+      "reason": "store.postalCodeから取得",
+      "comment": "郵便番号"
+    },
+    {
+      "key": "website",
+      "value": "https://koeido.co.jp/",
+      "based_on": "fact",
+      "reason": "store.website項目から抽出",
+      "comment": "公式サイトURL"
+    },
+    {
+      "key": "email",
+      "value": "info@koeido.co.jp",
+      "based_on": "fact",
+      "reason": "store.email項目から抽出",
+      "comment": "公式連絡用メールアドレス"
+    },
+    {
+      "key": "payment:electronic_money",
+      "value": "yes",
+      "based_on": "fact",
+      "reason": "payment.methodが「電子マネー」となっている",
+      "comment": "電子マネーでの決済が可能。"
+    },
+    {
+      "key": "shop",
+      "value": "confectionery",
+      "based_on": "inference",
+      "reason": "販売商品が和菓子（吉備団子）中心、和菓子店の実態・公式HP確認結果",
+      "comment": "販売商品の「むかし吉備団子」等から和菓子・菓子専門店（shop=confectionery）と推定。"
+    },
+    {
+      "key": "product",
+      "value": "wagashi",
+      "based_on": "inference",
+      "reason": "アイテムが和菓子（吉備団子）であるため",
+      "comment": "日本の伝統菓子を主力商品としている証拠から。"
+    },
+    {
+      "key": "tax_id",
+      "value": "T1260001002299",
+      "based_on": "fact",
+      "reason": "receipt.registrationNumberから取得",
+      "comment": "インボイス制度対応の登録番号。"
+    },
+    {
+      "key": "opening_hours:covid19",
+      "value": "unknown",
+      "based_on": "inference",
+      "reason": "レシートやJSONに営業時間情報なし",
+      "comment": "営業時間不明のため、その旨を追加。"
+    }
+  ],
+  "existing_store_info": {
+    "tags": [
+      {
+        "key": "name",
+        "value": "廣榮堂 倉敷店",
+        "comment": "OpenStreetMap上に登録されている店舗名。"
+      },
+      {
+        "key": "shop",
+        "value": "confectionery",
+        "comment": "OSM上では既に和菓子・菓子店として登録されている。"
+      },
+      {
+        "key": "addr:full",
+        "value": "岡山県倉敷市中央1-1-8",
+        "comment": "日本語の正式なフル住所。"
+      },
+      {
+        "key": "phone",
+        "value": "+81-86-426-5888",
+        "comment": "国際形式の電話番号で登録。"
+      },
+      {
+        "key": "website",
+        "value": "https://koeido.co.jp/",
+        "comment": "公式ウェブサイトへのリンク。"
+      },
+      {
+        "key": "addr:postcode",
+        "value": "710-0046",
+        "comment": "郵便番号。"
+      }
+    ],
+    "comment": "OpenStreetMapの既存情報として上記タグ（仮想的に主要タグ6種を抽出）。OSMノードID例: 1100099999（仮）"
+  },
+  "comparison": [
+    {
+      "key": "name",
+      "existing_value": "廣榮堂 倉敷店",
+      "new_value": "廣榮堂 倉敷店",
+      "difference": "same",
+      "comment": "名称は一致。変化なし。"
+    },
+    {
+      "key": "branch",
+      "existing_value": null,
+      "new_value": "倉敷店",
+      "difference": "new",
+      "comment": "分店・支店名情報の新規追加。branchタグ追加推奨。"
+    },
+    {
+      "key": "operator",
+      "existing_value": null,
+      "new_value": "廣榮堂",
+      "difference": "new",
+      "comment": "運営主体名（フランチャイズ等ではない場合、新規追加推奨）。"
+    },
+    {
+      "key": "phone",
+      "existing_value": "+81-86-426-5888",
+      "new_value": "+81-86-426-5888",
+      "difference": "same",
+      "comment": "電話番号は一致。"
+    },
+    {
+      "key": "addr:full",
+      "existing_value": "岡山県倉敷市中央1-1-8",
+      "new_value": "岡山県倉敷市中央1-1-8",
+      "difference": "same",
+      "comment": "住所完全一致。"
+    },
+    {
+      "key": "addr:postcode",
+      "existing_value": "710-0046",
+      "new_value": "710-0046",
+      "difference": "same",
+      "comment": "郵便番号は一致。"
+    },
+    {
+      "key": "website",
+      "existing_value": "https://koeido.co.jp/",
+      "new_value": "https://koeido.co.jp/",
+      "difference": "same",
+      "comment": "公式サイトURLは一致。"
+    },
+    {
+      "key": "email",
+      "existing_value": null,
+      "new_value": "info@koeido.co.jp",
+      "difference": "new",
+      "comment": "メールアドレスの新規追加。"
+    },
+    {
+      "key": "payment:electronic_money",
+      "existing_value": null,
+      "new_value": "yes",
+      "difference": "new",
+      "comment": "電子マネー支払い対応である新情報。タグ追加推奨。"
+    },
+    {
+      "key": "shop",
+      "existing_value": "confectionery",
+      "new_value": "confectionery",
+      "difference": "same",
+      "comment": "業種分類に相違なし。"
+    },
+    {
+      "key": "product",
+      "existing_value": null,
+      "new_value": "wagashi",
+      "difference": "new",
+      "comment": "販売商品ジャンル情報の追加（和菓子）。"
+    },
+    {
+      "key": "tax_id",
+      "existing_value": null,
+      "new_value": "T1260001002299",
+      "difference": "new",
+      "comment": "インボイス事業者登録番号。今後活用例増のため追加推奨。"
+    },
+    {
+      "key": "opening_hours:covid19",
+      "existing_value": null,
+      "new_value": "unknown",
+      "difference": "new",
+      "comment": "営業時間不明の注記。"
+    }
+  ],
+  "update_recommendation": "既存OpenStreetMap情報には、branch（倉敷店）、operator（廣榮堂）、email、payment:electronic_money（電子マネー）、product=wagashi、tax_id（T1260001002299）、opening_hours:covid19=unknownが未登録または明示されていないため、追加・更新を推奨します。特に電子マネー対応可否の情報やインボイス登録番号は今後の利活用のためも推奨度が高いです。"
+}

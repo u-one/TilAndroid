@@ -1,5 +1,6 @@
 package net.uoneweb.android.til.ui.map
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -36,6 +37,14 @@ fun MapComponent(initialLocation: Location = Location.Default, initialZoom: Doub
                     .target(LatLng(initialLocation.latitude, initialLocation.longitude))
                     .zoom(initialZoom)
                     .build()
+                map.addOnMapClickListener { latlng ->
+                    Log.i("MapComponent", "Map clicked at: ${latlng.latitude}, ${latlng.longitude}")
+                    true
+                }
+                map.addOnCameraMoveListener {
+                    val center = map.cameraPosition.target
+                    Log.i("MapComponent", "Camera moved to: ${center?.latitude}, ${center?.longitude}")
+                }
             }
             mapView
         },

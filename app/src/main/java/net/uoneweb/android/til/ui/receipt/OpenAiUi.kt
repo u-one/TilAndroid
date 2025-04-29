@@ -40,10 +40,7 @@ fun OpenAiUi() {
             messages = listOf(
                 Message(
                     role = "user",
-                    content = listOf(
-                        Content(type = "text", text = "画像の内容をレシートの情報を表現するjsonにしてください"),
-                        Content(type = "file", fileId = fileId),
-                    ),
+                    content = "画像の内容をレシートの情報を表現するjsonにしてください",
                 ),
             ),
         )

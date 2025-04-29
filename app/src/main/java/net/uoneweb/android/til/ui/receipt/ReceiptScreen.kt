@@ -1,3 +1,5 @@
+package net.uoneweb.android.til.ui.receipt
+
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
@@ -19,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,16 +30,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.launch
 import net.uoneweb.android.til.ui.location.CurrentLocationComponent
-import net.uoneweb.android.til.ui.receipt.Receipt
-import net.uoneweb.android.til.ui.receipt.ReceiptMetaData
-import net.uoneweb.android.til.ui.receipt.ReceiptViewModel
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val selectedImageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
     val uploadedImageUri by viewModel.uploadedFileUrl
     val receipt by viewModel.receipt
+    val coroutineScope = rememberCoroutineScope()
+    val chatAiResponse by viewModel.json
 
     val loading = (selectedImageUri.value != null && receipt == Receipt.Empty)
 
@@ -49,19 +52,29 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
         }
     }
 
-    ReceiptScreenMain(
-        selectedImageUri.value, uploadedImageUri, receipt,
-        onImageSelected = { uri ->
-            selectedImageUri.value = uri
-            viewModel.reset()
-        },
-        onClickImageUpload = {
-            selectedImageUri.value?.let {
-                viewModel.uploadImage(it)
-            }
-        },
-        loading = loading,
-    )
+    Column {
+        ReceiptScreenMain(
+            selectedImageUri.value, uploadedImageUri, receipt,
+            onImageSelected = { uri ->
+                selectedImageUri.value = uri
+                viewModel.reset()
+            },
+            onClickImageUpload = {
+                selectedImageUri.value?.let {
+                    viewModel.uploadImage(it)
+                }
+            },
+            onClickOsmInfo = { json ->
+                coroutineScope.launch {
+                    viewModel.generateOsmInfoFromJson(json)
+                }
+            },
+            loading = loading,
+        )
+        if (chatAiResponse.isNotEmpty()) {
+            OpenStreetMapContent(chatAiResponse)
+        }
+    }
 
 }
 
@@ -70,8 +83,10 @@ fun ReceiptScreenMain(
     selectedImageUri: Uri?, uploadedImageUri: Uri?, receipt: Receipt,
     onImageSelected: (Uri?) -> Unit,
     onClickImageUpload: () -> Unit,
+    onClickOsmInfo: (json: String) -> Unit,
     loading: Boolean,
 ) {
+    val context = LocalContext.current
     var location by remember { mutableStateOf<Location?>(null) }
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(scrollState)) {
@@ -89,6 +104,12 @@ fun ReceiptScreenMain(
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
         ReceiptInfo(receipt, selectedImageUri, location)
+
+        Button(
+            onClick = { onClickOsmInfo(SampleData.dummyData(context)) },
+        ) {
+            Text("OSMInfo")
+        }
     }
 }
 
@@ -106,6 +127,7 @@ fun ReceiptScreenMainProgressPreview() {
         receipt,
         onImageSelected = {},
         onClickImageUpload = {},
+        onClickOsmInfo = {},
         loading = true,
     )
 }
@@ -137,6 +159,7 @@ fun ReceiptScreenMainPreview() {
         receipt,
         onImageSelected = {},
         onClickImageUpload = {},
+        onClickOsmInfo = {},
         loading = false,
     )
 }

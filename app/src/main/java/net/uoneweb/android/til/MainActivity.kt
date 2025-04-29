@@ -1,6 +1,5 @@
 package net.uoneweb.android.til
 
-import ReceiptScreen
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -53,6 +52,7 @@ import net.uoneweb.android.til.ui.location.LocationScreen
 import net.uoneweb.android.til.ui.main.MainScreen
 import net.uoneweb.android.til.ui.map.MapScreen
 import net.uoneweb.android.til.ui.pager.PagerScreen
+import net.uoneweb.android.til.ui.receipt.ReceiptScreen
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

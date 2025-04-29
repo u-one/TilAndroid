@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +13,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.vertexAI
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class ReceiptViewModel(application: Application) : AndroidViewModel(application) {
@@ -76,9 +80,51 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         print(response.text)
         val parser = GeminiReceiptResponse(response.text)
         print(parser.json())
-        _json.value = parser.json()
+
         _receipt.value = Receipt(parser.json())
     }
 
+
+    suspend fun generateOsmInfoFromJson(json: String) {
+        val prompt = OpenAiReceiptPrompt.loadOsmFromJsonPrompt(getApplication())
+        val promptWithJson = prompt.replace("{{json}}", json)
+
+        val request = ChatRequest(
+            //model = "gpt-4o",
+            // model = "gpt-4-turbo-2024-04-09",
+            model = "gpt-4.1",
+            messages = listOf(
+                Message(
+                    role = "user",
+                    content = promptWithJson,
+                ),
+            ),
+            response_format = ResponseFormat(type = "json_object"),
+        )
+        Log.i("OpenAI", "Request: $request")
+        RetrofitInstance.api.getChatCompletion(request).enqueue(
+            object : Callback<ChatResponse> {
+                override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
+                    if (response.isSuccessful) {
+                        val chatResponse = response.body()
+                        println(chatResponse)
+                        chatResponse?.choices?.forEach { choice ->
+                            val message = choice.message
+                            println("${message.role}: ${message.content}")
+                        }
+                        Log.i("OpenAI", "Response successful")
+                        Log.i("OpenAI", "Response: ${response.body()}")
+                        _json.value = response.body()?.choices?.get(0)?.message?.content ?: ""
+                    } else {
+                        Log.e("OpenAI", "Response failed: ${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
+                    println("Failed to get chat completion: ${t.message}")
+                }
+            },
+        )
+    }
 
 }

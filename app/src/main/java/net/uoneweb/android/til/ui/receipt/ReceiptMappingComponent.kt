@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -60,19 +61,13 @@ fun ReceiptMapInfoViewer(receiptMappingInfo: ReceiptMappingInfo) {
                         .padding(2.dp),
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
-                        Box(
-                            modifier = Modifier
-                                .background(color = Color.Green)
-                                .padding(horizontal = 8.dp, vertical = 2.dp),
-                        ) {
-                            Text(item.basedOn)
-                        }
+                        CertaintyLabel(item.basedOn)
                         Text(
                             "${item.key}: ${item.value}",
                             modifier = Modifier.padding(bottom = 8.dp),
                         )
-                        Text("${item.reason}")
-                        Text(" ${item.comment}")
+                        Text(item.reason)
+                        Text(item.comment)
 
                     }
                 }
@@ -87,7 +82,7 @@ fun ReceiptMapInfoViewer(receiptMappingInfo: ReceiptMappingInfo) {
                 Card(modifier = Modifier.padding(2.dp)) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         Text("${tag.key}: ${tag.value}", modifier = Modifier.padding(bottom = 8.dp))
-                        Text("${tag.comment}")
+                        Text(tag.comment)
                     }
                 }
 
@@ -102,15 +97,9 @@ fun ReceiptMapInfoViewer(receiptMappingInfo: ReceiptMappingInfo) {
             items(receiptMappingInfo.comparison) { comparison ->
                 Card(modifier = Modifier.padding(2.dp)) {
                     Column(modifier = Modifier.padding(8.dp)) {
-                        Box(
-                            modifier = Modifier
-                                .background(color = Color.Green)
-                                .padding(horizontal = 8.dp, vertical = 2.dp),
-                        ) {
-                            Text(comparison.difference)
-                        }
+                        DifferenceLabel(difference = comparison.difference)
                         Text("${comparison.key}: ${comparison.existingValue} -> ${comparison.newValue}", modifier = Modifier.padding(bottom = 8.dp))
-                        Text("${comparison.comment}")
+                        Text(comparison.comment)
                     }
                 }
             }
@@ -123,6 +112,63 @@ fun ReceiptMapInfoViewer(receiptMappingInfo: ReceiptMappingInfo) {
             Text(receiptMappingInfo.updateRecommendation, modifier = Modifier.padding(8.dp))
         }
     }
+}
+
+@Composable
+fun CertaintyLabel(certainty: Certainty) {
+    val color = when (certainty) {
+        Certainty.Unknown -> Color.Gray
+        Certainty.Fact -> Color.Green
+        Certainty.Inference -> Color.Yellow
+    }
+    val text = when (certainty) {
+        Certainty.Unknown -> "Unknown"
+        Certainty.Fact -> "事実ベース"
+        Certainty.Inference -> "予測ベース"
+    }
+    Box(
+        modifier = Modifier
+            .background(color = color, shape = RoundedCornerShape(4.dp))
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+    ) {
+        Text(text)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCertaintyLabel() {
+    CertaintyLabel(Certainty.Fact)
+}
+
+@Composable
+fun DifferenceLabel(difference: Difference) {
+    val color = when (difference) {
+        Difference.Unknown -> Color.Gray
+        Difference.Same -> Color.Gray
+        Difference.Different -> Color.Yellow
+        Difference.New -> Color.Red
+
+    }
+    val text = when (difference) {
+        Difference.Unknown -> "Unknown"
+        Difference.Same -> "差異なし"
+        Difference.Different -> "更新"
+        Difference.New -> "新規"
+    }
+    Box(
+        modifier = Modifier
+            .background(color = color, shape = RoundedCornerShape(4.dp))
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+    ) {
+        Text(text)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewDifferenceLabel() {
+    DifferenceLabel(Difference.Different)
 }
 
 

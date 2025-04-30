@@ -3,6 +3,7 @@ package net.uoneweb.android.til.ui.receipt
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     private const val BASE_URL = "https://api.openai.com/v1/"

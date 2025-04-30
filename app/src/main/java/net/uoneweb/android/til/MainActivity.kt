@@ -139,7 +139,7 @@ private fun BottomBar(navController: NavController) {
             BottomBarItem(
                 screen = screen,
                 selected = currentDestination?.isCurrentScreen(screen) ?: false,
-                onClick = { navController.navigate(screen) },
+                onClick = { navController.navigateLocal(screen.route) },
             )
         }
     }
@@ -147,8 +147,8 @@ private fun BottomBar(navController: NavController) {
 
 private fun (NavDestination).isCurrentScreen(screen: Screen): Boolean = hierarchy.any { it.route == screen.route }
 
-private fun (NavController).navigate(screen: Screen) {
-    navigate(screen.route) {
+private fun (NavController).navigateLocal(route: String) {
+    navigate(route) {
         popUpTo(graph.startDestinationId) {
             saveState = true
         }

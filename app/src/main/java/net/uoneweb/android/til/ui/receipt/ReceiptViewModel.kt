@@ -9,10 +9,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.vertexAI
+import kotlinx.coroutines.launch
+import net.uoneweb.android.til.data.SettingsDataStore
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,6 +28,16 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     val json: State<String> = _json
     private val _receipt: MutableState<Receipt> = mutableStateOf(Receipt.Empty)
     val receipt: State<Receipt> = _receipt
+    private val settings = SettingsDataStore(getApplication())
+
+    init {
+        this.viewModelScope.launch {
+            settings.preferenceFlow.collect { value ->
+                // TODO: refactor
+                RetrofitInstance.apiKey = value
+            }
+        }
+    }
 
     fun reset() {
         _uploadedFileUrl.value = null
@@ -101,7 +114,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             ),
             response_format = ResponseFormat(type = "json_object"),
         )
-        Log.i("OpenAI", "Request: $request")
+        Log.i("OpenAI", "Request start")
         RetrofitInstance.api.getChatCompletion(request).enqueue(
             object : Callback<ChatResponse> {
                 override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {

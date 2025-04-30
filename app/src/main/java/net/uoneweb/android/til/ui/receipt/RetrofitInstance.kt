@@ -7,14 +7,15 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     private const val BASE_URL = "https://api.openai.com/v1/"
-    private const val API_KEY = "<API_KEY>"
 
+    // TODO: refactor
+    var apiKey = ""
 
     private val client = OkHttpClient.Builder()
         .readTimeout(60, TimeUnit.SECONDS)
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                .addHeader("Authorization", "Bearer $API_KEY")
+                .addHeader("Authorization", "Bearer $apiKey")
                 .build()
             chain.proceed(request)
         }.build()

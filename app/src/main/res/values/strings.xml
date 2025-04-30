@@ -11,4 +11,5 @@
     <string name="drive">drive</string>
     <string name="location">location</string>
     <string name="map">map</string>
+    <string name="preference">設定</string>
 </resources>

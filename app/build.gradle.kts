@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "net.uoneweb.android.til"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "net.uoneweb.android.til"
@@ -71,7 +71,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
 
-    implementation("androidx.core:core-ktx:1.13.1") // 1.15.0以降はandroid-35
+    implementation("androidx.core:core-ktx:1.16.0") // 1.15.0以降はandroid-35
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("androidx.compose.material:material") // TODO: remove
     implementation("androidx.compose.material3:material3")
@@ -109,10 +109,15 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-vertexai")
     implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("org.maplibre.gl:android-sdk:11.8.5")
+
+    val coroutinesVersion = "1.7.3"
+    implementation("androidx.datastore:datastore-preferences:1.1.4") // 1.1.5は利用不可
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

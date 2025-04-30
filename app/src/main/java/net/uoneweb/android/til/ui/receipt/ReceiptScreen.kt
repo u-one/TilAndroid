@@ -39,7 +39,8 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val uploadedImageUri by viewModel.uploadedFileUrl
     val receipt by viewModel.receipt
     val coroutineScope = rememberCoroutineScope()
-    val chatAiResponse by viewModel.json
+    val receiptMappingInfo by viewModel.json
+    val context = LocalContext.current
 
     val loading = (selectedImageUri.value != null && receipt == Receipt.Empty)
 
@@ -54,7 +55,10 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 
     Column {
         ReceiptScreenMain(
-            selectedImageUri.value, uploadedImageUri, receipt,
+            selectedImageUri.value,
+            uploadedImageUri,
+            receipt,
+            receiptMappingInfo,
             onImageSelected = { uri ->
                 selectedImageUri.value = uri
                 viewModel.reset()
@@ -64,30 +68,33 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                     viewModel.uploadImage(it)
                 }
             },
-            onClickOsmInfo = { json ->
+            onClickOsmInfo = {
                 coroutineScope.launch {
+                    val json = if (receipt == Receipt.Empty) {
+                        SampleData.dummyData(context)
+                    } else {
+                        receipt.json
+                    }
                     viewModel.generateOsmInfoFromJson(json)
                 }
             },
             loading = loading,
         )
-        if (chatAiResponse.isNotEmpty()) {
-            ReceiptMappingComponent(chatAiResponse)
-        } else {
-            val context = LocalContext.current
-            val t = SampleData.responseSample(context)
-            ReceiptMappingComponent(t)
-        }
+
+
     }
 
 }
 
 @Composable
 fun ReceiptScreenMain(
-    selectedImageUri: Uri?, uploadedImageUri: Uri?, receipt: Receipt,
+    selectedImageUri: Uri?,
+    uploadedImageUri: Uri?,
+    receipt: Receipt,
+    receiptMappingInfo: String,
     onImageSelected: (Uri?) -> Unit,
     onClickImageUpload: () -> Unit,
-    onClickOsmInfo: (json: String) -> Unit,
+    onClickOsmInfo: () -> Unit,
     loading: Boolean,
 ) {
     val context = LocalContext.current
@@ -110,10 +117,11 @@ fun ReceiptScreenMain(
         ReceiptInfo(receipt, selectedImageUri, location)
 
         Button(
-            onClick = { onClickOsmInfo(SampleData.dummyData(context)) },
+            onClick = onClickOsmInfo,
         ) {
-            Text("OSMInfo")
+            Text("ReceiptMappingInfo")
         }
+        ReceiptMappingComponent(receiptMappingInfo)
     }
 }
 
@@ -129,6 +137,7 @@ fun ReceiptScreenMainProgressPreview() {
         selectedImageUri,
         uploadedImageUri,
         receipt,
+        "",
         onImageSelected = {},
         onClickImageUpload = {},
         onClickOsmInfo = {},
@@ -161,6 +170,7 @@ fun ReceiptScreenMainPreview() {
         selectedImageUri,
         uploadedImageUri,
         receipt,
+        "",
         onImageSelected = {},
         onClickImageUpload = {},
         onClickOsmInfo = {},

@@ -19,6 +19,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
@@ -52,6 +53,7 @@ import net.uoneweb.android.til.ui.location.LocationScreen
 import net.uoneweb.android.til.ui.main.MainScreen
 import net.uoneweb.android.til.ui.map.MapScreen
 import net.uoneweb.android.til.ui.pager.PagerScreen
+import net.uoneweb.android.til.ui.preference.PreferenceScreen
 import net.uoneweb.android.til.ui.receipt.ReceiptScreen
 
 @AndroidEntryPoint
@@ -197,6 +199,8 @@ sealed class Screen(
     data object Location : Screen("location", R.string.location, Icons.Filled.LocationOn)
 
     data object Map : Screen("map", R.string.map, Icons.Filled.Place)
+
+    data object Preference : Screen("preference", R.string.preference, Icons.Filled.Check)
 }
 
 private val screens =
@@ -212,6 +216,7 @@ private val screens =
         Screen.Drive,
         Screen.Location,
         Screen.Map,
+        Screen.Preference,
     )
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -257,6 +262,9 @@ private fun TilNavHost(
         }
         composable(Screen.Map.route) {
             MapScreen()
+        }
+        composable(Screen.Preference.route) {
+            PreferenceScreen()
         }
     }
 }

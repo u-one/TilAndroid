@@ -1,6 +1,5 @@
 package net.uoneweb.android.til.ui.location
 
-import android.location.Location
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

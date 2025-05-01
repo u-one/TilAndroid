@@ -107,6 +107,11 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         _receipt.value = Receipt(parser.json())
     }
 
+    fun receiptResultTest() {
+        val testData = SampleData.dummyData(getApplication())
+        _receipt.value = Receipt(testData)
+    }
+
 
     suspend fun generateOsmInfoFromJson(json: String, isTest: Boolean) {
         if (isTest) {

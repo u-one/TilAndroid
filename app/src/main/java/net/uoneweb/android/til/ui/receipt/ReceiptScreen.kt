@@ -1,21 +1,15 @@
 package net.uoneweb.android.til.ui.receipt
 
-import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,14 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 import net.uoneweb.android.til.ui.location.CurrentLocationComponent
 import net.uoneweb.android.til.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Receipt
-import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 import net.uoneweb.android.til.ui.receipt.webapi.SampleData
 
 @Composable
@@ -59,13 +51,16 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 
     Column {
         ReceiptScreenMain(
-            selectedImageUri.value,
-            uploadedImageUri,
-            receipt,
-            receiptMappingInfo,
+            selectedImageUri = selectedImageUri.value,
+            uploadedImageUri = uploadedImageUri,
+            receipt = receipt,
+            receiptMappingInfo = receiptMappingInfo,
             onImageSelected = { uri ->
                 selectedImageUri.value = uri
                 viewModel.reset()
+            },
+            onClickReceiptResultTest = {
+                viewModel.receiptResultTest()
             },
             onClickImageUpload = {
                 selectedImageUri.value?.let {
@@ -92,14 +87,15 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 
 @Composable
 fun ReceiptScreenMain(
-    selectedImageUri: Uri?,
-    uploadedImageUri: Uri?,
-    receipt: Receipt,
-    receiptMappingInfo: String,
-    onImageSelected: (Uri?) -> Unit,
-    onClickImageUpload: () -> Unit,
-    onClickOsmInfo: (isTest: Boolean) -> Unit,
-    loading: Boolean,
+    selectedImageUri: Uri? = null,
+    uploadedImageUri: Uri? = null,
+    receipt: Receipt = Receipt.Empty,
+    onClickReceiptResultTest: () -> Unit = {},
+    receiptMappingInfo: String = "",
+    onImageSelected: (Uri?) -> Unit = {},
+    onClickImageUpload: () -> Unit = {},
+    onClickOsmInfo: (isTest: Boolean) -> Unit = {},
+    loading: Boolean = false,
 ) {
 
     val scrollState = rememberScrollState()
@@ -118,19 +114,18 @@ fun ReceiptScreenMain(
         when (selectedTabIndex) {
             0 -> {
                 var location by remember { mutableStateOf<Location?>(null) }
-                ReceiptImageSelector(selectedImageUri) { onImageSelected(it) }
-
-                ReceiptImageUploader(selectedImageUri, uploadedImageUri) { onClickImageUpload() }
-
-                CurrentLocationComponent(location = location) {
-                    location = it
+                Row {
+                    ImageSelector(selectedImageUri) { onImageSelected(it) }
+                    Button(onClick = onClickReceiptResultTest) { Text(text = "ReceiptResultTest") }
                 }
+                ImageUploaderButton(selectedImageUri, uploadedImageUri) { onClickImageUpload() }
+                CurrentLocationComponent(location = location) { location = it }
 
                 if (loading) {
                     Text("Analyzing receipt info ...")
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-                ReceiptInfo(receipt, selectedImageUri, location)
+                ReceiptInfoPane(receipt, selectedImageUri, location)
             }
 
             1 -> {
@@ -146,11 +141,9 @@ fun ReceiptScreenMain(
                         Text("TestReceiptMappingInfo")
                     }
                 }
-                ReceiptMappingComponent(receiptMappingInfo)
+                ReceiptMappingPane(receiptMappingInfo)
             }
         }
-
-
     }
 }
 
@@ -158,18 +151,12 @@ fun ReceiptScreenMain(
 @Composable
 fun ReceiptScreenMainProgressPreview() {
     val context = LocalContext.current
-    val selectedImageUri = Uri.parse("android.resource://${context.packageName}/drawable/dummy_receipt")
+    val selectedImageUri = "android.resource://${context.packageName}/drawable/dummy_receipt".toUri()
     val uploadedImageUri = Uri.Builder().build()
-    val receipt = Receipt.Empty
 
     ReceiptScreenMain(
-        selectedImageUri,
-        uploadedImageUri,
-        receipt,
-        "",
-        onImageSelected = {},
-        onClickImageUpload = {},
-        onClickOsmInfo = {},
+        selectedImageUri = selectedImageUri,
+        uploadedImageUri = uploadedImageUri,
         loading = true,
     )
 }
@@ -178,9 +165,10 @@ fun ReceiptScreenMainProgressPreview() {
 @Composable
 fun ReceiptScreenMainPreview() {
     val context = LocalContext.current
-    val selectedImageUri = Uri.parse("android.resource://${context.packageName}/drawable/dummy_receipt")
+    val selectedImageUri = "android.resource://${context.packageName}/drawable/dummy_receipt".toUri()
     val uploadedImageUri = Uri.Builder().authority("example.com").build()
-    val json = """
+    val receipt = Receipt(
+        """
             {
               "store": {
                 "name": "store",
@@ -192,159 +180,13 @@ fun ReceiptScreenMainPreview() {
               },
               "total": 5678 
             }
-        """.trimIndent()
-    val receipt = Receipt(json)
+        """.trimIndent(),
+    )
 
     ReceiptScreenMain(
-        selectedImageUri,
-        uploadedImageUri,
-        receipt,
-        "",
-        onImageSelected = {},
-        onClickImageUpload = {},
-        onClickOsmInfo = {},
-        loading = false,
+        selectedImageUri = selectedImageUri,
+        uploadedImageUri = uploadedImageUri,
+        receipt = receipt,
     )
 }
 
-@Composable
-fun ReceiptImageSelector(selectedImageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
-    val imagePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-        onImageSelected(uri)
-    }
-    Column {
-        Button(onClick = { imagePickerLauncher.launch("image/*") }) {
-            Text("Select Image")
-        }
-        selectedImageUri?.let { uri ->
-            Text(uri.toString())
-            Image(
-                painter = rememberAsyncImagePainter(uri),
-                contentDescription = "Selected image",
-                modifier = Modifier.size(256.dp),
-            )
-        }
-    }
-}
-
-@Composable
-fun ReceiptImageUploader(selectedImageUri: Uri?, uploadedImageUri: Uri?, onClickImageUpload: () -> Unit) {
-    if (selectedImageUri == null) return
-    Column {
-        Button(
-            onClick = {
-                onClickImageUpload()
-            },
-            enabled = uploadedImageUri == null,
-        ) {
-            if (uploadedImageUri != null) {
-                Text("Uploaded")
-            } else {
-                Text("Upload Image")
-            }
-        }
-
-        if (uploadedImageUri != null) {
-            Text("Image url: $uploadedImageUri")
-        }
-
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 320)
-fun ReceiptImageSelectorPreview() {
-    ReceiptImageSelector(selectedImageUri = null) {}
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 320)
-fun ReceiptImageUploaderPreview() {
-    ReceiptImageUploader(selectedImageUri = Uri.Builder().build(), uploadedImageUri = null) {}
-}
-
-@Composable
-fun ReceiptInfo(receipt: Receipt, imageUri: Uri?, location: Location?) {
-    if (receipt == Receipt.Empty) {
-        return
-    }
-
-    val metadata = ReceiptMetaData(receipt, location, imageUri?.lastPathSegment)
-    Column {
-        ShareButton(receipt)
-        Row {
-            Text(text = "店舗")
-            Text(text = receipt.store())
-        }
-        Row {
-            Text("合計")
-            Text(text = receipt.total().toString() + "円")
-        }
-        Row {
-            Text("住所")
-            Text(text = receipt.address())
-        }
-        Text("ファイル名:")
-        Text(text = receipt.title())
-        Text("json:")
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = androidx.compose.ui.graphics.Color.LightGray),
-            text = metadata.json(),
-        )
-    }
-}
-
-@Composable
-fun ShareButton(receipt: Receipt) {
-    val context = LocalContext.current
-    if (receipt == Receipt.Empty) {
-        return
-    }
-    Button(
-        onClick = {
-            val title = receipt.title()
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, receipt.json)
-                putExtra(Intent.EXTRA_SUBJECT, title)
-                type = "text/plain"
-            }
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            context.startActivity(shareIntent)
-        },
-    ) {
-        Text("Share")
-    }
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 320)
-fun ReceiptInfoPreview() {
-    val json = """
-            {
-              "store": {
-                "name": "◯◯◯",
-                "branch": "△△店",
-                "tel": "012-3456-7890",
-                "address": "東京都千代田区1-2-3",
-                "postalCode": "123-4567",
-                "website": "https://example.com",
-                "email": "test@example.com"
-              },
-              "receipt": {
-                "date": "2025-01-01",
-                "time": "12:34"
-              },
-              "total": 5678 
-            }
-        """.trimIndent()
-    ReceiptInfo(Receipt(json), null, null)
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 320)
-fun EmptyReceiptInfoPreview() {
-    ReceiptInfo(Receipt.Empty, null, null)
-}

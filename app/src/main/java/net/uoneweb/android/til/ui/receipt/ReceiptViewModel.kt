@@ -16,6 +16,16 @@ import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.vertexAI
 import kotlinx.coroutines.launch
 import net.uoneweb.android.til.data.SettingsDataStore
+import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.til.ui.receipt.webapi.ChatRequest
+import net.uoneweb.android.til.ui.receipt.webapi.ChatResponse
+import net.uoneweb.android.til.ui.receipt.webapi.GeminiReceiptPrompt
+import net.uoneweb.android.til.ui.receipt.webapi.GeminiReceiptResponse
+import net.uoneweb.android.til.ui.receipt.webapi.Message
+import net.uoneweb.android.til.ui.receipt.webapi.OpenAiReceiptPrompt
+import net.uoneweb.android.til.ui.receipt.webapi.ResponseFormat
+import net.uoneweb.android.til.ui.receipt.webapi.RetrofitInstance
+import net.uoneweb.android.til.ui.receipt.webapi.SampleData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

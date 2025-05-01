@@ -1,5 +1,6 @@
 package net.uoneweb.android.til.ui.receipt
 
+import net.uoneweb.android.til.ui.receipt.webapi.GeminiReceiptResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

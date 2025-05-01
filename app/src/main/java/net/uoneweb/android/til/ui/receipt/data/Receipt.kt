@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.receipt
+package net.uoneweb.android.til.ui.receipt.data
 
 import com.google.gson.JsonParser
 

@@ -15,6 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import net.uoneweb.android.til.ui.receipt.webapi.ChatRequest
+import net.uoneweb.android.til.ui.receipt.webapi.ChatResponse
+import net.uoneweb.android.til.ui.receipt.webapi.FileUploadResponse
+import net.uoneweb.android.til.ui.receipt.webapi.Message
+import net.uoneweb.android.til.ui.receipt.webapi.RetrofitInstance
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody

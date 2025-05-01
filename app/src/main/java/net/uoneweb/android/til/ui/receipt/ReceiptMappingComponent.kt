@@ -19,6 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.gson.Gson
+import net.uoneweb.android.til.ui.receipt.data.Certainty
+import net.uoneweb.android.til.ui.receipt.data.Difference
+import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
+import net.uoneweb.android.til.ui.receipt.webapi.SampleData
 
 @Composable
 fun ReceiptMappingComponent(text: String) {

@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.receipt
+package net.uoneweb.android.til.ui.receipt.webapi
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

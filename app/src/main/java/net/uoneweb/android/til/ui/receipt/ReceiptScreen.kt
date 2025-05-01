@@ -33,6 +33,9 @@ import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 import net.uoneweb.android.til.ui.location.CurrentLocationComponent
 import net.uoneweb.android.til.ui.location.Location
+import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
+import net.uoneweb.android.til.ui.receipt.webapi.SampleData
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {

@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.receipt
+package net.uoneweb.android.til.ui.receipt.webapi
 
 import android.content.Context
 import net.uoneweb.android.til.R

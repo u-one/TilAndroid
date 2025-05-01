@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.receipt
+package net.uoneweb.android.til.ui.receipt.webapi
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

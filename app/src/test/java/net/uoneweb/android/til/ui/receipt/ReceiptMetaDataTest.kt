@@ -1,6 +1,8 @@
 package net.uoneweb.android.til.ui.receipt
 
 import com.google.gson.JsonParser
+import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

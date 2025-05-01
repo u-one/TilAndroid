@@ -3,11 +3,13 @@ package net.uoneweb.android.til.ui.location
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,8 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -49,17 +54,30 @@ fun CurrentLocationComponent(location: Location?, onLocation: (Location?) -> Uni
 
     Column {
         if (permissionGranted) {
-            Button(
-                onClick = {
-                    getCurrentLocation(fusedLocationClient) { loc ->
-                        onLocation(loc)
-                    }
-                },
-            ) {
-                Text("Get Current Location")
-            }
-            location?.let {
-                Text("Latitude: ${it.latitude}, Longitude: ${it.longitude}")
+            Row {
+                var loading by remember { mutableStateOf(false) }
+                Button(
+                    onClick = {
+                        loading = true
+                        getCurrentLocation(fusedLocationClient) { loc ->
+                            loading = false
+                            onLocation(loc)
+                        }
+                    },
+                ) {
+                    Text("Get Current Location")
+                }
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.CenterVertically),
+                    )
+                }
+                if (location != null) {
+                    Text("Latitude: ${location.latitude}, Longitude: ${location.longitude}",
+                        modifier = Modifier.align(Alignment.CenterVertically))
+                }
             }
         } else {
             Text("Location permission is required.")
@@ -72,7 +90,10 @@ fun getCurrentLocation(
     fusedLocationClient: FusedLocationProviderClient,
     onLocationReceived: (Location?) -> Unit,
 ) {
-    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+    fusedLocationClient.lastLocation.addOnSuccessListener { androidLocation ->
+        val location = androidLocation?.let {
+            Location(it.latitude, it.longitude)
+        }
         onLocationReceived(location)
     }.addOnFailureListener {
         onLocationReceived(null)
@@ -82,5 +103,5 @@ fun getCurrentLocation(
 @Preview
 @Composable
 fun PreviewCurrentLocationComponent() {
-    CurrentLocationComponent(location = null) {}
+    CurrentLocationComponent(location = Location(1.0, 2.0)) {}
 }

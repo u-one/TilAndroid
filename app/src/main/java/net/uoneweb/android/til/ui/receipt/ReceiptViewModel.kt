@@ -98,7 +98,11 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     }
 
 
-    suspend fun generateOsmInfoFromJson(json: String) {
+    suspend fun generateOsmInfoFromJson(json: String, isTest: Boolean) {
+        if (isTest) {
+            _json.value = SampleData.responseSample(getApplication())
+            return
+        }
         val prompt = OpenAiReceiptPrompt.loadOsmFromJsonPrompt(getApplication())
         val promptWithJson = prompt.replace("{{json}}", json)
 

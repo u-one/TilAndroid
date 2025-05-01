@@ -1,7 +1,6 @@
 package net.uoneweb.android.til.ui.receipt
 
 import android.content.Intent
-import android.location.Location
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.material3.TabRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 import net.uoneweb.android.til.ui.location.CurrentLocationComponent
+import net.uoneweb.android.til.ui.location.Location
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
@@ -68,14 +69,14 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                     viewModel.uploadImage(it)
                 }
             },
-            onClickOsmInfo = {
+            onClickOsmInfo = { isTest ->
                 coroutineScope.launch {
                     val json = if (receipt == Receipt.Empty) {
                         SampleData.dummyData(context)
                     } else {
                         receipt.json
                     }
-                    viewModel.generateOsmInfoFromJson(json)
+                    viewModel.generateOsmInfoFromJson(json, isTest)
                 }
             },
             loading = loading,
@@ -94,34 +95,59 @@ fun ReceiptScreenMain(
     receiptMappingInfo: String,
     onImageSelected: (Uri?) -> Unit,
     onClickImageUpload: () -> Unit,
-    onClickOsmInfo: () -> Unit,
+    onClickOsmInfo: (isTest: Boolean) -> Unit,
     loading: Boolean,
 ) {
-    val context = LocalContext.current
-    var location by remember { mutableStateOf<Location?>(null) }
+
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(scrollState)) {
+        var selectedTabIndex by remember { mutableStateOf(0) }
+        TabRow(selectedTabIndex = selectedTabIndex) {
+            val tabTitles = listOf("ReceiptInfo", "MappingInfo")
+            tabTitles.forEachIndexed { index, title ->
+                androidx.compose.material.Tab(
+                    selected = selectedTabIndex == index,
+                    onClick = { selectedTabIndex = index },
+                    text = { Text(title) },
+                )
+            }
+        }
+        when (selectedTabIndex) {
+            0 -> {
+                var location by remember { mutableStateOf<Location?>(null) }
+                ReceiptImageSelector(selectedImageUri) { onImageSelected(it) }
 
-        ReceiptImageSelector(selectedImageUri) { onImageSelected(it) }
+                ReceiptImageUploader(selectedImageUri, uploadedImageUri) { onClickImageUpload() }
 
-        ReceiptImageUploader(selectedImageUri, uploadedImageUri) { onClickImageUpload() }
+                CurrentLocationComponent(location = location) {
+                    location = it
+                }
 
-        CurrentLocationComponent(location = null) {
-            location = it
+                if (loading) {
+                    Text("Analyzing receipt info ...")
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+                ReceiptInfo(receipt, selectedImageUri, location)
+            }
+
+            1 -> {
+                Row {
+                    Button(
+                        onClick = { onClickOsmInfo(false) },
+                    ) {
+                        Text("ReceiptMappingInfo")
+                    }
+                    Button(
+                        onClick = { onClickOsmInfo(true) },
+                    ) {
+                        Text("TestReceiptMappingInfo")
+                    }
+                }
+                ReceiptMappingComponent(receiptMappingInfo)
+            }
         }
 
-        if (loading) {
-            Text("Analyzing receipt info ...")
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
-        ReceiptInfo(receipt, selectedImageUri, location)
 
-        Button(
-            onClick = onClickOsmInfo,
-        ) {
-            Text("ReceiptMappingInfo")
-        }
-        ReceiptMappingComponent(receiptMappingInfo)
     }
 }
 
@@ -239,11 +265,8 @@ fun ReceiptInfo(receipt: Receipt, imageUri: Uri?, location: Location?) {
     if (receipt == Receipt.Empty) {
         return
     }
-    val metaLocation = if (location?.latitude != null && location?.longitude != null) {
-        net.uoneweb.android.til.ui.location.Location(location.latitude, location.longitude)
-    } else null
 
-    val metadata = ReceiptMetaData(receipt, metaLocation, imageUri?.lastPathSegment)
+    val metadata = ReceiptMetaData(receipt, location, imageUri?.lastPathSegment)
     Column {
         ShareButton(receipt)
         Row {

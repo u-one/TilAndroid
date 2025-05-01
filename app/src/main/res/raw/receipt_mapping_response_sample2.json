@@ -1,0 +1,228 @@
+{
+  "store_info_extracted": [
+    {
+      "key": "name",
+      "value": "railwaysしんゆり湘南ライン",
+      "based_on": "fact",
+      "reason": "JSONのstore.nameから直接抽出したため",
+      "comment": "店舗の公式名称。レシート上から事実として取得可能。"
+    },
+    {
+      "key": "phone",
+      "value": "+81-44-299-9005",
+      "based_on": "fact",
+      "reason": "JSONのstore.telから国番号付きに正規化して取得",
+      "comment": "店舗の電話番号。国番号(+81)に正規化。"
+    },
+    {
+      "key": "addr:full",
+      "value": "神奈川県川崎市麻生区万福寺2-4-7 アノンテラス新百合ヶ丘1F",
+      "based_on": "fact",
+      "reason": "JSONのstore.addressを改行除去し1行化",
+      "comment": "建物名・階数付きの正式な住所（郵便番号は不明）。"
+    },
+    {
+      "key": "addr:province",
+      "value": "神奈川県",
+      "based_on": "inference",
+      "reason": "store.addressから都道府県部分を抽出",
+      "comment": "都道府県部分のみ。住所情報の一部を分割（確度高いが完全自動抽出は注意）。"
+    },
+    {
+      "key": "addr:city",
+      "value": "川崎市麻生区",
+      "based_on": "inference",
+      "reason": "store.addressから市区部分を抽出",
+      "comment": "該当地域名を分割抽出。"
+    },
+    {
+      "key": "addr:street",
+      "value": "万福寺2-4-7",
+      "based_on": "inference",
+      "reason": "store.addressから町名番地部分を抽出",
+      "comment": "町名・番地を抽出（確度高いが建物名などは除外済）"
+    },
+    {
+      "key": "addr:floor",
+      "value": "1",
+      "based_on": "inference",
+      "reason": "addressに「1F」と明記されているため",
+      "comment": "1階にあることを示す。"
+    },
+    {
+      "key": "addr:housename",
+      "value": "アノンテラス新百合ヶ丘",
+      "based_on": "inference",
+      "reason": "address中の建物名部分を抽出",
+      "comment": "建物名の補助情報。"
+    },
+    {
+      "key": "website",
+      "value": "http://www.shonan-line.com",
+      "based_on": "fact",
+      "reason": "store.websiteからhttp付与し生成",
+      "comment": "公式ウェブサイト。"
+    },
+    {
+      "key": "operator",
+      "value": "(株)ツーイチ",
+      "based_on": "fact",
+      "reason": "receipt.issuer（運営主体）から取得",
+      "comment": "運営会社名"
+    },
+    {
+      "key": "tax_id",
+      "value": "T2021001039040",
+      "based_on": "fact",
+      "reason": "receipt.registrationNumberから取得",
+      "comment": "インボイス制度用 適格請求書発行事業者番号。"
+    },
+    {
+      "key": "shop",
+      "value": "consignment",
+      "based_on": "inference",
+      "reason": "レシートの商品名が『委託商品』であり、店舗名が“railways”なので鉄道グッズ委託販売店の可能性濃厚",
+      "comment": "ジャンル推定。‘委託商品’が主取り扱い=委託販売型店舗と推定。ただし“consignment”タグはOSM標準タグに直接は存在しないため、注意。"
+    },
+    {
+      "key": "description",
+      "value": "鉄道関連委託商品を主に扱うショップ",
+      "based_on": "inference",
+      "reason": "商品名・店舗名から店舗形態を要約",
+      "comment": "“railways”や『委託商品』から鉄道×委託販売店と推定。"
+    },
+    {
+      "key": "payment:cash",
+      "value": "yes",
+      "based_on": "fact",
+      "reason": "receipt.paymentのtenderedから現金支払対応を確認",
+      "comment": "現金支払い可能。"
+    }
+  ],
+  "existing_store_info": {
+    "tags": [
+      {
+        "key": "name",
+        "value": "railwaysしんゆり湘南ライン",
+        "comment": "OpenStreetMap上に登録されている店舗名"
+      },
+      {
+        "key": "phone",
+        "value": "+81-44-299-9005",
+        "comment": "登録済みの店舗電話番号"
+      },
+      {
+        "key": "addr:full",
+        "value": "神奈川県川崎市麻生区万福寺2-4-7 アノンテラス新百合ヶ丘1F",
+        "comment": "登録済みの住所"
+      },
+      {
+        "key": "website",
+        "value": "http://www.shonan-line.com",
+        "comment": "既存の公式ウェブサイトURL"
+      }
+    ],
+    "comment": "OSM検索により店舗名・電話番号・住所・公式ウェブサイトは既に登録済。他の詳細情報や形態情報は未記載。"
+  },
+  "comparison": [
+    {
+      "key": "name",
+      "existing_value": "railwaysしんゆり湘南ライン",
+      "new_value": "railwaysしんゆり湘南ライン",
+      "difference": "same",
+      "comment": "名称は一致。変更不要。"
+    },
+    {
+      "key": "phone",
+      "existing_value": "+81-44-299-9005",
+      "new_value": "+81-44-299-9005",
+      "difference": "same",
+      "comment": "電話番号は一致。"
+    },
+    {
+      "key": "addr:full",
+      "existing_value": "神奈川県川崎市麻生区万福寺2-4-7 アノンテラス新百合ヶ丘1F",
+      "new_value": "神奈川県川崎市麻生区万福寺2-4-7 アノンテラス新百合ヶ丘1F",
+      "difference": "same",
+      "comment": "住所は一致。"
+    },
+    {
+      "key": "website",
+      "existing_value": "http://www.shonan-line.com",
+      "new_value": "http://www.shonan-line.com",
+      "difference": "same",
+      "comment": "公式Webは一致。"
+    },
+    {
+      "key": "operator",
+      "existing_value": null,
+      "new_value": "(株)テスト",
+      "difference": "new",
+      "comment": "運営会社情報が新規。追加推奨。"
+    },
+    {
+      "key": "tax_id",
+      "existing_value": null,
+      "new_value": "T2021000000000",
+      "difference": "new",
+      "comment": "インボイス事業者番号は重要な新規情報。"
+    },
+    {
+      "key": "shop",
+      "existing_value": null,
+      "new_value": "consignment",
+      "difference": "new",
+      "comment": "店舗ジャンル情報が無登録。分野推定だが記載推奨。"
+    },
+    {
+      "key": "description",
+      "existing_value": null,
+      "new_value": "鉄道関連委託商品を主に扱うショップ",
+      "difference": "new",
+      "comment": "店舗概要説明タグが追加可能。ユーザー利便性向上。"
+    },
+    {
+      "key": "addr:province",
+      "existing_value": null,
+      "new_value": "神奈川県",
+      "difference": "new",
+      "comment": "都道府県分割タグ、追加推奨（ただし既存データ構造との重複注意）。"
+    },
+    {
+      "key": "addr:city",
+      "existing_value": null,
+      "new_value": "川崎市麻生区",
+      "difference": "new",
+      "comment": "市区分割タグ、同上。"
+    },
+    {
+      "key": "addr:street",
+      "existing_value": null,
+      "new_value": "万福寺2-4-7",
+      "difference": "new",
+      "comment": "町字番地。"
+    },
+    {
+      "key": "addr:housename",
+      "existing_value": null,
+      "new_value": "アノンテラス新百合ヶ丘",
+      "difference": "new",
+      "comment": "建物名補助情報。"
+    },
+    {
+      "key": "addr:floor",
+      "existing_value": null,
+      "new_value": "1",
+      "difference": "new",
+      "comment": "店舗階数。"
+    },
+    {
+      "key": "payment:cash",
+      "existing_value": null,
+      "new_value": "yes",
+      "difference": "new",
+      "comment": "現金支払い対応タグが未記載。"
+    }
+  ],
+  "update_recommendation": "基本タグ（name, phone, addr:full, website）は既に一致していますが、運営主体（operator）、インボイス事業者番号（tax_id）、ジャンル（shop/description）、および住所の詳細分割タグ（addr:province, addr:city, addr:street, addr:housename, addr:floor）、支払方法(payment:cash)は新情報として追加推奨します。ジャンル（shop=consignment）は標準タグではないので、そのままの利用/タグ付け検討（もしくはshop=variety_storeやdescriptionタグ併記）をお願いします。"
+}

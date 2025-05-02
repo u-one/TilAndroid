@@ -11,4 +11,5 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     id("com.diffplug.spotless") version "6.25.0" apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
+    id("com.google.devtools.ksp") version "2.1.20-2.0.1" apply false
 }

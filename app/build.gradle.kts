@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     //id("com.apollographql.apollo3") version "3.8.5"
     id("com.diffplug.spotless")
@@ -82,8 +83,6 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("com.google.dagger:hilt-android:2.50")
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     //implementation("com.apollographql.apollo3:apollo-runtime:3.8.5") //TODO: fix
@@ -120,10 +119,13 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("org.maplibre.gl:android-sdk:11.8.5")
 
-    val coroutinesVersion = "1.10.2"
     implementation("androidx.datastore:datastore-preferences:1.1.4") // 1.1.5は利用不可
+    val coroutinesVersion = "1.10.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+
+    implementation("androidx.room:room-runtime:2.7.1")
+    ksp("androidx.room:room-compiler:2.7.1")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -133,6 +135,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
+    implementation("com.google.dagger:hilt-android:2.42")
     kapt("com.google.dagger:hilt-compiler:2.42")
 
 }

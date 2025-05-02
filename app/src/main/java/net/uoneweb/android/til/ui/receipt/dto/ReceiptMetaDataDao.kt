@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReceiptMetaDataDao {
@@ -13,10 +14,10 @@ interface ReceiptMetaDataDao {
     suspend fun insert(metadata: ReceiptMetaDataEntity): Long
 
     @Query("SELECT * FROM receipt_metadata WHERE id = :id")
-    suspend fun getById(id: Long): ReceiptMetaDataEntity?
+    fun getById(id: Long): Flow<ReceiptMetaDataEntity?>
 
     @Query("SELECT * FROM receipt_metadata")
-    suspend fun getAll(): List<ReceiptMetaDataEntity>
+    fun getAll(): Flow<List<ReceiptMetaDataEntity>>
 
     @Update
     suspend fun update(metadata: ReceiptMetaDataEntity)

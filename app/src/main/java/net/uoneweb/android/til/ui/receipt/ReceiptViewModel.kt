@@ -14,9 +14,14 @@ import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.vertexAI
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import net.uoneweb.android.til.data.SettingsDataStore
 import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
+import net.uoneweb.android.til.ui.receipt.repository.ReceiptMetaDataRepository
 import net.uoneweb.android.til.ui.receipt.webapi.ChatRequest
 import net.uoneweb.android.til.ui.receipt.webapi.ChatResponse
 import net.uoneweb.android.til.ui.receipt.webapi.GeminiReceiptPrompt
@@ -32,6 +37,7 @@ import retrofit2.Response
 
 
 class ReceiptViewModel(application: Application) : AndroidViewModel(application) {
+    private val receiptMetaDataRepository = ReceiptMetaDataRepository(application)
     private val _uploadedFileUrl: MutableState<Uri?> = mutableStateOf(null)
     val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
     private val _json: MutableState<String> = mutableStateOf("")
@@ -48,6 +54,19 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
+    fun saveReceiptMetaData(receiptMetaData: ReceiptMetaData) {
+        viewModelScope.launch {
+            receiptMetaDataRepository.insert(receiptMetaData)
+        }
+    }
+
+    val listReceiptMetaData: StateFlow<List<ReceiptMetaData>> = receiptMetaDataRepository.getAll().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = emptyList(),
+    )
+
 
     fun reset() {
         _uploadedFileUrl.value = null

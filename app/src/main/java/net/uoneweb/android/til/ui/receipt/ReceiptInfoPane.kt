@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,14 +15,24 @@ import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 
 @Composable
-fun ReceiptInfoPane(receipt: Receipt, imageUri: Uri?, location: Location?) {
+fun ReceiptInfoPane(
+    receipt: Receipt, imageUri: Uri?, location: Location?,
+    onSaveMetaData: (ReceiptMetaData) -> Unit = {},
+) {
     if (receipt == Receipt.Empty) {
         return
     }
 
     val metadata = ReceiptMetaData(receipt, location, imageUri?.lastPathSegment)
     Column {
-        TextShareButton(receipt.title(), metadata.json())
+        Row {
+            TextShareButton(receipt.title(), metadata.json())
+            Button(
+                onClick = { onSaveMetaData(metadata) },
+            ) {
+                Text("Save")
+            }
+        }
         Row {
             Text(text = "店舗")
             Text(text = receipt.store())

@@ -12,6 +12,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 import net.uoneweb.android.til.ui.location.CurrentLocationComponent
 import net.uoneweb.android.til.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 import net.uoneweb.android.til.ui.receipt.webapi.SampleData
 
 @Composable
@@ -37,6 +39,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val coroutineScope = rememberCoroutineScope()
     val receiptMappingInfo by viewModel.json
     val context = LocalContext.current
+    val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
 
     val loading = (selectedImageUri.value != null && receipt == Receipt.Empty)
 
@@ -51,6 +54,10 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 
     Column {
         ReceiptScreenMain(
+            list = receiptMetaDataList.value,
+            onSaveMetaData = {
+                viewModel.saveReceiptMetaData(it)
+            },
             selectedImageUri = selectedImageUri.value,
             uploadedImageUri = uploadedImageUri,
             receipt = receipt,
@@ -79,14 +86,13 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
             },
             loading = loading,
         )
-
-
     }
-
 }
 
 @Composable
 fun ReceiptScreenMain(
+    list: List<ReceiptMetaData> = emptyList(),
+    onSaveMetaData: (ReceiptMetaData) -> Unit = {},
     selectedImageUri: Uri? = null,
     uploadedImageUri: Uri? = null,
     receipt: Receipt = Receipt.Empty,
@@ -102,7 +108,7 @@ fun ReceiptScreenMain(
     Column(modifier = Modifier.verticalScroll(scrollState)) {
         var selectedTabIndex by remember { mutableStateOf(0) }
         TabRow(selectedTabIndex = selectedTabIndex) {
-            val tabTitles = listOf("ReceiptInfo", "MappingInfo")
+            val tabTitles = listOf("List", "ReceiptInfo", "MappingInfo")
             tabTitles.forEachIndexed { index, title ->
                 androidx.compose.material.Tab(
                     selected = selectedTabIndex == index,
@@ -113,6 +119,14 @@ fun ReceiptScreenMain(
         }
         when (selectedTabIndex) {
             0 -> {
+                list.forEach { item ->
+                    Row {
+                        Text(item.content.title())
+                    }
+                }
+            }
+
+            1 -> {
                 var location by remember { mutableStateOf<Location?>(null) }
                 Row {
                     ImageSelector(selectedImageUri) { onImageSelected(it) }
@@ -125,10 +139,10 @@ fun ReceiptScreenMain(
                     Text("Analyzing receipt info ...")
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-                ReceiptInfoPane(receipt, selectedImageUri, location)
+                ReceiptInfoPane(receipt, selectedImageUri, location, onSaveMetaData)
             }
 
-            1 -> {
+            2 -> {
                 Row {
                     Button(
                         onClick = { onClickOsmInfo(false) },

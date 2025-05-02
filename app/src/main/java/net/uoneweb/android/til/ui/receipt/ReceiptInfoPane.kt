@@ -21,7 +21,7 @@ fun ReceiptInfoPane(receipt: Receipt, imageUri: Uri?, location: Location?) {
 
     val metadata = ReceiptMetaData(receipt, location, imageUri?.lastPathSegment)
     Column {
-        TextShareButton(receipt.title(), receipt.json)
+        TextShareButton(receipt.title(), metadata.json())
         Row {
             Text(text = "店舗")
             Text(text = receipt.store())

@@ -1,5 +1,7 @@
 package net.uoneweb.android.til.ui.receipt.data
 
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 
 
@@ -11,7 +13,32 @@ data class ReceiptMappingInfo(
     val comparison: List<ComparisonItem>,
     @SerializedName("update_recommendation")
     val updateRecommendation: String,
-)
+    val id: Long? = null,
+    val receiptId: Long? = null,
+) {
+    companion object {
+        fun fromJson(jsonString: String): ReceiptMappingInfo {
+            val gson = Gson()
+            try {
+                return gson.fromJson(jsonString, ReceiptMappingInfo::class.java) ?: Empty
+            } catch (e: JsonSyntaxException) {
+                return ReceiptMappingInfo(listOf(), ExistingStoreInfo(listOf(), ""), listOf(), e.message ?: "invalid json")
+            }
+        }
+
+        fun toJson(obj: ReceiptMappingInfo): String {
+            val gson = Gson()
+            return gson.toJson(obj)
+        }
+
+        val Empty = ReceiptMappingInfo(
+            storeInfoExtracted = listOf(),
+            existingStoreInfo = ExistingStoreInfo(listOf(), ""),
+            comparison = listOf(),
+            updateRecommendation = "",
+        )
+    }
+}
 
 data class ExtractedTagItem(
     val key: String,

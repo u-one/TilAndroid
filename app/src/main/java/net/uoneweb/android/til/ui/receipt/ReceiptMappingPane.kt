@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.gson.Gson
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
 import net.uoneweb.android.til.ui.receipt.webapi.SampleData
 
@@ -37,12 +36,11 @@ fun ReceiptMappingPane(text: String) {
 
 @Composable
 fun JsonContentViewer(jsonString: String) {
-    val gson = Gson()
-    val receiptMappingInfo = gson.fromJson(jsonString, ReceiptMappingInfo::class.java)
-    if (receiptMappingInfo == null) {
-        Text("Invalid JSON")
+    val receiptMappingInfo = ReceiptMappingInfo.fromJson(jsonString)
+    if (receiptMappingInfo == ReceiptMappingInfo.Empty) {
         return
     }
+
     ReceiptMapInfoViewer(receiptMappingInfo)
 }
 

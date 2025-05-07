@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import net.uoneweb.android.til.ui.location.CurrentLocationComponent
 import net.uoneweb.android.til.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 import net.uoneweb.android.til.ui.receipt.webapi.SampleData
 
@@ -43,6 +44,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val receiptMappingInfo by viewModel.json
     val context = LocalContext.current
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
+    val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
 
     val loading = (selectedImageUri.value != null && receipt == ReceiptMetaData.Empty)
 
@@ -58,6 +60,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     Column {
         ReceiptScreenMain(
             list = receiptMetaDataList.value,
+            receiptMappingInfoList = receiptMappingInfoList.value,
             onClickItem = { item ->
                 item.id?.let { id ->
                     viewModel.select(id)
@@ -100,6 +103,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 @Composable
 fun ReceiptScreenMain(
     list: List<ReceiptMetaData> = emptyList(),
+    receiptMappingInfoList: List<ReceiptMappingInfo> = emptyList(),
     onClickItem: (item: ReceiptMetaData) -> Unit = {},
     onSaveMetaData: (ReceiptMetaData) -> Unit = {},
     selectedImageUri: Uri? = null,
@@ -117,7 +121,7 @@ fun ReceiptScreenMain(
     Column(modifier = Modifier.verticalScroll(scrollState)) {
         var selectedTabIndex by remember { mutableStateOf(0) }
         TabRow(selectedTabIndex = selectedTabIndex) {
-            val tabTitles = listOf("List", "ReceiptInfo", "MappingInfo")
+            val tabTitles = listOf("List", "ReceiptInfo", "MappingInfoList", "MappingInfo")
             tabTitles.forEachIndexed { index, title ->
                 androidx.compose.material.Tab(
                     selected = selectedTabIndex == index,
@@ -159,6 +163,21 @@ fun ReceiptScreenMain(
             }
 
             2 -> {
+                receiptMappingInfoList.forEach { item ->
+                    Row(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable {
+                                selectedTabIndex = 3
+                            },
+                    ) {
+                        Text(item.id.toString())
+                    }
+
+                }
+            }
+
+            3 -> {
                 Row {
                     Button(
                         onClick = { onClickOsmInfo(false) },
@@ -222,6 +241,6 @@ fun ReceiptScreenMainPreview() {
         uploadedImageUri = uploadedImageUri,
         receipt = ReceiptMetaData(receipt),
 
-    )
+        )
 }
 

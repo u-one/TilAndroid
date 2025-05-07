@@ -12,7 +12,8 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "app_database",
-            ).build()
+            )
+                .build()
         }
         return instance!!
     }

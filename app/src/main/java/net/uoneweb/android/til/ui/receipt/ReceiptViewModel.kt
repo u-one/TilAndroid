@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import net.uoneweb.android.til.data.SettingsDataStore
 import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
+import net.uoneweb.android.til.ui.receipt.repository.ReceiptMappingInfoRepository
 import net.uoneweb.android.til.ui.receipt.repository.ReceiptMetaDataRepository
 import net.uoneweb.android.til.ui.receipt.webapi.ChatRequest
 import net.uoneweb.android.til.ui.receipt.webapi.ChatResponse
@@ -38,6 +40,7 @@ import retrofit2.Response
 
 class ReceiptViewModel(application: Application) : AndroidViewModel(application) {
     private val receiptMetaDataRepository = ReceiptMetaDataRepository(application)
+    private val receiptMappingInfoRepository = ReceiptMappingInfoRepository(application)
     private val _uploadedFileUrl: MutableState<Uri?> = mutableStateOf(null)
     val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
     private val _json: MutableState<String> = mutableStateOf("")
@@ -63,6 +66,12 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     }
 
     val listReceiptMetaData: StateFlow<List<ReceiptMetaData>> = receiptMetaDataRepository.getAll().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = emptyList(),
+    )
+
+    fun listReceiptMappingInfosByReceiptId(receiptId: Long): StateFlow<List<ReceiptMappingInfo>> = receiptMappingInfoRepository.getByReceiptId(receiptId).stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
         initialValue = emptyList(),
@@ -176,6 +185,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
                         }
                         Log.i("OpenAI", "Response successful")
                         Log.i("OpenAI", "Response: ${response.body()}")
+                        val jsonString = response.body()?.choices?.get(0)?.message?.content ?: ""
+                        viewModelScope.launch {
+                            receiptMappingInfoRepository.insert(ReceiptMappingInfo.fromJson(jsonString))
+                        }
                         _json.value = response.body()?.choices?.get(0)?.message?.content ?: ""
                     } else {
                         Log.e("OpenAI", "Response failed: ${response.errorBody()?.string()}")

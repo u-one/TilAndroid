@@ -1,9 +1,11 @@
 package net.uoneweb.android.til.ui.receipt
 
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -22,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
@@ -41,7 +44,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val context = LocalContext.current
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
 
-    val loading = (selectedImageUri.value != null && receipt == Receipt.Empty)
+    val loading = (selectedImageUri.value != null && receipt == ReceiptMetaData.Empty)
 
     //OpenAiUi()
     //AiResult()
@@ -55,6 +58,11 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     Column {
         ReceiptScreenMain(
             list = receiptMetaDataList.value,
+            onClickItem = { item ->
+                item.id?.let { id ->
+                    viewModel.select(id)
+                }
+            },
             onSaveMetaData = {
                 viewModel.saveReceiptMetaData(it)
             },
@@ -76,10 +84,10 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
             },
             onClickOsmInfo = { isTest ->
                 coroutineScope.launch {
-                    val json = if (receipt == Receipt.Empty) {
+                    val json = if (receipt == ReceiptMetaData.Empty) {
                         SampleData.dummyData(context)
                     } else {
-                        receipt.json
+                        receipt.content.json
                     }
                     viewModel.generateOsmInfoFromJson(json, isTest)
                 }
@@ -92,10 +100,11 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 @Composable
 fun ReceiptScreenMain(
     list: List<ReceiptMetaData> = emptyList(),
+    onClickItem: (item: ReceiptMetaData) -> Unit = {},
     onSaveMetaData: (ReceiptMetaData) -> Unit = {},
     selectedImageUri: Uri? = null,
     uploadedImageUri: Uri? = null,
-    receipt: Receipt = Receipt.Empty,
+    receipt: ReceiptMetaData = ReceiptMetaData.Empty,
     onClickReceiptResultTest: () -> Unit = {},
     receiptMappingInfo: String = "",
     onImageSelected: (Uri?) -> Unit = {},
@@ -120,7 +129,14 @@ fun ReceiptScreenMain(
         when (selectedTabIndex) {
             0 -> {
                 list.forEach { item ->
-                    Row {
+                    Row(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable {
+                                selectedTabIndex = 1
+                                onClickItem(item)
+                            },
+                    ) {
                         Text(item.content.title())
                     }
                 }
@@ -198,9 +214,14 @@ fun ReceiptScreenMainPreview() {
     )
 
     ReceiptScreenMain(
+        list = listOf(
+            ReceiptMetaData(Receipt.Empty),
+            ReceiptMetaData(Receipt.Empty),
+        ),
         selectedImageUri = selectedImageUri,
         uploadedImageUri = uploadedImageUri,
-        receipt = receipt,
+        receipt = ReceiptMetaData(receipt),
+
     )
 }
 

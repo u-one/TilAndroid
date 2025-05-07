@@ -42,8 +42,8 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
     private val _json: MutableState<String> = mutableStateOf("")
     val json: State<String> = _json
-    private val _receipt: MutableState<Receipt> = mutableStateOf(Receipt.Empty)
-    val receipt: State<Receipt> = _receipt
+    private val _receipt: MutableState<ReceiptMetaData> = mutableStateOf(ReceiptMetaData.Empty)
+    val receipt: State<ReceiptMetaData> = _receipt
     private val settings = SettingsDataStore(getApplication())
 
     init {
@@ -57,7 +57,8 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
 
     fun saveReceiptMetaData(receiptMetaData: ReceiptMetaData) {
         viewModelScope.launch {
-            receiptMetaDataRepository.insert(receiptMetaData)
+            val id = receiptMetaDataRepository.insert(receiptMetaData)
+            _receipt.value = receiptMetaData.copy(id = id)
         }
     }
 
@@ -67,11 +68,21 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         initialValue = emptyList(),
     )
 
+    fun select(id: Long) {
+        viewModelScope.launch {
+            receiptMetaDataRepository.getById(id).collect { metadata ->
+                if (metadata != null) {
+                    _receipt.value = metadata
+                }
+            }
+        }
+    }
+
 
     fun reset() {
         _uploadedFileUrl.value = null
         _json.value = ""
-        _receipt.value = Receipt.Empty
+        _receipt.value = ReceiptMetaData.Empty
     }
 
     fun uploadImage(localFileUri: Uri?) {
@@ -123,12 +134,12 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         val parser = GeminiReceiptResponse(response.text)
         print(parser.json())
 
-        _receipt.value = Receipt(parser.json())
+        _receipt.value = ReceiptMetaData(Receipt(parser.json()))
     }
 
     fun receiptResultTest() {
         val testData = SampleData.dummyData(getApplication())
-        _receipt.value = Receipt(testData)
+        _receipt.value = ReceiptMetaData(Receipt(testData))
     }
 
 

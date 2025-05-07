@@ -16,6 +16,7 @@ data class ReceiptMetaDataEntity(
     companion object {
         fun fromReceiptMetaData(metadata: ReceiptMetaData): ReceiptMetaDataEntity {
             return ReceiptMetaDataEntity(
+                id = metadata.id ?: 0,
                 content = metadata.content.json,
                 location = metadata.location?.let { LocationConverter.toJson(it) },
                 filename = metadata.filename,
@@ -24,6 +25,7 @@ data class ReceiptMetaDataEntity(
 
         fun toReceiptMetaData(entity: ReceiptMetaDataEntity): ReceiptMetaData {
             return ReceiptMetaData(
+                id = entity.id,
                 content = Receipt(entity.content),
                 location = entity.location?.let { LocationConverter.fromJson(it) },
                 filename = entity.filename,

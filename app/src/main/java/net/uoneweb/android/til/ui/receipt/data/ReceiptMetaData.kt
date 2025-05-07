@@ -8,6 +8,7 @@ import net.uoneweb.android.til.ui.location.Location
 
 data class ReceiptMetaData(
     val content: Receipt,
+    val id: Long? = null,
     val location: Location? = null,
     val filename: String? = null,
 ) {
@@ -34,6 +35,10 @@ data class ReceiptMetaData(
         jsonObj.add("meta", metaObj)
 
         return gson.toJson(jsonObj)
+    }
+
+    companion object {
+        val Empty = ReceiptMetaData(Receipt.Empty)
     }
 }
 

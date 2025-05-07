@@ -16,37 +16,42 @@ import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 
 @Composable
 fun ReceiptInfoPane(
-    receipt: Receipt, imageUri: Uri?, location: Location?,
+    receipt: ReceiptMetaData, imageUri: Uri?, location: Location?,
     onSaveMetaData: (ReceiptMetaData) -> Unit = {},
 ) {
-    if (receipt == Receipt.Empty) {
+    if (receipt == ReceiptMetaData.Empty) {
         return
     }
 
-    val metadata = ReceiptMetaData(receipt, location, imageUri?.lastPathSegment)
+    // TODO: refactor
+    val metadata = if (receipt.id == null || receipt.location != location) {
+        ReceiptMetaData(receipt.content, receipt.id, location, imageUri?.lastPathSegment)
+    } else receipt
+
+
+
     Column {
         Row {
-            TextShareButton(receipt.title(), metadata.json())
-            Button(
+            TextShareButton(metadata.content.title(), metadata.json())
+            SaveButton(
+                enabled = metadata.id == null || receipt.location != location,
                 onClick = { onSaveMetaData(metadata) },
-            ) {
-                Text("Save")
-            }
+            )
         }
         Row {
             Text(text = "店舗")
-            Text(text = receipt.store())
+            Text(text = metadata.content.store())
         }
         Row {
             Text("合計")
-            Text(text = receipt.total().toString() + "円")
+            Text(text = metadata.content.total().toString() + "円")
         }
         Row {
             Text("住所")
-            Text(text = receipt.address())
+            Text(text = metadata.content.address())
         }
         Text("ファイル名:")
-        Text(text = receipt.title())
+        Text(text = metadata.content.title())
         Text("json:")
         Text(
             modifier = Modifier
@@ -55,6 +60,29 @@ fun ReceiptInfoPane(
             text = metadata.json(),
         )
     }
+}
+
+@Composable
+fun SaveButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit = {},
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        Text("Save")
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SaveButtonPreview() {
+    SaveButton(
+        enabled = false,
+    )
 }
 
 @Composable
@@ -78,11 +106,11 @@ fun ReceiptInfoPreview() {
               "total": 5678 
             }
         """.trimIndent()
-    ReceiptInfoPane(Receipt(json), null, null)
+    ReceiptInfoPane(ReceiptMetaData(Receipt(json)), null, null)
 }
 
 @Composable
 @Preview(showBackground = true, widthDp = 320)
 fun EmptyReceiptInfoPreview() {
-    ReceiptInfoPane(Receipt.Empty, null, null)
+    ReceiptInfoPane(ReceiptMetaData.Empty, null, null)
 }

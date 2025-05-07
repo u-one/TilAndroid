@@ -27,7 +27,7 @@ class ReceiptMetaDataRepository(context: Context) {
         }
     }
 
-    suspend fun update(metadata: ReceiptMetaData) = withContext(Dispatchers.IO) {
+    suspend fun update(id: Long, metadata: ReceiptMetaData) = withContext(Dispatchers.IO) {
         val entity = ReceiptMetaDataEntity.fromReceiptMetaData(metadata)
         dao.update(entity)
     }

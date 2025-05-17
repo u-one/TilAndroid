@@ -62,22 +62,22 @@ dependencies {
     androidTestImplementation(composeBom)
 
     val nav_version = "2.8.9" // Compose 1.7.0
-    val lifecycle_version = "2.8.7"
 
     implementation("androidx.fragment:fragment-ktx:1.8.6")
     implementation(libs.androidx.activity.compose)
     implementation("androidx.appcompat:appcompat")
 
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.constraintlayout)
-    implementation("androidx.compose.material:material") // TODO: remove
+    implementation(libs.androidx.compose.material) // TODO: remove
     implementation(libs.androidx.compose.material3)
     implementation("androidx.compose.runtime:runtime-livedata")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.ui.tooling.preview)
 
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
@@ -87,8 +87,8 @@ dependencies {
 
     //implementation("com.apollographql.apollo3:apollo-runtime:3.8.5") //TODO: fix
 
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
     val camerax_version = "1.4.2"
     implementation("androidx.camera:camera-core:${camerax_version}")

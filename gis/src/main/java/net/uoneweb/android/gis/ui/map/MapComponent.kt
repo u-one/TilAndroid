@@ -1,25 +1,29 @@
 package net.uoneweb.android.gis.ui.map
 
 import android.graphics.PointF
+import android.graphics.RectF
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import net.uoneweb.android.gis.ui.location.Location
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -29,12 +33,17 @@ import org.maplibre.geojson.Feature
 
 @Composable
 fun MapComponent(
-    location: net.uoneweb.android.gis.ui.location.Location = net.uoneweb.android.gis.ui.location.Location.Default,
+    location: Location = Location.Default,
     initialZoom: Double = 15.0,
-    onLocationChanged: (net.uoneweb.android.gis.ui.location.Location) -> Unit = {},
+    onLocationChanged: (Location) -> Unit = {},
 ) {
     if (LocalInspectionMode.current) {
-        Surface(modifier = Modifier.fillMaxSize(), color = Color.Blue) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Green),
+        ) {
+            Text(modifier = Modifier.align(Alignment.Center), text = "MapView")
         }
         return
     }
@@ -76,7 +85,8 @@ fun MapComponent(
                 map.addOnMapClickListener { latlng ->
                     Log.i("MapComponent", "Map clicked at: ${latlng.latitude}, ${latlng.longitude}")
                     val point = PointF(latlng.longitude.toFloat(), latlng.latitude.toFloat())
-                    val list = map.queryRenderedFeatures(point)
+                    val rect = RectF(0f, 0f, map.width.toFloat(), map.height.toFloat())
+                    val list = map.queryRenderedFeatures(rect)
                     featureList.clear()
                     for (feature in list) {
                         featureList.add(feature)
@@ -88,7 +98,7 @@ fun MapComponent(
                     Log.i("MapComponent", "Camera moved to: ${center?.latitude}, ${center?.longitude}")
                     if (center?.latitude != null && center?.longitude != null) {
                         onLocationChanged(
-                            net.uoneweb.android.gis.ui.location.Location(
+                            Location(
                                 center.latitude,
                                 center.longitude,
                             ),

@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.map
+package net.uoneweb.android.gis.ui.map
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.uoneweb.android.gis.ui.location.CurrentLocationButton
+import net.uoneweb.android.gis.ui.location.Location
 
 
 @Composable
@@ -26,7 +27,7 @@ fun MapScreen() {
     var mapLocation by remember { mutableStateOf<net.uoneweb.android.gis.ui.location.Location?>(null) }
     Box(modifier = Modifier.fillMaxSize()) {
         MapComponent(
-            location = currentLocation ?: net.uoneweb.android.gis.ui.location.Location.Default,
+            location = currentLocation ?: Location.Default,
             onLocationChanged = {
                 mapLocation = it
             },

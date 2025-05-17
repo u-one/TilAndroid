@@ -58,4 +58,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
     implementation(libs.gson)
+    implementation("org.maplibre.gl:android-sdk:11.8.5")
+
 }

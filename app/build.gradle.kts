@@ -116,7 +116,6 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    implementation("org.maplibre.gl:android-sdk:11.8.5")
 
     implementation("androidx.datastore:datastore-preferences:1.1.4") // 1.1.5は利用不可
     val coroutinesVersion = "1.10.2"

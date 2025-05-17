@@ -43,15 +43,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import net.uoneweb.android.gis.ui.location.LocationScreen
+import net.uoneweb.android.gis.ui.map.MapScreen
 import net.uoneweb.android.til.ui.audio.AudioScreen
 import net.uoneweb.android.til.ui.buttons.ButtonsScreen
 import net.uoneweb.android.til.ui.camera.CameraScreen
 import net.uoneweb.android.til.ui.drive.DriveScreen
 import net.uoneweb.android.til.ui.graphql.GraphQLScreen
 import net.uoneweb.android.til.ui.haptic.HapticFeedbackScreen
-import net.uoneweb.android.gis.ui.location.LocationScreen
 import net.uoneweb.android.til.ui.main.MainScreen
-import net.uoneweb.android.til.ui.map.MapScreen
 import net.uoneweb.android.til.ui.pager.PagerScreen
 import net.uoneweb.android.til.ui.preference.PreferenceScreen
 import net.uoneweb.android.til.ui.receipt.ReceiptScreen

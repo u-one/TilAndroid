@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.map
+package net.uoneweb.android.gis.ui.map
 
 import android.graphics.PointF
 import android.util.Log
@@ -20,7 +20,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
-import net.uoneweb.android.gis.ui.location.Location
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory

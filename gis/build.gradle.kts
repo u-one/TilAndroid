@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp")
 }
 
 android {
@@ -46,17 +45,17 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    val composeBom = platform("androidx.compose:compose-bom:2025.04.00")
+    val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    implementation("androidx.activity:activity-compose:1.9.3") // 1.10.0以降はandroid-35
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation(libs.androidx.constraintlayout)
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation(libs.gson)
 }

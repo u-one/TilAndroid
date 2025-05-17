@@ -1,4 +1,4 @@
-package net.uoneweb.android.gis.ui.location.dto
+package net.uoneweb.android.til.data
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

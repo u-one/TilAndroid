@@ -2,7 +2,7 @@ package net.uoneweb.android.til.ui.receipt.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import net.uoneweb.android.gis.ui.location.dto.LocationConverter
+import net.uoneweb.android.til.data.LocationConverter
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 

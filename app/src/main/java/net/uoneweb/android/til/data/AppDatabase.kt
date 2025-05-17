@@ -3,7 +3,6 @@ package net.uoneweb.android.til.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import net.uoneweb.android.gis.ui.location.dto.LocationConverter
 import net.uoneweb.android.til.ui.receipt.dto.ReceiptMappingInfoDao
 import net.uoneweb.android.til.ui.receipt.dto.ReceiptMappingInfoEntity
 import net.uoneweb.android.til.ui.receipt.dto.ReceiptMetaDataDao

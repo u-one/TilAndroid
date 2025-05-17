@@ -57,7 +57,7 @@ android {
 //}
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2025.04.00")
+    val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
@@ -65,17 +65,17 @@ dependencies {
     val lifecycle_version = "2.8.7"
 
     implementation("androidx.fragment:fragment-ktx:1.8.6")
-    implementation("androidx.activity:activity-compose:1.9.3") // 1.10.0以降はandroid-35
+    implementation(libs.androidx.activity.compose)
     implementation("androidx.appcompat:appcompat")
 
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
 
-    implementation("androidx.core:core-ktx:1.16.0") // 1.15.0以降はandroid-35
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.constraintlayout)
     implementation("androidx.compose.material:material") // TODO: remove
-    implementation("androidx.compose.material3:material3")
+    implementation(libs.androidx.compose.material3)
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
@@ -110,7 +110,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation(libs.gson)
 
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")

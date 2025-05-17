@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Til"
 include(":app")
+include(":gis")

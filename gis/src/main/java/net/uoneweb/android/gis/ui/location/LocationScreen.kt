@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.location
+package net.uoneweb.android.gis.ui.location
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -28,8 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import net.uoneweb.android.til.ui.location.CurrentLocationComponent
-import net.uoneweb.android.til.ui.location.Location
+import net.uoneweb.android.gis.ui.location.CurrentLocationComponent
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
@@ -147,7 +146,7 @@ fun ReceiptScreenMain(
             }
 
             1 -> {
-                var location by remember { mutableStateOf<Location?>(null) }
+                var location by remember { mutableStateOf<net.uoneweb.android.gis.ui.location.Location?>(null) }
                 Row {
                     ImageSelector(selectedImageUri) { onImageSelected(it) }
                     Button(onClick = onClickReceiptResultTest) { Text(text = "ReceiptResultTest") }

@@ -20,7 +20,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
-import net.uoneweb.android.til.ui.location.Location
+import net.uoneweb.android.gis.ui.location.Location
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -30,9 +30,9 @@ import org.maplibre.geojson.Feature
 
 @Composable
 fun MapComponent(
-    location: Location = Location.Default,
+    location: net.uoneweb.android.gis.ui.location.Location = net.uoneweb.android.gis.ui.location.Location.Default,
     initialZoom: Double = 15.0,
-    onLocationChanged: (Location) -> Unit = {},
+    onLocationChanged: (net.uoneweb.android.gis.ui.location.Location) -> Unit = {},
 ) {
     if (LocalInspectionMode.current) {
         Surface(modifier = Modifier.fillMaxSize(), color = Color.Blue) {
@@ -88,7 +88,12 @@ fun MapComponent(
                     val center = map.cameraPosition.target
                     Log.i("MapComponent", "Camera moved to: ${center?.latitude}, ${center?.longitude}")
                     if (center?.latitude != null && center?.longitude != null) {
-                        onLocationChanged(Location(center.latitude, center.longitude))
+                        onLocationChanged(
+                            net.uoneweb.android.gis.ui.location.Location(
+                                center.latitude,
+                                center.longitude,
+                            ),
+                        )
                     }
                 }
 

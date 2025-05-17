@@ -49,7 +49,7 @@ import net.uoneweb.android.til.ui.camera.CameraScreen
 import net.uoneweb.android.til.ui.drive.DriveScreen
 import net.uoneweb.android.til.ui.graphql.GraphQLScreen
 import net.uoneweb.android.til.ui.haptic.HapticFeedbackScreen
-import net.uoneweb.android.til.ui.location.LocationScreen
+import net.uoneweb.android.gis.ui.location.LocationScreen
 import net.uoneweb.android.til.ui.main.MainScreen
 import net.uoneweb.android.til.ui.map.MapScreen
 import net.uoneweb.android.til.ui.pager.PagerScreen

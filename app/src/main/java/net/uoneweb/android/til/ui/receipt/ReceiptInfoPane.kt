@@ -10,13 +10,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.uoneweb.android.til.ui.location.Location
+import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 
 @Composable
 fun ReceiptInfoPane(
-    receipt: ReceiptMetaData, imageUri: Uri?, location: Location?,
+    receipt: ReceiptMetaData, imageUri: Uri?, location: net.uoneweb.android.gis.ui.location.Location?,
     onSaveMetaData: (ReceiptMetaData) -> Unit = {},
 ) {
     if (receipt == ReceiptMetaData.Empty) {

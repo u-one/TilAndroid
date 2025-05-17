@@ -3,13 +3,13 @@ package net.uoneweb.android.til.ui.receipt.data
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.uoneweb.android.til.ui.location.Location
+import net.uoneweb.android.gis.ui.location.Location
 
 
 data class ReceiptMetaData(
     val content: Receipt,
     val id: Long? = null,
-    val location: Location? = null,
+    val location: net.uoneweb.android.gis.ui.location.Location? = null,
     val filename: String? = null,
 ) {
     private val gson = GsonBuilder().setPrettyPrinting().create()

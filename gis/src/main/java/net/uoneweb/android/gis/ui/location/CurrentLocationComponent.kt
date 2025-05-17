@@ -1,4 +1,4 @@
-package net.uoneweb.android.til.ui.location
+package net.uoneweb.android.gis.ui.location
 
 import android.Manifest
 import android.annotation.SuppressLint

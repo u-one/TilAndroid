@@ -17,17 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.uoneweb.android.til.ui.location.CurrentLocationButton
-import net.uoneweb.android.til.ui.location.Location
+import net.uoneweb.android.gis.ui.location.CurrentLocationButton
 
 
 @Composable
 fun MapScreen() {
-    var currentLocation by remember { mutableStateOf<Location?>(null) }
-    var mapLocation by remember { mutableStateOf<Location?>(null) }
+    var currentLocation by remember { mutableStateOf<net.uoneweb.android.gis.ui.location.Location?>(null) }
+    var mapLocation by remember { mutableStateOf<net.uoneweb.android.gis.ui.location.Location?>(null) }
     Box(modifier = Modifier.fillMaxSize()) {
         MapComponent(
-            location = currentLocation ?: Location.Default,
+            location = currentLocation ?: net.uoneweb.android.gis.ui.location.Location.Default,
             onLocationChanged = {
                 mapLocation = it
             },
@@ -43,7 +42,11 @@ fun MapScreen() {
                 contentDescription = "Location Icon",
             )
         }
-        Canvas(modifier = Modifier.size(64.dp).align(Alignment.Center)) {
+        Canvas(
+            modifier = Modifier
+                .size(64.dp)
+                .align(Alignment.Center),
+        ) {
             val stroke = 20f
             drawLine(
                 color = Color.Black,

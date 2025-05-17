@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -28,6 +27,43 @@ import com.google.android.gms.location.LocationServices
 
 @Composable
 fun CurrentLocationComponent(location: Location?, onLocation: (Location?) -> Unit) {
+    var loading by remember { mutableStateOf(false) }
+    Row {
+        CurrentLocationButton(
+            onLocation = onLocation,
+            onLoadingStateChange = {
+                loading = it
+            },
+            noPermissionContent = {
+                Text("Location permission is required.")
+            },
+        ) {
+            Text("Get Current Location")
+        }
+        if (loading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.CenterVertically),
+            )
+        }
+        if (location != null) {
+            Text(
+                "Latitude: ${location.latitude}, Longitude: ${location.longitude}",
+                modifier = Modifier.align(Alignment.CenterVertically),
+            )
+        }
+    }
+}
+
+@Composable
+fun CurrentLocationButton(
+    modifier: Modifier = Modifier,
+    onLocation: (Location?) -> Unit,
+    onLoadingStateChange: (Boolean) -> Unit = {},
+    noPermissionContent: @Composable () -> Unit = {},
+    getLocationButtonContent: @Composable () -> Unit = {},
+) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
@@ -52,36 +88,21 @@ fun CurrentLocationComponent(location: Location?, onLocation: (Location?) -> Uni
         }
     }
 
-    Column {
-        if (permissionGranted) {
-            Row {
-                var loading by remember { mutableStateOf(false) }
-                Button(
-                    onClick = {
-                        loading = true
-                        getCurrentLocation(fusedLocationClient) { loc ->
-                            loading = false
-                            onLocation(loc)
-                        }
-                    },
-                ) {
-                    Text("Get Current Location")
+    if (permissionGranted) {
+        Button(
+            modifier = modifier,
+            onClick = {
+                onLoadingStateChange(true)
+                getCurrentLocation(fusedLocationClient) { loc ->
+                    onLoadingStateChange(false)
+                    onLocation(loc)
                 }
-                if (loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.CenterVertically),
-                    )
-                }
-                if (location != null) {
-                    Text("Latitude: ${location.latitude}, Longitude: ${location.longitude}",
-                        modifier = Modifier.align(Alignment.CenterVertically))
-                }
-            }
-        } else {
-            Text("Location permission is required.")
+            },
+        ) {
+            getLocationButtonContent()
         }
+    } else {
+        noPermissionContent()
     }
 }
 

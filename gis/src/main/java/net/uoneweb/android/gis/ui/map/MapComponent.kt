@@ -109,6 +109,15 @@ fun MapView(
                         )
                     }
                 }
+                map.addOnCameraIdleListener {
+                    Log.i("MapComponent", "Camera idle")
+                }
+                map.addOnCameraMoveCancelListener {
+                    Log.i("MapComponent", "Camera move canceled")
+                }
+                map.addOnCameraMoveStartedListener {
+                    Log.i("MapComponent", "Camera move started")
+                }
 
             }
             mapView

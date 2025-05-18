@@ -29,6 +29,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.CurrentLocationComponent
+import net.uoneweb.android.gis.ui.location.Location
+import net.uoneweb.android.gis.ui.map.MapFeatureFinderDialog
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
@@ -118,6 +120,7 @@ fun ReceiptScreenMain(
 
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(scrollState)) {
+        var location by remember { mutableStateOf<Location?>(null) }
         var selectedTabIndex by remember { mutableStateOf(0) }
         TabRow(selectedTabIndex = selectedTabIndex) {
             val tabTitles = listOf("List", "ReceiptInfo", "MappingInfoList", "MappingInfo")
@@ -146,13 +149,20 @@ fun ReceiptScreenMain(
             }
 
             1 -> {
-                var location by remember { mutableStateOf<net.uoneweb.android.gis.ui.location.Location?>(null) }
+
+
                 Row {
                     ImageSelector(selectedImageUri) { onImageSelected(it) }
                     Button(onClick = onClickReceiptResultTest) { Text(text = "ReceiptResultTest") }
                 }
                 ImageUploaderButton(selectedImageUri, uploadedImageUri) { onClickImageUpload() }
                 CurrentLocationComponent(location = location) { location = it }
+                MapLocationFinder(
+                    location ?: Location.Default,
+                    onLocationSelected = {
+                        location = it
+                    },
+                )
 
                 if (loading) {
                     Text("Analyzing receipt info ...")
@@ -177,6 +187,12 @@ fun ReceiptScreenMain(
             }
 
             3 -> {
+                var expandFeatureFinderDialog by remember { mutableStateOf(false) }
+                Button(
+                    onClick = { expandFeatureFinderDialog = true },
+                ) {
+                    Text("Select Feature from Map")
+                }
                 Row {
                     Button(
                         onClick = { onClickOsmInfo(false) },
@@ -190,6 +206,16 @@ fun ReceiptScreenMain(
                     }
                 }
                 ReceiptMappingPane(receiptMappingInfo)
+                if (expandFeatureFinderDialog) {
+                    MapFeatureFinderDialog(
+                        location = location ?: Location.Default,
+                        onFeatureSelected = { feature ->
+                            println("Selected feature: $feature")
+                            expandFeatureFinderDialog = false
+                        },
+                        onDismissRequest = { expandFeatureFinderDialog = false },
+                    )
+                }
             }
         }
     }

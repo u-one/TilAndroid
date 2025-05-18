@@ -1,5 +1,6 @@
 package net.uoneweb.android.gis.ui.map
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,8 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.maplibre.geojson.Feature
 
+
 @Composable
-fun FeatureList(mapViewState: MapViewState, modifier: Modifier = Modifier) {
+fun FeatureList(mapViewState: MapViewState, modifier: Modifier = Modifier, onFeatureSelected: (Feature) -> Unit = {}) {
     val list = mapViewState.features.filter { it.geometry()?.type() != "LineString" || it.geometry()?.type() != "MultiLineString" }
     val points = mapViewState.features.filter { it.geometry()?.type() == "Point" }
     val polygons = mapViewState.features.filter { it.geometry()?.type() == "Polygon" }
@@ -25,7 +27,12 @@ fun FeatureList(mapViewState: MapViewState, modifier: Modifier = Modifier) {
             Text("total:${mapViewState.features.size} points:${points.size} polygons:${polygons.size}", modifier = Modifier.padding(8.dp))
         }
         items(list) { feature ->
-            FeatureItem(feature)
+            FeatureItem(
+                feature,
+                onClick = {
+                    onFeatureSelected(it)
+                },
+            )
         }
 
     }
@@ -44,6 +51,7 @@ fun FeatureItem(feature: Feature, onClick: (Feature) -> Unit = {}) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
+                .clickable { onClick(feature) }
                 .padding(8.dp),
         )
     }

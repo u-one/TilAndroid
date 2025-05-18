@@ -2,12 +2,20 @@ package net.uoneweb.android.gis.ui.map
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,48 +28,58 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import net.uoneweb.android.gis.ui.location.CurrentLocationButton
-import net.uoneweb.android.gis.ui.location.Location
-
+import org.maplibre.geojson.Feature
 
 @Composable
 fun MapScreen() {
-    var currentLocation by remember { mutableStateOf<Location?>(null) }
-    var mapLocation by remember { mutableStateOf<Location?>(null) }
     var showDropDown by remember { mutableStateOf(false) }
-    Box(modifier = Modifier.fillMaxSize()) {
-        MapComponent(
-            location = currentLocation ?: Location.Default,
-            onLocationChanged = {
-                mapLocation = it
-            },
-        )
-        Cross(
-            modifier = Modifier
-                .size(32.dp)
-                .align(Alignment.Center),
-        )
-        if (mapLocation != null) {
-            Text(mapLocation?.latitude.toString() + ", " + mapLocation?.longitude.toString())
+    val mapViewState = remember { MapViewState() }
+
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(this@BoxWithConstraints.maxHeight / 2),
+            ) {
+                MapComponent(
+                    modifier = Modifier.fillMaxSize(),
+                    mapViewState = mapViewState,
+                )
+                Cross(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.Center),
+                )
+                Text(mapViewState.mapLocation.latitude.toString() + ", " + mapViewState.mapLocation.longitude.toString())
+                Button(modifier = Modifier.align(Alignment.TopEnd), onClick = { showDropDown = true }) {
+                    Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu Icon")
+                }
+                CurrentLocationButton(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .align(Alignment.BottomEnd),
+                    onLocation = { it?.let { mapViewState.requestLocation(it) } },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Location Icon",
+                    )
+                }
+                StyleSelectorDialog(
+                    expanded = showDropDown,
+                    onDismissRequest = {
+                        showDropDown = false
+                    },
+                    onStyleSelected = {
+                        mapViewState.updateStyle(it)
+                    },
+                )
+            }
+            FeatureList(mapViewState, modifier = Modifier.fillMaxSize())
         }
-        Button(modifier = Modifier.align(Alignment.TopEnd), onClick = { showDropDown = true }) {
-            Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu Icon")
-        }
-        CurrentLocationButton(
-            modifier = Modifier
-                .size(64.dp)
-                .align(Alignment.BottomEnd),
-            onLocation = { currentLocation = it },
-        ) {
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = "Location Icon",
-            )
-        }
-        StyleSelectorDialog(modifier = Modifier.align(Alignment.Center), expanded = showDropDown) {
-            showDropDown = false
-        }
+
     }
 }
 
@@ -86,26 +104,6 @@ fun Cross(modifier: Modifier = Modifier) {
     }
 }
 
-@Composable
-fun StyleSelectorDialog(modifier: Modifier = Modifier, expanded: Boolean = false, onDismissRequest: () -> Unit) {
-    Dialog(onDismissRequest = { onDismissRequest() }) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Text(
-                text = "This is a minimal dialog",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
 
 @Preview(showBackground = true, widthDp = 320, heightDp = 640)
 @Composable
@@ -113,7 +111,3 @@ fun MapScreenPreview() {
     MapScreen()
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ButtonPreview() {
-}

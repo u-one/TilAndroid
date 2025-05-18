@@ -157,8 +157,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             _json.value = SampleData.responseSample(getApplication())
             return
         }
-        val prompt = OpenAiReceiptPrompt.loadOsmFromJsonPrompt(getApplication())
-        val promptWithJson = prompt.replace("{{json}}", json)
+        val prompt = OpenAiReceiptPrompt.promptToInferOsmFeatureFromReceipt(getApplication(), json)
 
         val request = ChatRequest(
             //model = "gpt-4o",
@@ -167,7 +166,55 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             messages = listOf(
                 Message(
                     role = "user",
-                    content = promptWithJson,
+                    content = prompt,
+                ),
+            ),
+            response_format = ResponseFormat(type = "json_object"),
+        )
+        Log.i("OpenAI", "Request start")
+        RetrofitInstance.api.getChatCompletion(request).enqueue(
+            object : Callback<ChatResponse> {
+                override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
+                    if (response.isSuccessful) {
+                        val chatResponse = response.body()
+                        println(chatResponse)
+                        chatResponse?.choices?.forEach { choice ->
+                            val message = choice.message
+                            println("${message.role}: ${message.content}")
+                        }
+                        Log.i("OpenAI", "Response successful")
+                        Log.i("OpenAI", "Response: ${response.body()}")
+                        val jsonString = response.body()?.choices?.get(0)?.message?.content ?: ""
+                        viewModelScope.launch {
+                            receiptMappingInfoRepository.insert(ReceiptMappingInfo.fromJson(jsonString))
+                        }
+                        _json.value = response.body()?.choices?.get(0)?.message?.content ?: ""
+                    } else {
+                        Log.e("OpenAI", "Response failed: ${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
+                    println("Failed to get chat completion: ${t.message}")
+                }
+            },
+        )
+    }
+
+
+    suspend fun generateOsmInfoFromReceiptAndFeature(receiptJson: String, featureJson: String, isTest: Boolean = false) {
+        if (isTest) {
+            return
+        }
+        val prompt = OpenAiReceiptPrompt.promptToInferOsmFeatureFromReceiptAndActualFeature(getApplication(), receiptJson, featureJson)
+        Log.i("ReceiptViewModel", "prompt: $prompt")
+
+        val request = ChatRequest(
+            model = "gpt-4.1",
+            messages = listOf(
+                Message(
+                    role = "user",
+                    content = prompt,
                 ),
             ),
             response_format = ResponseFormat(type = "json_object"),

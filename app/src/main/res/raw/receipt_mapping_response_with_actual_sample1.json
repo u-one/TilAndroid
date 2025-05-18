@@ -1,0 +1,235 @@
+{
+  "store_info_extracted": [
+    {
+      "key": "name",
+      "value": "廣榮堂 倉敷店",
+      "based_on": "fact",
+      "reason": "store.nameとbranch情報を結合したため",
+      "comment": "店舗の正式名称。レシートJSONから直接取得した確実な情報。"
+    },
+    {
+      "key": "operator",
+      "value": "廣榮堂",
+      "based_on": "fact",
+      "reason": "store.nameから抽出",
+      "comment": "運営会社（ブランド名）。レシートJSONのstore.nameより。"
+    },
+    {
+      "key": "branch",
+      "value": "倉敷店",
+      "based_on": "fact",
+      "reason": "store.branch項目に基づく",
+      "comment": "店舗の支店名。レシートJSONのbranch情報。"
+    },
+    {
+      "key": "phone",
+      "value": "+81-86-426-5888",
+      "based_on": "fact",
+      "reason": "store.telを国際電話番号表記に変換",
+      "comment": "店舗への電話番号。"
+    },
+    {
+      "key": "addr:full",
+      "value": "岡山県倉敷市中央1-1-8",
+      "based_on": "fact",
+      "reason": "store.addressフィールドそのまま",
+      "comment": "店舗の住所。"
+    },
+    {
+      "key": "addr:postcode",
+      "value": "710-0046",
+      "based_on": "fact",
+      "reason": "store.postalCodeより",
+      "comment": "郵便番号。"
+    },
+    {
+      "key": "website",
+      "value": "https://koeido.co.jp/",
+      "based_on": "fact",
+      "reason": "store.websiteより取得",
+      "comment": "公式ウェブサイトURL。"
+    },
+    {
+      "key": "email",
+      "value": "info@koeido.co.jp",
+      "based_on": "fact",
+      "reason": "store.emailより取得",
+      "comment": "問い合わせ先メールアドレス。"
+    },
+    {
+      "key": "payment:electronic_money",
+      "value": "yes",
+      "based_on": "fact",
+      "reason": "payment.methodが電子マネーのため",
+      "comment": "電子マネー支払い可。レシートの支払い方法から明確。"
+    },
+    {
+      "key": "opening_hours",
+      "value": "unknown",
+      "based_on": "inference",
+      "reason": "レシートに営業時間情報がないため",
+      "comment": "営業時間不明。必要なら現地調査・公式サイト確認要。"
+    },
+    {
+      "key": "shop",
+      "value": "confectionery",
+      "based_on": "inference",
+      "reason": "商品欄から和菓子販売が主体と推測（吉備団子）",
+      "comment": "和菓子を含む菓子（主に土産物）専門店と推測。"
+    },
+    {
+      "key": "cuisine",
+      "value": "japanese_sweets",
+      "based_on": "inference",
+      "reason": "商品名に吉備団子等和菓子が含まれるため",
+      "comment": "「むかし吉備団子」など和菓子が主力商品のため。"
+    }
+  ],
+  "existing_store_info": {
+    "tags": [
+      {
+        "key": "name",
+        "value": "廣榮堂本店",
+        "osm_id": "36481525031",
+        "comment": "OpenStreetMap上に登録されている店舗名。恐らく本店表記。"
+      },
+      {
+        "key": "name_de",
+        "value": "廣榮堂本店",
+        "osm_id": "36481525031",
+        "comment": "ドイツ語名標記。日本語名と同じ。"
+      },
+      {
+        "key": "name_en",
+        "value": "廣榮堂本店",
+        "osm_id": "36481525031",
+        "comment": "英語名標記。日本語名をそのまま転記。"
+      },
+      {
+        "key": "name:latin",
+        "value": "guǎng róng táng běn diàn",
+        "osm_id": "36481525031",
+        "comment": "中国語ピンインのラテン文字表記。"
+      },
+      {
+        "key": "class",
+        "value": "restaurant",
+        "osm_id": "36481525031",
+        "comment": "施設分類: レストラン。"
+      },
+      {
+        "key": "subclass",
+        "value": "restaurant",
+        "osm_id": "36481525031",
+        "comment": "さらに細分類レストラン。"
+      },
+      {
+        "key": "name:nonlatin",
+        "value": "廣榮堂本店",
+        "osm_id": "36481525031",
+        "comment": "非ラテン文字名。日本語名。"
+      },
+      {
+        "key": "name_int",
+        "value": "guǎng róng táng běn diàn",
+        "osm_id": "36481525031",
+        "comment": "国際的な発音記載（ピンイン）。"
+      }
+    ],
+    "comment": "現在OSM上では廣榮堂本店（本店）がポイント地物（ID:36481525031）として登録あり。「restaurant」扱いになっている。"
+  },
+  "comparison": [
+    {
+      "key": "name",
+      "existing_value": "廣榮堂本店",
+      "new_value": "廣榮堂 倉敷店",
+      "difference": "different",
+      "comment": "異なる支店名。本店（既存）と支店（レシート）が別である可能性。追加か分割登録が必要。"
+    },
+    {
+      "key": "shop",
+      "existing_value": null,
+      "new_value": "confectionery",
+      "difference": "new",
+      "comment": "既存にshopタグなし。和菓子土産系の業態を反映すべき。"
+    },
+    {
+      "key": "class",
+      "existing_value": "restaurant",
+      "new_value": null,
+      "difference": "different",
+      "comment": "既存はclass=restaurantで登録。レシート店舗は物販型。業態の違いに注意。"
+    },
+    {
+      "key": "subclass",
+      "existing_value": "restaurant",
+      "new_value": null,
+      "difference": "different",
+      "comment": "同上。物販であればsubclass=confectionery等修正が望ましい。"
+    },
+    {
+      "key": "phone",
+      "existing_value": null,
+      "new_value": "+81-86-426-5888",
+      "difference": "new",
+      "comment": "電話番号情報はOSM既存地物に無い。追加が推奨。"
+    },
+    {
+      "key": "operator",
+      "existing_value": null,
+      "new_value": "廣榮堂",
+      "difference": "new",
+      "comment": "運営会社情報を追加可能。"
+    },
+    {
+      "key": "branch",
+      "existing_value": null,
+      "new_value": "倉敷店",
+      "difference": "new",
+      "comment": "支店名も明記可能。"
+    },
+    {
+      "key": "addr:full",
+      "existing_value": null,
+      "new_value": "岡山県倉敷市中央1-1-8",
+      "difference": "new",
+      "comment": "住所情報を追加推奨。"
+    },
+    {
+      "key": "addr:postcode",
+      "existing_value": null,
+      "new_value": "710-0046",
+      "difference": "new",
+      "comment": "郵便番号も追加推奨。"
+    },
+    {
+      "key": "website",
+      "existing_value": null,
+      "new_value": "https://koeido.co.jp/",
+      "difference": "new",
+      "comment": "公式サイトの追加推奨。"
+    },
+    {
+      "key": "email",
+      "existing_value": null,
+      "new_value": "info@koeido.co.jp",
+      "difference": "new",
+      "comment": "公式メールアドレス追加推奨。"
+    },
+    {
+      "key": "payment:electronic_money",
+      "existing_value": null,
+      "new_value": "yes",
+      "difference": "new",
+      "comment": "電子マネー決済可を追加。利用者利便性向上。"
+    },
+    {
+      "key": "cuisine",
+      "existing_value": null,
+      "new_value": "japanese_sweets",
+      "difference": "new",
+      "comment": "業態表現。「和菓子」提供を示すタグ。"
+    }
+  ],
+  "update_recommendation": "既存のOSMポイント（ID:36481525031）は「廣榮堂本店」で、今回のレシートは「廣榮堂 倉敷店」（別支店）である。地図上の位置が一致する場合は、本店表記を現店舗名・業態（shop=confectionery等）で更新、業態を『和菓子販売（和菓子店、土産物）』へ修正することが望ましい。異なる場所・支店であれば新規POIとして上記情報で追加するのが最適。支払い方法・公式連絡先などの付与も推奨。"
+}

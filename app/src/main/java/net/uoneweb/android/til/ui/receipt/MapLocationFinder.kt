@@ -100,12 +100,12 @@ fun MapLocationDialog(location: Location = Location.Default, onLocationSelected:
                             )
                         }
                     }
-                    Row {
+                    Row(modifier = Modifier.fillMaxSize()) {
                         Button(
                             onClick = {
                                 onDismissRequest()
                             },
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.weight(1f),
                         ) {
                             Text("Cancel")
                         }
@@ -113,7 +113,7 @@ fun MapLocationDialog(location: Location = Location.Default, onLocationSelected:
                             onClick = {
                                 onLocationSelected(mapViewState.mapLocation)
                             },
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.weight(1f),
                         ) {
                             Text("OK")
                         }

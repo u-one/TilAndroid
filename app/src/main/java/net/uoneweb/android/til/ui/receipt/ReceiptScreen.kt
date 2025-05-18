@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.CurrentLocationComponent
 import net.uoneweb.android.gis.ui.location.Location
+import net.uoneweb.android.gis.ui.map.Feature
 import net.uoneweb.android.gis.ui.map.MapFeatureFinderDialog
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
@@ -46,6 +47,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val context = LocalContext.current
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
     val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
+    var feature by remember { mutableStateOf<Feature?>(null) }
 
     val loading = (selectedImageUri.value != null && receipt == ReceiptMetaData.Empty)
 
@@ -86,14 +88,18 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                     viewModel.uploadImage(it)
                 }
             },
-            onClickOsmInfo = { isTest ->
+            onClickOsmInfo = { feature, isTest ->
                 coroutineScope.launch {
                     val json = if (receipt == ReceiptMetaData.Empty) {
                         SampleData.dummyData(context)
                     } else {
                         receipt.content.json
                     }
-                    viewModel.generateOsmInfoFromJson(json, isTest)
+                    if (feature == null) {
+                        viewModel.generateOsmInfoFromJson(json, isTest)
+                    } else {
+                        viewModel.generateOsmInfoFromReceiptAndFeature(json, feature.geojson, isTest)
+                    }
                 }
             },
             loading = loading,
@@ -114,7 +120,7 @@ fun ReceiptScreenMain(
     receiptMappingInfo: String = "",
     onImageSelected: (Uri?) -> Unit = {},
     onClickImageUpload: () -> Unit = {},
-    onClickOsmInfo: (isTest: Boolean) -> Unit = {},
+    onClickOsmInfo: (feature: Feature?, isTest: Boolean) -> Unit = { feature: Feature?, b: Boolean -> },
     loading: Boolean = false,
 ) {
 
@@ -195,12 +201,12 @@ fun ReceiptScreenMain(
                 }
                 Row {
                     Button(
-                        onClick = { onClickOsmInfo(false) },
+                        onClick = { onClickOsmInfo(null, false) },
                     ) {
                         Text("ReceiptMappingInfo")
                     }
                     Button(
-                        onClick = { onClickOsmInfo(true) },
+                        onClick = { onClickOsmInfo(null, true) },
                     ) {
                         Text("TestReceiptMappingInfo")
                     }
@@ -212,6 +218,8 @@ fun ReceiptScreenMain(
                         onFeatureSelected = { feature ->
                             println("Selected feature: $feature")
                             expandFeatureFinderDialog = false
+                            onClickOsmInfo(feature, false)
+
                         },
                         onDismissRequest = { expandFeatureFinderDialog = false },
                     )

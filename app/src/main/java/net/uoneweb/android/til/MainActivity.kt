@@ -11,12 +11,6 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Check
@@ -27,6 +21,12 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -134,12 +134,13 @@ private fun TilApp() {
 
 @Composable
 private fun BottomBar(navController: NavController) {
-    BottomNavigation {
+    NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         screens.forEach { screen ->
-            BottomBarItem(
-                screen = screen,
+            NavigationBarItem(
+                icon = { Icon(screen.icon, contentDescription = stringResource(screen.resourceId)) },
+                label = { Text(stringResource(screen.resourceId)) },
                 selected = currentDestination?.isCurrentScreen(screen) ?: false,
                 onClick = { navController.navigateLocal(screen.route) },
             )
@@ -165,7 +166,7 @@ private fun (RowScope).BottomBarItem(
     selected: Boolean = false,
     onClick: () -> Unit = {},
 ) {
-    BottomNavigationItem(
+    NavigationBarItem(
         icon = { Icon(screen.icon, contentDescription = stringResource(screen.resourceId)) },
         label = { Text(stringResource(screen.resourceId)) },
         selected = selected,

@@ -3,6 +3,7 @@ package net.uoneweb.android.til.ui.receipt.repository
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import net.uoneweb.android.til.data.DatabaseProvider
@@ -26,6 +27,9 @@ class ReceiptMappingInfoRepository(context: Context) {
     }
 
     fun getByReceiptId(receiptId: Long): Flow<List<ReceiptMappingInfo>> {
+        if (receiptId == 0L) {
+            return flowOf(emptyList())
+        }
         return dao.getByReceiptId(receiptId).map { flow ->
             flow.map { ReceiptMappingInfoEntity.toReceiptMetaData(it) }
         }

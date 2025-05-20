@@ -9,9 +9,9 @@ import android.view.HapticFeedbackConstants
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -99,7 +99,7 @@ private fun PredefinedVibration(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         Text(
             text = text,
-            style = MaterialTheme.typography.h1,
+            style = MaterialTheme.typography.headlineLarge,
             modifier =
                 Modifier.clickable {
                     val vibratorManager =

@@ -7,11 +7,13 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.provider.Settings
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun DeveloperOptionsButton() {
@@ -46,6 +48,7 @@ private fun OpenButton(
     Button(
         enabled = enabled,
         onClick = onClick,
+        shape = RoundedCornerShape(4.dp),
     ) {
         if (enabled) {
             Text("開発者オプション")
@@ -58,9 +61,12 @@ private fun OpenButton(
 @Composable
 fun CreateDeveloperOptionsShortcutButton() {
     val context = LocalContext.current
-    Button(onClick = {
-        createAppShortCut(context)
-    }) {
+    Button(
+        onClick = {
+            createAppShortCut(context)
+        },
+        shape = RoundedCornerShape(4.dp),
+    ) {
         Text("ショートカット作成")
     }
 }

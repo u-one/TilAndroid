@@ -15,9 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,85 +36,88 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainFragment
-    @Inject
-    constructor() : Fragment() {
-        private val viewModel by viewModels<MainViewModel>()
+@Inject
+constructor() : Fragment() {
+    private val viewModel by viewModels<MainViewModel>()
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
 
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?,
-        ): View {
-            return ComposeView(requireContext()).apply {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    MyApplicationTheme {
-                        Surface(modifier = Modifier.fillMaxSize()) {
-                            Column {
-                                MessageCard(viewModel)
-                                DeveloperOptionsButton()
-                                CreateDeveloperOptionsShortcutButton()
-                            }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MyApplicationTheme {
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        Column {
+                            MessageCard(viewModel)
+                            DeveloperOptionsButton()
+                            CreateDeveloperOptionsShortcutButton()
                         }
                     }
                 }
             }
         }
+    }
 
-        data class Message(val author: String, val body: String)
+    data class Message(val author: String, val body: String)
 
-        @Composable
-        fun MessageCard(viewModel: MainViewModel) {
-            val msg = viewModel.message.value ?: Message("-", "-")
+    @Composable
+    fun MessageCard(viewModel: MainViewModel) {
+        val msg = viewModel.message.value ?: Message("-", "-")
 
-            Row(modifier = Modifier.padding(all = 8.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
-                    contentDescription = "icon",
-                    modifier =
-                        Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .border(1.5.dp, MaterialTheme.colors.secondary, CircleShape),
+        Row(modifier = Modifier.padding(all = 8.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = "icon",
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .border(1.5.dp, MaterialTheme.colorScheme.secondary, CircleShape),
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column {
+                Text(
+                    text = msg.author,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelMedium,
                 )
+                Spacer(modifier = Modifier.width(4.dp))
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Column {
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    shadowElevation = 1.dp,
+                ) {
                     Text(
-                        text = msg.author,
-                        color = MaterialTheme.colors.secondaryVariant,
-                        style = MaterialTheme.typography.subtitle2,
+                        text = msg.body,
+                        modifier = Modifier.padding(all = 4.dp),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Surface(shape = MaterialTheme.shapes.medium, elevation = 1.dp) {
-                        Text(
-                            text = msg.body,
-                            modifier = Modifier.padding(all = 4.dp),
-                            style = MaterialTheme.typography.body2,
-                        )
-                    }
-                }
-            }
-        }
-
-        @Preview(name = "Light Mode")
-        @Preview(
-            uiMode = Configuration.UI_MODE_NIGHT_YES,
-            showBackground = true,
-            name = "Dark Mode",
-        )
-        @Composable
-        fun PreviewMessageCard() {
-            MyApplicationTheme {
-                Surface {
-                    MessageCard(MainViewModel())
                 }
             }
         }
     }
+
+    @Preview(name = "Light Mode")
+    @Preview(
+        uiMode = Configuration.UI_MODE_NIGHT_YES,
+        showBackground = true,
+        name = "Dark Mode",
+    )
+    @Composable
+    fun PreviewMessageCard() {
+        MyApplicationTheme {
+            Surface {
+                MessageCard(MainViewModel())
+            }
+        }
+    }
+}

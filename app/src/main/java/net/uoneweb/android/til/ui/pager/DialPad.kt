@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -126,7 +126,7 @@ fun DialPad(
                     Text(
                         text = state.labels[index].toString(),
                         style =
-                            MaterialTheme.typography.h3.merge(
+                            MaterialTheme.typography.headlineSmall.merge(
                                 TextStyle(
                                     fontSize = fontSize,
                                     lineHeightStyle =

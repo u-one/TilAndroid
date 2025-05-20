@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -80,10 +81,11 @@ private fun ItemButton(
         }
     Button(
         modifier = Modifier.size(56.dp),
+        shape = RoundedCornerShape(4.dp),
         colors =
             if (enableItemColor) {
                 ButtonDefaults.buttonColors(
-                    backgroundColor = itemColor,
+                    containerColor = itemColor,
                 )
             } else {
                 ButtonDefaults.buttonColors()

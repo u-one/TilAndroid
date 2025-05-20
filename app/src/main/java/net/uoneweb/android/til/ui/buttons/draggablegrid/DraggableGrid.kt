@@ -13,10 +13,11 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -211,6 +212,7 @@ private fun DraggableGridPreview() {
                 Box(modifier = Modifier.padding(4.dp)) {
                     Button(
                         modifier = Modifier.size(56.dp),
+                        shape = RoundedCornerShape(4.dp),
                         onClick = {},
                     ) {
                         Text(item as String)
@@ -232,9 +234,10 @@ private fun DraggableGridPreview() {
                             Modifier
                                 .size(56.dp)
                                 .offset(offsetX, offsetY),
+                        shape = RoundedCornerShape(4.dp),
                         colors =
                             ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.secondary,
+                                containerColor = MaterialTheme.colorScheme.secondary,
                             ),
                         onClick = {},
                     ) {

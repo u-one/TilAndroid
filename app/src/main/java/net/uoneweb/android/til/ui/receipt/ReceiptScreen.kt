@@ -50,6 +50,12 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     var feature by remember { mutableStateOf<Feature?>(null) }
 
     val loading = (selectedImageUri.value != null && receipt == ReceiptMetaData.Empty)
+    var loadingFeature by remember { mutableStateOf(false) }
+
+    if (receiptMappingInfo.isNotEmpty()) {
+        loadingFeature = false
+
+    }
 
     //OpenAiUi()
     //AiResult()
@@ -89,6 +95,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 }
             },
             onClickOsmInfo = { feature, isTest ->
+                loadingFeature = true
                 coroutineScope.launch {
                     val json = if (receipt == ReceiptMetaData.Empty) {
                         SampleData.dummyData(context)
@@ -103,6 +110,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 }
             },
             loading = loading,
+            loadingFeature = loadingFeature,
         )
     }
 }
@@ -122,6 +130,7 @@ fun ReceiptScreenMain(
     onClickImageUpload: () -> Unit = {},
     onClickOsmInfo: (feature: Feature?, isTest: Boolean) -> Unit = { feature: Feature?, b: Boolean -> },
     loading: Boolean = false,
+    loadingFeature: Boolean = false,
 ) {
 
     val scrollState = rememberScrollState()
@@ -212,6 +221,9 @@ fun ReceiptScreenMain(
                     }
                 }
                 ReceiptMappingPane(receiptMappingInfo)
+                if (loadingFeature) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
                 if (expandFeatureFinderDialog) {
                     MapFeatureFinderDialog(
                         location = location ?: Location.Default,

@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -74,7 +74,7 @@ private fun InputText(
     Column(modifier = modifier) {
         Text(
             text = "メッセージを入力して#を押してください",
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             color = Color.Black,
             modifier = Modifier.padding(10.dp),
         )
@@ -95,7 +95,7 @@ private fun SoundSwitch(
     Row {
         Text(
             text = "ダイヤル音",
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             color = Color.Black,
             modifier = Modifier.padding(10.dp),
         )
@@ -111,7 +111,7 @@ private fun HapticFeedbackSwitch(
     Row {
         Text(
             text = "振動",
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             color = Color.Black,
             modifier = Modifier.padding(10.dp),
         )

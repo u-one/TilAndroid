@@ -71,11 +71,18 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         initialValue = emptyList(),
     )
 
-    fun listReceiptMappingInfosByReceiptId(receiptId: Long): StateFlow<List<ReceiptMappingInfo>> = receiptMappingInfoRepository.getByReceiptId(receiptId).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = emptyList(),
-    )
+    private val reciptMappingInfoCache = mutableMapOf<Long, StateFlow<List<ReceiptMappingInfo>>>()
+
+    fun listReceiptMappingInfosByReceiptId(receiptId: Long): StateFlow<List<ReceiptMappingInfo>> =
+        reciptMappingInfoCache.getOrPut(receiptId) {
+            receiptMappingInfoRepository.getByReceiptId(receiptId)
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Lazily,
+                    initialValue = emptyList(),
+                )
+        }
+
 
     fun select(id: Long) {
         viewModelScope.launch {

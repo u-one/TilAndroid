@@ -2,27 +2,43 @@ package net.uoneweb.android.til.ui.receipt.data
 
 import com.google.gson.JsonParser
 
-class Receipt(val json: String) {
+class Receipt(jsonStr: String) {
     val version = "v3"
 
+    val json: String = jsonStr
+    val date: String
+    val time: String
+    val storeName: String
+    val storeBranch: String
+    val total: Int
+    val address: String
+
+    init {
+        if (jsonStr.isEmpty()) {
+            date = ""
+            time = ""
+            storeName = "NA"
+            storeBranch = ""
+            total = 0
+            address = ""
+        } else {
+            val jsonObj = JsonParser.parseString(jsonStr)?.asJsonObject
+            val storeObj = jsonObj?.get("store")?.asJsonObject
+            val receiptObj = jsonObj?.get("receipt")?.asJsonObject
+            date = receiptObj?.get("date")?.asString
+                ?.replace("-", "")
+                ?: ""
+            time = receiptObj?.get("time")?.asString
+                ?.replace(":", "")
+                ?: ""
+            storeName = storeObj?.get("name")?.asString ?: "NA"
+            storeBranch = storeObj?.get("branch")?.asString ?: ""
+            total = jsonObj?.get("total")?.asInt ?: 0
+            address = storeObj?.get("address")?.asString ?: ""
+        }
+    }
+
     fun title(): String {
-        if (json.isBlank()) return ""
-        val jsonObj = JsonParser.parseString(json).asJsonObject
-        val storeObj = jsonObj.get("store")?.asJsonObject
-        val receiptObj = jsonObj.get("receipt")?.asJsonObject
-
-        val date = receiptObj?.get("date")?.asString
-            ?.replace("-", "")
-            ?: ""
-        val time = receiptObj?.get("time")?.asString
-            ?.replace(":", "")
-            ?: ""
-
-        val storeName = storeObj?.get("name")?.asString ?: "NA"
-        val storeBranch = storeObj?.get("branch")?.asString ?: ""
-
-        val total = jsonObj.get("total")?.asString ?: "0"
-
         if (storeBranch.isNotBlank()) {
             return "${date}_${time}_${total}_${version}_${storeName}_${storeBranch}.json"
         }
@@ -30,11 +46,6 @@ class Receipt(val json: String) {
     }
 
     fun store(): String {
-        if (json.isBlank()) return ""
-        val jsonObj = JsonParser.parseString(json).asJsonObject
-        val storeObj = jsonObj.get("store")?.asJsonObject
-        val storeName = storeObj?.get("name")?.asString ?: "NA"
-        val storeBranch = storeObj?.get("branch")?.asString ?: ""
         return if (storeBranch.isNotBlank()) {
             "$storeName $storeBranch"
         } else {
@@ -43,19 +54,15 @@ class Receipt(val json: String) {
     }
 
     fun total(): Int {
-        if (json.isBlank()) return 0
-        val jsonObj = JsonParser.parseString(json).asJsonObject
-        return jsonObj.get("total")?.asInt ?: 0
+        return total
     }
 
     fun address(): String {
-        if (json.isBlank()) return ""
-        val jsonObj = JsonParser.parseString(json).asJsonObject
-        val storeObj = jsonObj.get("store")?.asJsonObject
-        return storeObj?.get("address")?.asString ?: ""
+        return address
     }
 
     companion object {
+
         val Empty = Receipt("")
 
         val Sample = Receipt(

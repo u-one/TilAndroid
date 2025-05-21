@@ -51,8 +51,6 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     private val _receipt: MutableState<ReceiptMetaData> = mutableStateOf(ReceiptMetaData.Empty)
     val receipt: State<ReceiptMetaData> = _receipt
     private val settings = SettingsDataStore(getApplication())
-    private val _location: MutableState<Location?> = mutableStateOf(null)
-    val location: State<Location?> = _location
     private val _feature: MutableState<Feature?> = mutableStateOf(null)
     val feature: State<Feature?> = _feature
 
@@ -77,6 +75,14 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         started = SharingStarted.Lazily,
         initialValue = emptyList(),
     )
+
+    fun listReceiptMappingInfos(): StateFlow<List<ReceiptMappingInfo>> =
+        receiptMappingInfoRepository.getAll()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue = emptyList(),
+            )
 
     private val reciptMappingInfoCache = mutableMapOf<Long, StateFlow<List<ReceiptMappingInfo>>>()
 
@@ -144,7 +150,9 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun setLocation(location: Location) {
-        _location.value = location
+        val newdata = _receipt.value.copy(location = location)
+        _receipt.value = newdata
+
     }
 
     suspend fun generateJsonFromImage(localFileUri: Uri) {

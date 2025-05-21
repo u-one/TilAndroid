@@ -36,9 +36,12 @@ class ReceiptMappingInfoRepository(context: Context) {
     }
 
     fun getAll(): Flow<List<ReceiptMappingInfo>> {
+        /*
         return dao.getAll().map { flow ->
             flow.map { ReceiptMappingInfoEntity.toReceiptMetaData(it) }
         }
+         */
+        return flowOf()
     }
 
     suspend fun update(obj: ReceiptMappingInfo) = withContext(Dispatchers.IO) {

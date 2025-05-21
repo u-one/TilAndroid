@@ -4,12 +4,13 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import net.uoneweb.android.gis.ui.location.Location
 
 
 data class ReceiptMetaData(
     val content: Receipt,
     val id: Long? = null,
-    val location: net.uoneweb.android.gis.ui.location.Location? = null,
+    val location: Location? = null,
     val filename: String? = null,
 ) {
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -21,8 +22,8 @@ data class ReceiptMetaData(
         metaObj.addProperty("version", content.version)
         if (location != null) {
             val locationObj = JsonObject()
-            locationObj.addProperty("latitude", location.latitude)
-            locationObj.addProperty("longitude", location.longitude)
+            locationObj.addProperty("latitude", location.latitude.value)
+            locationObj.addProperty("longitude", location.longitude.value)
             metaObj.add("location", locationObj)
         }
         if (filename != null) {

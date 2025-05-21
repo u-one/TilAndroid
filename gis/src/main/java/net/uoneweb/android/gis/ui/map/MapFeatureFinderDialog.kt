@@ -28,9 +28,9 @@ import net.uoneweb.android.gis.ui.location.Location
 fun MapFeatureFinderDialog(
     location: Location = Location.Default,
     onFeatureSelected: (Feature) -> Unit = {},
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
 ) {
-    val mapViewState = remember { MapViewState(initialLocation = location) }
+    val mapViewState = remember { MapViewState(initialLocation = location, initialZoom = 18.0) }
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
@@ -58,7 +58,7 @@ fun MapFeatureFinderDialog(
                                 .size(32.dp)
                                 .align(Alignment.Center),
                         )
-                        Text(mapViewState.mapLocation.latitude.toString() + ", " + mapViewState.mapLocation.longitude.toString())
+                        Text(mapViewState.mapLocation.latitude.toString() + ", " + mapViewState.mapLocation.longitude.toString() + " zoom:" + mapViewState.zoom)
 
                         CurrentLocationButton(
                             modifier = Modifier
@@ -72,11 +72,13 @@ fun MapFeatureFinderDialog(
                             )
                         }
                     }
-                    FeatureList(mapViewState, modifier = Modifier.fillMaxSize(), onFeatureSelected = {
-                        mapLibreFeature ->
-                        val feature = Feature(mapLibreFeature.toJson())
-                        onFeatureSelected(feature)
-                    })
+                    FeatureList(
+                        mapViewState, modifier = Modifier.fillMaxSize(),
+                        onFeatureSelected = { mapLibreFeature ->
+                            val feature = Feature(mapLibreFeature.toJson())
+                            onFeatureSelected(feature)
+                        },
+                    )
                 }
 
             }

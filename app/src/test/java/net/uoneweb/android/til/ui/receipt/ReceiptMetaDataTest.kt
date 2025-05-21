@@ -1,6 +1,7 @@
 package net.uoneweb.android.til.ui.receipt
 
 import com.google.gson.JsonParser
+import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 import org.junit.Assert.assertEquals
@@ -26,7 +27,7 @@ class ReceiptMetaDataTest {
     fun testJsonFilename() {
         val receipt = Receipt(receiptJson)
         val filename = "filename"
-        val receiptMetaData = ReceiptMetaData(receipt, null, filename)
+        val receiptMetaData = ReceiptMetaData(receipt, null, null, filename)
 
         val actual = receiptMetaData.json()
 
@@ -41,7 +42,7 @@ class ReceiptMetaDataTest {
     fun testJsonLocation() {
         val receipt = Receipt(receiptJson)
         val location = Location(1.0, 2.0)
-        val receiptMetaData = ReceiptMetaData(receipt, location, null)
+        val receiptMetaData = ReceiptMetaData(receipt, null, location, null)
 
         val actual = receiptMetaData.json()
 

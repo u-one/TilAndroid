@@ -19,7 +19,7 @@ fun ReceiptMappingList(receiptMappingInfoList: List<ReceiptMappingInfo> = emptyL
                 .padding(8.dp)
                 .clickable { onClickItem(item) },
         ) {
-            Text(item.id.toString())
+            Text(item.id.toString() + " " + item.receiptId.toString() + " " + item.updateRecommendation.substring(0..20), modifier = Modifier.padding(8.dp))
         }
     }
 }

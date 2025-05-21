@@ -37,9 +37,9 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
 
     val receiptMappingInfo by viewModel.json
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
-    val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
+    //val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
+    val receiptMappingInfoList = viewModel.listReceiptMappingInfos().collectAsState()
 
-    val location by viewModel.location
 
     var loadingFeature by remember { mutableStateOf(false) }
 
@@ -52,7 +52,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
         selectedImageUri = selectedImageUri.value,
         uploadedImageUri = uploadedImageUri,
         receipt = receipt,
-        location = location,
+        location = receipt.location,
         loading = loading,
     )
 
@@ -67,7 +67,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val receiptMappingUiState = ReceiptMappingUiState(
         isLoading = loadingFeature,
         receiptMappingInfo = receiptMappingInfo,
-        location = location ?: Location.Default,
+        location = receipt.location ?: Location.Default,
     )
 
     Column {

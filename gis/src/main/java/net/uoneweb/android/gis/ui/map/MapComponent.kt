@@ -57,8 +57,18 @@ fun MapView(
 
     LaunchedEffect(mapViewState.requestLocation) {
         mapView.getMapAsync { map ->
-            if (map.cameraPosition.target?.latitude != mapViewState.requestLocation.latitude || map.cameraPosition.target?.longitude != mapViewState.requestLocation.longitude) {
-                map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(mapViewState.requestLocation.latitude, mapViewState.requestLocation.longitude)))
+            if (
+                map.cameraPosition.target?.latitude != mapViewState.requestLocation.latitude.value
+                || map.cameraPosition.target?.longitude != mapViewState.requestLocation.longitude.value
+            ) {
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLng(
+                        LatLng(
+                            mapViewState.requestLocation.latitude.value,
+                            mapViewState.requestLocation.longitude.value,
+                        ),
+                    ),
+                )
             }
         }
 
@@ -82,7 +92,7 @@ fun MapView(
 
                 map.cameraPosition = CameraPosition
                     .Builder()
-                    .target(LatLng(mapViewState.requestLocation.latitude, mapViewState.requestLocation.longitude))
+                    .target(LatLng(mapViewState.requestLocation.latitude.value, mapViewState.requestLocation.longitude.value))
                     .zoom(mapViewState.zoom)
                     .build()
                 map.addOnMapClickListener { latlng ->

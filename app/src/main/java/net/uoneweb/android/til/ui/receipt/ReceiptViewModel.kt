@@ -18,7 +18,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import net.uoneweb.android.gis.ui.location.Location
+import net.uoneweb.android.gis.ui.map.Feature
 import net.uoneweb.android.til.data.SettingsDataStore
+import net.uoneweb.android.til.receiptmapping.ui.ReceiptMappingEvent
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
@@ -48,6 +51,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     private val _receipt: MutableState<ReceiptMetaData> = mutableStateOf(ReceiptMetaData.Empty)
     val receipt: State<ReceiptMetaData> = _receipt
     private val settings = SettingsDataStore(getApplication())
+    private val _location: MutableState<Location?> = mutableStateOf(null)
+    val location: State<Location?> = _location
+    private val _feature: MutableState<Feature?> = mutableStateOf(null)
+    val feature: State<Feature?> = _feature
 
     init {
         this.viewModelScope.launch {
@@ -134,6 +141,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
                 println("downloadUri: failed")
             }
         }
+    }
+
+    fun setLocation(location: Location) {
+        _location.value = location
     }
 
     suspend fun generateJsonFromImage(localFileUri: Uri) {
@@ -256,4 +267,33 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         )
     }
 
+    fun onReceiptMappingEvent(event: ReceiptMappingEvent) {
+        //loadingFeature = true
+        val json = if (receipt.value == ReceiptMetaData.Empty) {
+            SampleData.dummyData(getApplication())
+        } else {
+            receipt.value.content.json
+        }
+        when (event) {
+            is ReceiptMappingEvent.OnInferClicked -> {
+                if (feature.value == null) {
+                    viewModelScope.launch {
+                        generateOsmInfoFromJson(json, false)
+                    }
+                } else {
+                    viewModelScope.launch {
+                        // TODO: feature
+                        generateOsmInfoFromReceiptAndFeature(json, feature.value!!.geojson)
+                    }
+                }
+            }
+
+            is ReceiptMappingEvent.OnTestInferClicked -> {
+                viewModelScope.launch {
+                    generateOsmInfoFromJson("", true)
+                }
+
+            }
+        }
+    }
 }

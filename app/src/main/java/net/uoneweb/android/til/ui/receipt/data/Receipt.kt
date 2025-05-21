@@ -57,7 +57,22 @@ class Receipt(val json: String) {
 
     companion object {
         val Empty = Receipt("")
-    }
 
+        val Sample = Receipt(
+            """
+            {
+              "store": {
+                "name": "store",
+                "branch": "branch"
+              },
+              "receipt": {
+                "date": "2025-01-01",
+                "time": "12:34"
+              },
+              "total": 5678 
+            }
+        """.trimIndent(),
+        )
+    }
 }
 

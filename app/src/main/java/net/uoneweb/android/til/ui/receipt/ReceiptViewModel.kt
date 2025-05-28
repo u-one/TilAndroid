@@ -44,15 +44,24 @@ import retrofit2.Response
 class ReceiptViewModel(application: Application) : AndroidViewModel(application) {
     private val receiptMetaDataRepository = ReceiptMetaDataRepository(application)
     private val receiptMappingInfoRepository = ReceiptMappingInfoRepository(application)
+
     private val _uploadedFileUrl: MutableState<Uri?> = mutableStateOf(null)
     val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
-    private val _json: MutableState<String> = mutableStateOf("")
-    val json: State<String> = _json
+
     private val _receipt: MutableState<ReceiptMetaData> = mutableStateOf(ReceiptMetaData.Empty)
     val receipt: State<ReceiptMetaData> = _receipt
+    private val _receiptLoading: MutableState<Boolean> = mutableStateOf(false)
+    val receiptLoading: State<Boolean> = _receiptLoading
+
     private val settings = SettingsDataStore(getApplication())
+
     private val _feature: MutableState<Feature?> = mutableStateOf(null)
     val feature: State<Feature?> = _feature
+    private val _loadingFeature: MutableState<Boolean> = mutableStateOf(false)
+    val loadingFeature: MutableState<Boolean> = _loadingFeature
+    private val _osmInfoJson: MutableState<String> = mutableStateOf("")
+    val osmInfoJson: State<String> = _osmInfoJson
+
 
     init {
         this.viewModelScope.launch {
@@ -110,7 +119,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
 
     fun reset() {
         _uploadedFileUrl.value = null
-        _json.value = ""
+        _osmInfoJson.value = ""
         _receipt.value = ReceiptMetaData.Empty
     }
 
@@ -156,6 +165,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     }
 
     suspend fun generateJsonFromImage(localFileUri: Uri) {
+        _receiptLoading.value = true
         val contentResolver = getApplication<Application>().contentResolver
         val bitmap: Bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(localFileUri))
         val prompt = content {
@@ -170,6 +180,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         print(parser.json())
 
         _receipt.value = ReceiptMetaData(Receipt(parser.json()))
+        _receiptLoading.value = false
     }
 
     fun receiptResultTest() {
@@ -180,7 +191,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
 
     suspend fun generateOsmInfoFromJson(json: String, isTest: Boolean) {
         if (isTest) {
-            _json.value = SampleData.responseSample(getApplication())
+            _osmInfoJson.value = SampleData.responseSample(getApplication())
             return
         }
         val prompt = OpenAiReceiptPrompt.promptToInferOsmFeatureFromReceipt(getApplication(), json)
@@ -198,6 +209,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             response_format = ResponseFormat(type = "json_object"),
         )
         Log.i("OpenAI", "Request start")
+        _loadingFeature.value = true
         RetrofitInstance.api.getChatCompletion(request).enqueue(
             object : Callback<ChatResponse> {
                 override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
@@ -214,14 +226,16 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
                         viewModelScope.launch {
                             receiptMappingInfoRepository.insert(ReceiptMappingInfo.fromJson(jsonString))
                         }
-                        _json.value = response.body()?.choices?.get(0)?.message?.content ?: ""
+                        _osmInfoJson.value = response.body()?.choices?.get(0)?.message?.content ?: ""
                     } else {
                         Log.e("OpenAI", "Response failed: ${response.errorBody()?.string()}")
                     }
+                    _loadingFeature.value = false
                 }
 
                 override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
                     println("Failed to get chat completion: ${t.message}")
+                    _loadingFeature.value = false
                 }
             },
         )
@@ -246,6 +260,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             response_format = ResponseFormat(type = "json_object"),
         )
         Log.i("OpenAI", "Request start")
+        _loadingFeature.value = true
         RetrofitInstance.api.getChatCompletion(request).enqueue(
             object : Callback<ChatResponse> {
                 override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
@@ -262,21 +277,22 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
                         viewModelScope.launch {
                             receiptMappingInfoRepository.insert(ReceiptMappingInfo.fromJson(jsonString))
                         }
-                        _json.value = response.body()?.choices?.get(0)?.message?.content ?: ""
+                        _osmInfoJson.value = response.body()?.choices?.get(0)?.message?.content ?: ""
                     } else {
                         Log.e("OpenAI", "Response failed: ${response.errorBody()?.string()}")
                     }
+                    _loadingFeature.value = false
                 }
 
                 override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
                     println("Failed to get chat completion: ${t.message}")
+                    _loadingFeature.value = false
                 }
             },
         )
     }
 
     fun onReceiptMappingEvent(event: ReceiptMappingEvent) {
-        //loadingFeature = true
         val json = if (receipt.value == ReceiptMetaData.Empty) {
             SampleData.dummyData(getApplication())
         } else {

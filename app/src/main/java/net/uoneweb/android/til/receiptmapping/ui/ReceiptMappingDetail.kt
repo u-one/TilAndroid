@@ -1,5 +1,6 @@
 package net.uoneweb.android.til.receiptmapping.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
@@ -11,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.gis.ui.map.Feature
@@ -35,42 +35,44 @@ fun ReceiptMappingDetail(
     uiState: ReceiptMappingUiState,
     onEvent: (ReceiptMappingEvent) -> Unit,
 ) {
+
     var expandFeatureFinderDialog by remember { mutableStateOf(false) }
 
-    Button(onClick = { expandFeatureFinderDialog = true }) {
-        Text("Select Feature from Map")
-    }
-    Row {
-        Button(onClick = { onEvent(ReceiptMappingEvent.OnInferClicked()) }) {
-            Text("ReceiptMappingInfo")
+    Column {
+        Button(onClick = { expandFeatureFinderDialog = true }) {
+            Text("Select Feature from Map")
         }
-        Button(onClick = { onEvent(ReceiptMappingEvent.OnTestInferClicked) }) {
-            Text("TestReceiptMappingInfo")
+        Row {
+            Button(onClick = { onEvent(ReceiptMappingEvent.OnInferClicked()) }) {
+                Text("ReceiptMappingInfo")
+            }
+            Button(onClick = { onEvent(ReceiptMappingEvent.OnTestInferClicked) }) {
+                Text("TestReceiptMappingInfo")
+            }
         }
-    }
-    ReceiptMappingPane(uiState.receiptMappingInfo)
-    if (uiState.isLoading) {
-        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-    }
-    if (expandFeatureFinderDialog) {
-        MapFeatureFinderDialog(
-            location = uiState.location,
-            onFeatureSelected = { feature ->
-                println("Selected feature: $feature")
-                expandFeatureFinderDialog = false
-                onEvent(ReceiptMappingEvent.OnInferClicked(feature))
+        ReceiptMappingPane(uiState.receiptMappingInfo)
+        if (uiState.isLoading) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
+        if (expandFeatureFinderDialog) {
+            MapFeatureFinderDialog(
+                location = uiState.location,
+                onFeatureSelected = { feature ->
+                    println("Selected feature: $feature")
+                    expandFeatureFinderDialog = false
+                    onEvent(ReceiptMappingEvent.OnInferClicked(feature))
 
-            },
-            onDismissRequest = { expandFeatureFinderDialog = false },
-        )
+                },
+                onDismissRequest = { expandFeatureFinderDialog = false },
+            )
+        }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ReceiptMappingDetailPreview() {
-    val context = LocalContext.current
-    val receiptMappingInfo = SampleData.responseSample(context)
+    val receiptMappingInfo = SampleData.shortSample()
     val uiState = ReceiptMappingUiState(
         isLoading = false,
         receiptMappingInfo = receiptMappingInfo,

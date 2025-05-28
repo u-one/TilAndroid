@@ -121,7 +121,7 @@ fun getCurrentLocation(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewCurrentLocationComponent() {
     CurrentLocationComponent(location = Location(1.0, 2.0)) {}

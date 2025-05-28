@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMappingInfo
@@ -122,8 +121,7 @@ fun ComparingItemsCard(receiptMappingInfo: ReceiptMappingInfo) {
 @Preview(showBackground = true, widthDp = 600, heightDp = 1200)
 @Composable
 fun PreviewReceiptMappingPane() {
-    val context = LocalContext.current
-    val json = SampleData.responseSample(context)
+    val json = SampleData.shortSample()
 
     ReceiptMappingPane(json)
 }

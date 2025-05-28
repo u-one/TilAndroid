@@ -33,20 +33,15 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val selectedImageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
     val uploadedImageUri by viewModel.uploadedFileUrl
     val receipt by viewModel.receipt
-    val loading = (selectedImageUri.value != null && receipt == ReceiptMetaData.Empty)
+    val loading by viewModel.receiptLoading
 
-    val receiptMappingInfo by viewModel.json
+    val receiptMappingInfo by viewModel.osmInfoJson
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
     //val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
     val receiptMappingInfoList = viewModel.listReceiptMappingInfos().collectAsState()
 
 
-    var loadingFeature by remember { mutableStateOf(false) }
-
-    if (receiptMappingInfo.isNotEmpty()) {
-        loadingFeature = false
-
-    }
+    val loadingFeature by viewModel.loadingFeature
 
     val receiptDetailUiState = ReceiptDetailUiState(
         selectedImageUri = selectedImageUri.value,

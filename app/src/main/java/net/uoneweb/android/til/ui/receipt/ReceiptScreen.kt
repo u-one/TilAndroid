@@ -12,7 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,7 +29,7 @@ import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
-    val selectedImageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
+    val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
     val uploadedImageUri by viewModel.uploadedFileUrl
     val receipt by viewModel.receipt
     val loading by viewModel.receiptLoading

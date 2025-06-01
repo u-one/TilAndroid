@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.compose.material) // TODO: remove
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation(libs.androidx.ui.tooling.preview)
 

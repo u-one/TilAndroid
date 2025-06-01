@@ -254,6 +254,7 @@ private fun TilNavHost(
         }
         composable(Screen.Receipt.route) {
             ReceiptScreen()
+            //ReceiptListScreen()
         }
         composable(Screen.Drive.route) {
             DriveScreen()

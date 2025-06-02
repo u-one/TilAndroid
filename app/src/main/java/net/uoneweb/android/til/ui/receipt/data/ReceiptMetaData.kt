@@ -16,8 +16,6 @@ data class ReceiptMetaData(
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     fun json(): String {
-
-
         val metaObj = JsonObject()
         metaObj.addProperty("version", content.version)
         if (location != null) {
@@ -45,28 +43,37 @@ data class ReceiptMetaData(
         fun fromJson(json: String): ReceiptMetaData {
             val gson = Gson()
             val jsonObj = JsonParser.parseString(json).asJsonObject
-            val receiptObj = jsonObj.getAsJsonObject("receipt")
-            val receipt = Receipt(gson.toJson(receiptObj))
 
-            val metaObj = jsonObj.getAsJsonObject("meta")
-            val id = if (metaObj.has("id")) {
-                metaObj.get("id").asLong
-            } else null
+            if (jsonObj.has("meta")) {
+                val metaObj = jsonObj.getAsJsonObject("meta")
+                val id = if (metaObj.has("id")) {
+                    metaObj.get("id").asLong
+                } else null
 
-            val location = if (metaObj.has("location")) {
-                val locationObj = metaObj.getAsJsonObject("location")
-                net.uoneweb.android.gis.ui.location.Location(
-                    locationObj.get("latitude").asDouble,
-                    locationObj.get("longitude").asDouble,
-                )
-            } else null
+                val location = if (metaObj.has("location")) {
+                    val locationObj = metaObj.getAsJsonObject("location")
+                    Location(
+                        locationObj.get("latitude").asDouble,
+                        locationObj.get("longitude").asDouble,
+                    )
+                } else null
 
+                val filename = if (metaObj.has("filename")) {
+                    metaObj.get("filename").asString
+                } else null
 
-            val filename = if (metaObj.has("filename")) {
-                metaObj.get("filename").asString
-            } else null
+                val receiptObj = jsonObj.getAsJsonObject("receipt")
+                val receipt = Receipt(gson.toJson(receiptObj))
+                return ReceiptMetaData(receipt, id, location, filename)
+            } else if (jsonObj.has("receipt")) {
+                // v2, v1
+                val receiptObj = jsonObj.getAsJsonObject("receipt")
+                val receipt = Receipt(gson.toJson(receiptObj))
+                return ReceiptMetaData(receipt)
+            } else {
+                throw IllegalArgumentException("Invalid JSON format for ReceiptMetaData")
 
-            return ReceiptMetaData(receipt, id, location, filename)
+            }
         }
     }
 }

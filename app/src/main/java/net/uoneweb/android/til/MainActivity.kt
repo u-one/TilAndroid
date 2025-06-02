@@ -21,17 +21,27 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -43,8 +53,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.LocationScreen
 import net.uoneweb.android.gis.ui.map.MapScreen
+import net.uoneweb.android.til.data.SettingsDataStore
 import net.uoneweb.android.til.ui.audio.AudioScreen
 import net.uoneweb.android.til.ui.buttons.ButtonsScreen
 import net.uoneweb.android.til.ui.camera.CameraScreen
@@ -123,13 +135,63 @@ class MainActivity : AppCompatActivity() {
 @Composable
 private fun TilApp() {
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = {
-            BottomBar(navController)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val settings = SettingsDataStore(context)
+    val showBottomBar by settings.showBottomBarFlow.collectAsState(initial = true)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Text(
+                    text = "メニュー",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(16.dp),
+                )
+                screens.forEach { screen ->
+                    androidx.compose.material3.NavigationDrawerItem(
+                        icon = { Icon(screen.icon, contentDescription = stringResource(screen.resourceId)) },
+                        label = { Text(stringResource(screen.resourceId)) },
+                        selected = false,
+                        onClick = {
+                            navController.navigateLocal(screen.route)
+                            scope.launch { drawerState.close() }
+                        },
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                    )
+                }
+            }
         },
-    ) { innerPadding ->
-        TilNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
+    ) {
+        Scaffold(
+            topBar = {
+                TopBar(
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                )
+            },
+            bottomBar = {
+                if (showBottomBar) {
+                    BottomBar(navController)
+                }
+            },
+        ) { innerPadding ->
+            TilNavHost(navController = navController, modifier = Modifier.padding(innerPadding))
+        }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(onMenuClick: () -> Unit) {
+    androidx.compose.material3.TopAppBar(
+        title = { Text("TIL App") },
+        navigationIcon = {
+            IconButton(onClick = onMenuClick) {
+                Icon(Icons.Filled.Menu, contentDescription = "メニュー")
+            }
+        },
+    )
 }
 
 @Composable
@@ -270,4 +332,3 @@ private fun TilNavHost(
         }
     }
 }
-

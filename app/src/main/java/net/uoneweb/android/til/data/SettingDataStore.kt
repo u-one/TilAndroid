@@ -1,6 +1,7 @@
 package net.uoneweb.android.til.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -12,6 +13,7 @@ import java.io.IOException
 
 
 class SettingsDataStore(context: Context) {
+    private val SHOW_BOTTOM_BAR_KEY = booleanPreferencesKey("show_bottom_bar")
     private val OPEN_API_KEY = stringPreferencesKey("open_api_key")
     private var apiKey = ""
 
@@ -33,6 +35,25 @@ class SettingsDataStore(context: Context) {
         .map { preferences ->
             preferences[OPEN_API_KEY] ?: ""
         }
+
+    val showBottomBarFlow: Flow<Boolean> = context.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                exception.printStackTrace()
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[SHOW_BOTTOM_BAR_KEY] == true
+        }
+
+    suspend fun saveShowBottomBar(show: Boolean, context: Context) {
+        context.dataStore.edit { preferences ->
+            preferences[SHOW_BOTTOM_BAR_KEY] = show
+        }
+    }
 }
 
 private const val APP_PREFERENCES_NAME = "app_preference"

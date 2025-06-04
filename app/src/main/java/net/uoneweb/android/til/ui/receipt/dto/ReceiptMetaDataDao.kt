@@ -24,4 +24,7 @@ interface ReceiptMetaDataDao {
 
     @Delete
     suspend fun delete(metadata: ReceiptMetaDataEntity)
+
+    @Query("DELETE FROM receipt_metadata")
+    suspend fun deleteAll()
 }

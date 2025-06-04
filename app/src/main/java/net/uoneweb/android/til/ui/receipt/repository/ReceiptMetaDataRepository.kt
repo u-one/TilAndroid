@@ -36,4 +36,8 @@ class ReceiptMetaDataRepository(context: Context) {
         val entity = ReceiptMetaDataEntity.fromReceiptMetaData(metadata)
         dao.delete(entity)
     }
+
+    suspend fun deleteAll() = withContext(Dispatchers.IO) {
+        dao.deleteAll()
+    }
 }

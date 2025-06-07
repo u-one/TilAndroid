@@ -38,6 +38,12 @@ data class ReceiptMetaData(
 
     companion object {
         val Empty = ReceiptMetaData(Receipt.Empty)
+        val Sample = ReceiptMetaData(
+            content = Receipt.Sample,
+            id = 1L,
+            location = Location(12.34, 56.78),
+            filename = "sample_receipt.json",
+        )
 
 
         fun fromJson(json: String): ReceiptMetaData {

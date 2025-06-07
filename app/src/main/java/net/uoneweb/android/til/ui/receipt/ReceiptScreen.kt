@@ -198,7 +198,7 @@ fun ReceiptScreenMainPreview() {
 
     ReceiptScreenMain(
         list = listOf(
-            ReceiptMetaData(Receipt.Empty),
+            ReceiptMetaData(Receipt.Sample),
             ReceiptMetaData(Receipt.Empty),
         ),
         receiptDetailUiState = receiptDetailUiState,

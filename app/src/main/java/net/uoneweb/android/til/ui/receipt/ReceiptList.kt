@@ -1,7 +1,7 @@
 package net.uoneweb.android.til.ui.receipt
 
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 
 
@@ -25,15 +26,9 @@ fun ReceiptList(list: List<ReceiptMetaData> = emptyList(), onClickItem: (item: R
         }
 
     }
-    sortedList.forEach { item ->
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .clickable {
-                    onClickItem(item)
-                },
-        ) {
-            Text(item.content.title())
+    Column {
+        sortedList.forEach { item ->
+            ReceiptListItem(item)
         }
     }
 }
@@ -54,11 +49,11 @@ fun ReceiptListItem(item: ReceiptMetaData = ReceiptMetaData.Empty, onClickItem: 
 @Preview(showBackground = true)
 @Composable
 fun ReceiptListPreview() {
-    ReceiptList()
+    ReceiptList(listOf(ReceiptMetaData.Sample, ReceiptMetaData.Empty))
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ReceiptListItemPreview() {
-    ReceiptListItem()
+    ReceiptListItem(ReceiptMetaData.Sample)
 }

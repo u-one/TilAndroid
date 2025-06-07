@@ -9,6 +9,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Receipt
@@ -16,25 +17,18 @@ import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 
 @Composable
 fun ReceiptInfoPane(
-    receipt: ReceiptMetaData, imageUri: Uri?, location: net.uoneweb.android.gis.ui.location.Location?,
+    metadata: ReceiptMetaData, imageUri: Uri?, location: Location?,
     onSaveMetaData: (ReceiptMetaData) -> Unit = {},
 ) {
-    if (receipt == ReceiptMetaData.Empty) {
+    if (metadata == ReceiptMetaData.Empty) {
         return
     }
-
-    // TODO: refactor
-    val metadata = if (receipt.id == null || receipt.location != location) {
-        ReceiptMetaData(receipt.content, receipt.id, location, imageUri?.lastPathSegment)
-    } else receipt
-
-
 
     Column {
         Row {
             TextShareButton(metadata.content.title(), metadata.json())
             SaveButton(
-                enabled = metadata.id == null || receipt.location != location,
+                enabled = metadata.id == null || metadata.location != location,
                 onClick = { onSaveMetaData(metadata) },
             )
         }
@@ -52,13 +46,7 @@ fun ReceiptInfoPane(
         }
         Text("ファイル名:")
         Text(text = metadata.content.title())
-        Text("json:")
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = androidx.compose.ui.graphics.Color.LightGray),
-            text = metadata.json(),
-        )
+        JsonTextView(metadata)
     }
 }
 
@@ -83,6 +71,19 @@ fun SaveButtonPreview() {
     SaveButton(
         enabled = false,
     )
+}
+
+@Composable
+private fun JsonTextView(metadata: ReceiptMetaData) {
+    Column {
+        Text("json:")
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.LightGray),
+            text = metadata.json(),
+        )
+    }
 }
 
 @Composable

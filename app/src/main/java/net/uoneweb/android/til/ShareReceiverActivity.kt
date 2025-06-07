@@ -1,7 +1,5 @@
 package net.uoneweb.android.til
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -25,12 +23,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.coroutineScope
-import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 import net.uoneweb.android.til.ui.receipt.repository.ReceiptMetaDataRepository
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 class ShareReceiverActivity : AppCompatActivity() {
 
@@ -44,7 +39,7 @@ class ShareReceiverActivity : AppCompatActivity() {
 
         Log.d("ShareReceiverActivity", intent.toString())
         try {
-            event = parse(intent)
+            event = IntentParser(contentResolver).parse(intent)
         } catch (e: Exception) {
             Log.e("ShareReceiverActivity", "Error: ", e)
             Toast.makeText(this@ShareReceiverActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
@@ -57,6 +52,8 @@ class ShareReceiverActivity : AppCompatActivity() {
             LaunchedEffect(Unit) {
                 if (event is IntentEvent.MultipleReceipts) {
                     showDeleteAllDialog = true
+                } else {
+                    handleEvent(event)
                 }
             }
 
@@ -69,7 +66,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                                     showDeleteAllDialog = false
                                     lifecycle.coroutineScope.launch {
                                         receiptMetaDataRepository.deleteAll()
-                                        handleJson((event as IntentEvent.MultipleReceipts).text)
+                                        handleEvent(event)
                                     }
                                 },
                                 onDismiss = {
@@ -87,83 +84,35 @@ class ShareReceiverActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
 
-    fun parse(intent: Intent?): IntentEvent {
-        when (intent?.action) {
-            Intent.ACTION_SEND -> {
-                if (intent.type != "text/plain") {
-                    return IntentEvent.Unknown("not text/plain")
-                }
-                return IntentEvent.Unknown(intent.getStringExtra(Intent.EXTRA_TEXT) ?: "empty text/plain")
+    suspend fun handleEvent(event: IntentEvent) {
+        when (event) {
+            is IntentEvent.MultipleReceipts -> {
+                Log.d("ShareReceiverActivity", "MultipleReceipts: ${event.data().size} items")
+                saveMultipleReceipts(event.data())
             }
 
-            Intent.ACTION_VIEW -> {
-                val uri: Uri? = intent.data
-                if (uri == null) {
-                    return IntentEvent.Unknown(intent.getStringExtra(Intent.EXTRA_TEXT) ?: "no uri or text")
-                }
-                if (intent.type == "text/plain" || intent.type == "application/json") {
-                    val text = readString(uri)
-                    val jsonObj = JsonParser.parseString(text).asJsonObject
-                    if (jsonObj.has("receipts")) {
-                        return IntentEvent.MultipleReceipts(text)
-                    } else if (jsonObj.has("meta")) {
-                        return IntentEvent.ReceiptV3(text)
-                    } else if (jsonObj.has("receipt")) {
-                        return IntentEvent.ReceiptV2(text)
-                    } else {
-                        return IntentEvent.Unknown("unknown json format: $text")
-                    }
-                }
+            is IntentEvent.ReceiptV3 -> {
+                Log.d("ShareReceiverActivity", "ReceiptV3: ${event.data()}")
+                receiptMetaDataRepository.insert(event.data())
             }
 
-            else -> {
-                return IntentEvent.Unknown("unknown action: ${intent?.action}")
+            is IntentEvent.ReceiptV2 -> {
+                Log.d("ShareReceiverActivity", "ReceiptV2: ${event.data()}")
+                receiptMetaDataRepository.insert(event.data())
+            }
+
+            is IntentEvent.Unknown -> {
+                Log.e("ShareReceiverActivity", "Unknown event: ${event.text}")
+                Toast.makeText(this@ShareReceiverActivity, "Unknown event: ${event.text}", Toast.LENGTH_LONG).show()
             }
         }
-        return IntentEvent.Unknown("unsupported type: ${intent}")
     }
 
-    fun readString(uri: Uri): String {
-        contentResolver.openInputStream(uri)?.use { inputStream ->
-            BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                return reader.readText()
-            }
-        } ?: throw IllegalArgumentException("Unable to open input stream for URI: $uri")
-    }
-
-    suspend fun handleJson(text: String) {
-        val jsonObj = JsonParser.parseString(text).asJsonObject
-        Log.d("handleJson", jsonObj.toString())
-        if (jsonObj.has("receipts")) {
-            saveMultipleReceipts(text)
-            return
-        } else if (jsonObj.has("meta")) {
-            // v3
-            val data = ReceiptMetaData.fromJson(text)
-            receiptMetaDataRepository.insert(data)
-            return
-        } else if (jsonObj.has("receipt")) {
-            // v2, v1
-            val data = ReceiptMetaData.fromJson(text)
-            receiptMetaDataRepository.insert(data)
-            return
-        } else {
-            Log.e("handleJson", "Unknown JSON format: $text")
-            Toast.makeText(this@ShareReceiverActivity, "Invalid JSON format", Toast.LENGTH_LONG).show()
-            return
-        }
-    }
-
-    suspend fun saveMultipleReceipts(json: String) {
-        val jsonObj = JsonParser.parseString(json).asJsonObject
-        val array = jsonObj.getAsJsonArray("receipts")
-        val total = array.size()
+    suspend fun saveMultipleReceipts(list: List<ReceiptMetaData>) {
         var cnt = 0
-        for (receipt in array) {
+        for (receipt in list) {
             val data = ReceiptMetaData.fromJson(receipt.toString())
             val id = receiptMetaDataRepository.insert(data)
             if (id >= 0) {
@@ -173,7 +122,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                 Log.e("handleJson", "Failed to insert receipt: $data")
             }
         }
-        Log.d("handleJson", "Inserted $cnt/$total receipts")
+        Log.d("handleJson", "Inserted $cnt/${list.size} receipts")
     }
 }
 

@@ -45,6 +45,8 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     private val receiptMetaDataRepository = ReceiptMetaDataRepository(application)
     private val receiptMappingInfoRepository = ReceiptMappingInfoRepository(application)
 
+    private val _selectedImageUri: MutableState<Uri?> = mutableStateOf(null)
+    val selectedImageUri: State<Uri?> = _selectedImageUri
     private val _uploadedFileUrl: MutableState<Uri?> = mutableStateOf(null)
     val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
 
@@ -52,6 +54,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     val receipt: State<ReceiptMetaData> = _receipt
     private val _receiptLoading: MutableState<Boolean> = mutableStateOf(false)
     val receiptLoading: State<Boolean> = _receiptLoading
+
 
     private val settings = SettingsDataStore(getApplication())
 
@@ -165,6 +168,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     }
 
     suspend fun generateJsonFromImage(localFileUri: Uri) {
+        _selectedImageUri.value = localFileUri
         _receiptLoading.value = true
         val contentResolver = getApplication<Application>().contentResolver
         val bitmap: Bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(localFileUri))
@@ -179,13 +183,13 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         val parser = GeminiReceiptResponse(response.text)
         print(parser.json())
 
-        _receipt.value = ReceiptMetaData(Receipt(parser.json()))
+        _receipt.value = ReceiptMetaData(Receipt.fromJson(parser.json()))
         _receiptLoading.value = false
     }
 
     fun receiptResultTest() {
         val testData = SampleData.dummyData(getApplication())
-        _receipt.value = ReceiptMetaData(Receipt(testData))
+        _receipt.value = ReceiptMetaData(Receipt.fromJson(testData))
     }
 
 

@@ -14,7 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,9 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.uoneweb.android.gis.ui.location.Location
+import net.uoneweb.android.til.ui.receipt.data.Item
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 import java.text.NumberFormat
@@ -55,6 +58,7 @@ fun ReceiptInfoPane(
     }
 
     var showFullJson by remember { mutableStateOf(false) }
+    var showItems by remember { mutableStateOf(true) }
     val currencyFormatter = remember { NumberFormat.getCurrencyInstance(Locale.JAPAN) }
 
     Card(
@@ -103,15 +107,6 @@ fun ReceiptInfoPane(
                 )
             }
 
-            // 金額情報
-            InfoRow(
-                icon = Icons.Default.MonetizationOn,
-                label = "合計",
-                value = currencyFormatter.format(metadata.content.total()),
-                color = MaterialTheme.colorScheme.tertiary,
-                valueStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            )
-
             // 住所情報
             if (metadata.content.address().isNotEmpty()) {
                 InfoRow(
@@ -122,7 +117,110 @@ fun ReceiptInfoPane(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 商品項目セクション
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 8.dp),
+                    )
+                    Text(
+                        text = "商品項目 (${metadata.content.items.size}点)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                Button(
+                    onClick = { showItems = !showItems },
+                    colors = ButtonDefaults.textButtonColors(),
+                ) {
+                    Text(if (showItems) "折りたたむ" else "展開する")
+                }
+            }
+
+            if (showItems && metadata.content.items.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 商品リストのヘッダー
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp, horizontal = 8.dp),
+                ) {
+                    Text(
+                        text = "商品名",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(3f),
+                    )
+                    Text(
+                        text = "数量",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        text = "金額",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.weight(2f),
+                    )
+                }
+
+                Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+
+                // 商品リスト
+                metadata.content.items.forEach { item ->
+                    ItemRow(item, currencyFormatter)
+                }
+
+                Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+
+                // 合計金額
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = Modifier.weight(3f))
+                    Text(
+                        text = "合計",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        text = currencyFormatter.format(metadata.content.total()),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.weight(2f),
+                    )
+                }
+            } else if (metadata.content.items.isEmpty()) {
+                Text(
+                    text = "商品情報がありません",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
             Divider()
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -185,7 +283,7 @@ fun ReceiptInfoPane(
                         .padding(end = 8.dp),
                     enabled = true,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.secondary,
                     ),
                 )
 
@@ -203,6 +301,36 @@ fun ReceiptInfoPane(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ItemRow(item: Item, currencyFormatter: NumberFormat) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = item.name,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(3f),
+        )
+        Text(
+            text = if (item.quantity > 0) item.quantity.toString() else "1",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = currencyFormatter.format(item.price),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(2f),
+        )
     }
 }
 
@@ -310,7 +438,19 @@ fun ReceiptInfoPreview() {
                 "date": "2025-01-01",
                 "time": "12:34"
               },
-              "total": 5678 
+              "items": [
+                {
+                  "name": "むかし吉備団子15個 ※",
+                  "price": 1728,
+                  "quantity": 1
+                },
+                {
+                  "name": "紙袋 小・縦小・中",
+                  "price": 10,
+                  "quantity": 2
+                }
+              ], 
+              "total": 1738 
             }
         """.trimIndent()
     MaterialTheme {

@@ -28,7 +28,7 @@ fun ReceiptList(list: List<ReceiptMetaData> = emptyList(), onClickItem: (item: R
     }
     Column {
         sortedList.forEach { item ->
-            ReceiptListItem(item)
+            ReceiptListItem(item, onClickItem)
         }
     }
 }

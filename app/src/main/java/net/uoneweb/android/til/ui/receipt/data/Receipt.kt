@@ -44,7 +44,7 @@ data class Receipt(
 
     companion object {
         val Empty = Receipt()
-        val Sample = Receipt(
+        val Sample = Receipt.fromJson(
             """
             {
               "store": {

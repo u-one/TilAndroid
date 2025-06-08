@@ -26,7 +26,7 @@ data class ReceiptMetaDataEntity(
         fun toReceiptMetaData(entity: ReceiptMetaDataEntity): ReceiptMetaData {
             return ReceiptMetaData(
                 id = entity.id,
-                content = Receipt(entity.content),
+                content = Receipt.fromJson(entity.content),
                 location = entity.location?.let { LocationConverter.fromJson(it) },
                 filename = entity.filename,
             )

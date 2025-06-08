@@ -27,7 +27,7 @@ class ReceiptMetaDataTest {
 
     @Test
     fun testJsonFilename() {
-        val receipt = Receipt(receiptJson)
+        val receipt = Receipt.fromJson(receiptJson)
         val filename = "filename"
         val receiptMetaData = ReceiptMetaData(receipt, null, null, filename)
 
@@ -41,7 +41,7 @@ class ReceiptMetaDataTest {
 
     @Test
     fun testJsonLocation() {
-        val receipt = Receipt(receiptJson)
+        val receipt = Receipt.fromJson(receiptJson)
         val location = Location(1.0, 2.0)
         val receiptMetaData = ReceiptMetaData(receipt, null, location, null)
 

@@ -56,6 +56,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.LocationScreen
 import net.uoneweb.android.gis.ui.map.MapScreen
+import net.uoneweb.android.receipt.ui.ReceiptScreen
 import net.uoneweb.android.til.data.SettingsDataStore
 import net.uoneweb.android.til.ui.audio.AudioScreen
 import net.uoneweb.android.til.ui.buttons.ButtonsScreen
@@ -66,7 +67,6 @@ import net.uoneweb.android.til.ui.haptic.HapticFeedbackScreen
 import net.uoneweb.android.til.ui.main.MainScreen
 import net.uoneweb.android.til.ui.pager.PagerScreen
 import net.uoneweb.android.til.ui.preference.PreferenceScreen
-import net.uoneweb.android.til.ui.receipt.ReceiptScreen
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

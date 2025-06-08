@@ -4,7 +4,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import com.google.gson.JsonParser
-import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
+import net.uoneweb.android.receipt.data.ReceiptMetaData
 import java.io.BufferedReader
 import java.io.InputStreamReader
 

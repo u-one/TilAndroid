@@ -24,8 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.coroutineScope
 import kotlinx.coroutines.launch
-import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
-import net.uoneweb.android.til.ui.receipt.repository.ReceiptMetaDataRepository
+import net.uoneweb.android.receipt.data.ReceiptMetaData
+import net.uoneweb.android.receipt.repository.ReceiptMetaDataRepository
 
 class ShareReceiverActivity : AppCompatActivity() {
 

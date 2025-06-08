@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="use_image_location">画像の位置を利用</string>
+    <string name="list_title">レシート一覧</string>
+    <string name="list_back">戻る</string>
+    <string name="list_add">追加</string>
+    <string name="list_empty">レシートがありません</string>
+    <string name="list_empty_description">新しいレシートを追加してください</string>
+    <string name="list_error">エラー： %1$s</string>
+    <string name="detail_date_unknown">不明</string>
+    <string name="list_delete">削除</string>
+    <string name="find_with_map">地図を開く</string>
+</resources>

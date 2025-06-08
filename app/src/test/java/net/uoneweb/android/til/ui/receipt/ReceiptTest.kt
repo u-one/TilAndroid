@@ -1,6 +1,6 @@
 package net.uoneweb.android.til.ui.receipt
 
-import net.uoneweb.android.til.ui.receipt.data.Receipt
+import net.uoneweb.android.receipt.data.Receipt
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

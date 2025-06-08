@@ -2,8 +2,8 @@ package net.uoneweb.android.til.ui.receipt
 
 import com.google.gson.JsonParser
 import net.uoneweb.android.gis.ui.location.Location
-import net.uoneweb.android.til.ui.receipt.data.Receipt
-import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
+import net.uoneweb.android.receipt.data.Receipt
+import net.uoneweb.android.receipt.data.ReceiptMetaData
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull

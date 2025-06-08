@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import net.uoneweb.android.data.ReceiptSettingDataStore
 import net.uoneweb.android.til.data.SettingsDataStore
 
 
@@ -42,7 +43,8 @@ import net.uoneweb.android.til.data.SettingsDataStore
 fun PreferenceScreen() {
     val context = LocalContext.current
     val settingDataStore = remember { SettingsDataStore(context) }
-    val apiKey by settingDataStore.preferenceFlow.collectAsState(initial = "")
+    val receiptSettingDataStore = remember { ReceiptSettingDataStore(context) }
+    val apiKey by receiptSettingDataStore.apiKeyFlow.collectAsState(initial = "")
     val showBottomBar by settingDataStore.showBottomBarFlow.collectAsState(initial = true)
     val coroutineScope = rememberCoroutineScope()
 
@@ -53,7 +55,7 @@ fun PreferenceScreen() {
         },
         apiKey = apiKey,
         onApiKeyChange = {
-            coroutineScope.launch { settingDataStore.saveOpenApiKey(it, context) }
+            coroutineScope.launch { receiptSettingDataStore.saveOpenApiKey(it, context) }
         },
     )
 }

@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.uoneweb.android.receipt.data.ReceiptMetaData
 
 
@@ -42,7 +41,7 @@ fun ReceiptListItem(item: ReceiptMetaData = ReceiptMetaData.Empty, onClickItem: 
                 onClickItem(item)
             },
     ) {
-        Text(item.content.title(), style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp))
+        Text(item.content.title(), style = MaterialTheme.typography.bodyMedium)
     }
 }
 

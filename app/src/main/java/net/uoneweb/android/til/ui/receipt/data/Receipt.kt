@@ -102,8 +102,8 @@ data class ReceiptInfo(
 data class Item(
     val code: String = "",
     val name: String = "",
-    val price: Int = 0,
-    val quantity: Int = 0,
+    val price: Int? = null,
+    val quantity: Float? = null,
     val taxIncludedAmount: Int? = null,
     val taxAmount: Int? = null,
 )

@@ -7,17 +7,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.til.receiptmapping.ui.ReceiptMappingDetail
 import net.uoneweb.android.til.receiptmapping.ui.ReceiptMappingEvent
@@ -29,39 +30,21 @@ import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
-    val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
-    val uploadedImageUri by viewModel.uploadedFileUrl
-    val receipt by viewModel.receipt
-    val loading by viewModel.receiptLoading
 
     val receiptMappingInfo by viewModel.osmInfoJson
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
     //val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
     val receiptMappingInfoList = viewModel.listReceiptMappingInfos().collectAsState()
-
+    val coroutineScope = rememberCoroutineScope()
 
     val loadingFeature by viewModel.loadingFeature
 
-    val receiptDetailUiState = ReceiptDetailUiState(
-        selectedImageUri = selectedImageUri.value,
-        uploadedImageUri = uploadedImageUri,
-        receipt = receipt,
-        location = receipt.location,
-        loading = loading,
-    )
-
-    LaunchedEffect(selectedImageUri.value) {
-        println("selectedImageUri: $selectedImageUri")
-        if (selectedImageUri.value != null) {
-            viewModel.generateJsonFromImage(selectedImageUri.value!!)
-        }
-    }
-
+    val receiptDetailUiState by viewModel.receiptDetailUiState.collectAsState()
 
     val receiptMappingUiState = ReceiptMappingUiState(
         isLoading = loadingFeature,
         receiptMappingInfo = receiptMappingInfo,
-        location = receipt.location ?: Location.Default,
+        location = receiptDetailUiState.receipt.location ?: Location.Default,
     )
 
     Column {
@@ -73,30 +56,31 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                     viewModel.select(id)
                 }
             },
-            receiptDetailUiState,
+            receiptDetailUiState = receiptDetailUiState,
             onReceiptDetailEvent = { event ->
-                when (event) {
-                    is ReceiptDetailEvent.OnImageSelected -> {
-                        selectedImageUri.value = event.uri
-                        viewModel.reset()
-                    }
-
-                    is ReceiptDetailEvent.OnLocationSet -> {
-                        viewModel.setLocation(event.location)
-                    }
-
-                    is ReceiptDetailEvent.OnSaveMetaData -> {
-                        viewModel.saveReceiptMetaData(event.metaData)
-                    }
-
-                    is ReceiptDetailEvent.OnClickImageUpload -> {
-                        selectedImageUri.value?.let { uri ->
-                            viewModel.uploadImage(uri)
+                coroutineScope.launch {
+                    when (event) {
+                        is ReceiptDetailEvent.OnImageSelected -> {
+                            viewModel.generateJsonFromImage(event.uri)
                         }
-                    }
 
-                    is ReceiptDetailEvent.OnClickTest -> {
-                        viewModel.receiptResultTest()
+                        is ReceiptDetailEvent.OnLocationSet -> {
+                            viewModel.setLocation(event.location)
+                        }
+
+                        is ReceiptDetailEvent.OnSaveMetaData -> {
+                            viewModel.saveReceiptMetaData(event.metaData)
+                        }
+
+                        is ReceiptDetailEvent.OnClickImageUpload -> {
+                            receiptDetailUiState.selectedImageUri?.let { uri ->
+                                viewModel.uploadImage(uri)
+                            }
+                        }
+
+                        is ReceiptDetailEvent.OnClickTest -> {
+                            viewModel.receiptResultTest()
+                        }
                     }
                 }
             },
@@ -116,7 +100,6 @@ fun ReceiptScreenMain(
     receiptMappingUiState: ReceiptMappingUiState = ReceiptMappingUiState(),
     onReceiptMappingEvent: (ReceiptMappingEvent) -> Unit = {},
 ) {
-
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(scrollState)) {
         var selectedTabIndex by remember { mutableStateOf(0) }

@@ -320,7 +320,7 @@ fun ItemRow(item: Item, currencyFormatter: NumberFormat) {
             modifier = Modifier.weight(3f),
         )
         Text(
-            text = if (item.quantity > 0) item.quantity.toString() else "1",
+            text = if ((item.quantity ?: 0f) > 0f) item.quantity.toString() else "1",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),

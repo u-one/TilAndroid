@@ -14,9 +14,12 @@ import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.vertexAI
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.gis.ui.map.Feature
@@ -45,16 +48,8 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     private val receiptMetaDataRepository = ReceiptMetaDataRepository(application)
     private val receiptMappingInfoRepository = ReceiptMappingInfoRepository(application)
 
-    private val _selectedImageUri: MutableState<Uri?> = mutableStateOf(null)
-    val selectedImageUri: State<Uri?> = _selectedImageUri
-    private val _uploadedFileUrl: MutableState<Uri?> = mutableStateOf(null)
-    val uploadedFileUrl: State<Uri?> = _uploadedFileUrl
-
-    private val _receipt: MutableState<ReceiptMetaData> = mutableStateOf(ReceiptMetaData.Empty)
-    val receipt: State<ReceiptMetaData> = _receipt
-    private val _receiptLoading: MutableState<Boolean> = mutableStateOf(false)
-    val receiptLoading: State<Boolean> = _receiptLoading
-
+    private val _receiptDetailUiState = MutableStateFlow(ReceiptDetailUiState())
+    val receiptDetailUiState: StateFlow<ReceiptDetailUiState> = _receiptDetailUiState.asStateFlow()
 
     private val settings = SettingsDataStore(getApplication())
 
@@ -78,7 +73,9 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     fun saveReceiptMetaData(receiptMetaData: ReceiptMetaData) {
         viewModelScope.launch {
             val id = receiptMetaDataRepository.insert(receiptMetaData)
-            _receipt.value = receiptMetaData.copy(id = id)
+            _receiptDetailUiState.update {
+                it.copy(receipt = it.receipt.copy(id = id))
+            }
         }
     }
 
@@ -113,7 +110,9 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             receiptMetaDataRepository.getById(id).collect { metadata ->
                 if (metadata != null) {
-                    _receipt.value = metadata
+                    _receiptDetailUiState.update {
+                        it.copy(receipt = metadata)
+                    }
                 }
             }
         }
@@ -121,9 +120,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
 
 
     fun reset() {
-        _uploadedFileUrl.value = null
         _osmInfoJson.value = ""
-        _receipt.value = ReceiptMetaData.Empty
+        _receiptDetailUiState.update {
+            it.copy(selectedImageUri = null, uploadedImageUri = null, receipt = ReceiptMetaData.Empty, loading = false)
+        }
     }
 
     fun uploadImage(localFileUri: Uri?) {
@@ -153,7 +153,9 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         }.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val downloadUri = task.result
-                _uploadedFileUrl.value = downloadUri
+                _receiptDetailUiState.update {
+                    it.copy(uploadedImageUri = downloadUri)
+                }
                 println("downloadUri: $downloadUri")
             } else {
                 println("downloadUri: failed")
@@ -162,14 +164,22 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun setLocation(location: Location) {
-        val newdata = _receipt.value.copy(location = location)
-        _receipt.value = newdata
+        _receiptDetailUiState.update {
+            it.copy(
+                location = location,
+                receipt = it.receipt.copy(location = location),
+            )
+        }
 
     }
 
     suspend fun generateJsonFromImage(localFileUri: Uri) {
-        _selectedImageUri.value = localFileUri
-        _receiptLoading.value = true
+        _receiptDetailUiState.update {
+            it.copy(
+                selectedImageUri = localFileUri,
+                loading = true,
+            )
+        }
         val contentResolver = getApplication<Application>().contentResolver
         val bitmap: Bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(localFileUri))
         val prompt = content {
@@ -182,14 +192,21 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         print(response.text)
         val parser = GeminiReceiptResponse(response.text)
         print(parser.json())
-
-        _receipt.value = ReceiptMetaData(Receipt.fromJson(parser.json()))
-        _receiptLoading.value = false
+        _receiptDetailUiState.update {
+            it.copy(
+                loading = false,
+                receipt = ReceiptMetaData(Receipt.fromJson(parser.json())),
+            )
+        }
     }
 
     fun receiptResultTest() {
         val testData = SampleData.dummyData(getApplication())
-        _receipt.value = ReceiptMetaData(Receipt.fromJson(testData))
+        _receiptDetailUiState.update {
+            it.copy(
+                receipt = ReceiptMetaData(Receipt.fromJson(testData)),
+            )
+        }
     }
 
 
@@ -297,10 +314,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun onReceiptMappingEvent(event: ReceiptMappingEvent) {
-        val json = if (receipt.value == ReceiptMetaData.Empty) {
+        val json = if (_receiptDetailUiState.value.receipt == ReceiptMetaData.Empty) {
             SampleData.dummyData(getApplication())
         } else {
-            receipt.value.content.json
+            _receiptDetailUiState.value.receipt.content.json
         }
         when (event) {
             is ReceiptMappingEvent.OnInferClicked -> {

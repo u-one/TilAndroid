@@ -1,6 +1,7 @@
 package net.uoneweb.android.til.ui.receipt
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,8 +30,8 @@ fun ReceiptDetail(uiState: ReceiptDetailUiState, onEvent: (ReceiptDetailEvent) -
     Column {
         Row {
             ImageSelector(uiState.selectedImageUri) { it?.let { onEvent(ReceiptDetailEvent.OnImageSelected(it)) } }
-            Button(onClick = { onEvent(ReceiptDetailEvent.OnClickTest) }) { Text(text = "ReceiptResultTest") }
         }
+        Button(onClick = { onEvent(ReceiptDetailEvent.OnClickTest) }) { Text(text = "ReceiptResultTest") }
         ImageUploaderButton(uiState.selectedImageUri, uiState.uploadedImageUri) { onEvent(ReceiptDetailEvent.OnClickImageUpload) }
         CurrentLocationComponent(location = uiState.location) { it?.let { onEvent(ReceiptDetailEvent.OnLocationSet(it)) } }
         MapLocationFinder(

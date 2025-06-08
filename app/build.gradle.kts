@@ -139,6 +139,7 @@ dependencies {
 
 
     implementation(project(":gis"))
+    implementation(project(":receipt"))
 
 }
 

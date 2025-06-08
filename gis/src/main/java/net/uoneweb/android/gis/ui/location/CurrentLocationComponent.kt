@@ -24,10 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import net.uoneweb.android.gis.R
 
 @Composable
 fun CurrentLocationComponent(location: Location?, onLocation: (Location?) -> Unit) {
     var loading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Row {
         CurrentLocationButton(
             onLocation = onLocation,
@@ -38,7 +40,7 @@ fun CurrentLocationComponent(location: Location?, onLocation: (Location?) -> Uni
                 Text("Location permission is required.")
             },
         ) {
-            Text("Get Current Location")
+            Text(context.getString(R.string.use_current_location))
         }
         if (loading) {
             CircularProgressIndicator(

@@ -20,4 +20,6 @@
     <string name="list_error">エラー： %1$s</string>
     <string name="detail_date_unknown">不明</string>
     <string name="list_delete">削除</string>
+    <string name="find_with_map">地図を開く</string>
+    <string name="use_image_location">画像の位置を利用</string>
 </resources>

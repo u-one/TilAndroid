@@ -60,6 +60,39 @@ data class Receipt(
             """.trimIndent(),
         )
 
+        val Sample2 = Receipt.fromJson(
+            """
+            {
+              "store": {
+                "name": "◯◯◯",
+                "branch": "△△店",
+                "tel": "012-3456-7890",
+                "address": "東京都千代田区1-2-3",
+                "postalCode": "123-4567",
+                "website": "https://example.com",
+                "email": "test@example.com"
+              },
+              "receipt": {
+                "date": "2025-01-01",
+                "time": "12:34"
+              },
+              "items": [
+                {
+                  "name": "むかし吉備団子15個 ※",
+                  "price": 1728,
+                  "quantity": 1
+                },
+                {
+                  "name": "紙袋 小・縦小・中",
+                  "price": 10,
+                  "quantity": 2
+                }
+              ], 
+              "total": 1738 
+            }
+            """.trimIndent(),
+        )
+
         fun fromJson(jsonStr: String): Receipt {
             if (jsonStr.isEmpty()) {
                 return Empty

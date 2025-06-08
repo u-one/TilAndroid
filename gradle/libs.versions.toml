@@ -1,5 +1,6 @@
 [versions]
 agp = "8.10.0"
+exifinterface = "1.4.1"
 kotlin = "2.1.20"
 # core-ktx1.15.0以降はandroid-35
 coreKtx = "1.16.0"
@@ -8,6 +9,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.6.1"
 lifecycleLivedataKtx = "2.8.7"
+material = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,11 +30,14 @@ androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version = "2.2.1" }
 
+androidx-exifinterface = { module = "androidx.exifinterface:exifinterface", version.ref = "exifinterface" }
+
 # 1.10.0以降はandroid-35
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.9.3" }
 
 gson = { group = "com.google.code.gson", name = "gson", version = "2.11.0" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

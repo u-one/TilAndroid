@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Item
 import net.uoneweb.android.til.ui.receipt.data.Receipt
@@ -48,11 +49,10 @@ import java.util.Locale
 
 @Composable
 fun ReceiptInfoPane(
-    metadata: ReceiptMetaData,
-    imageUri: Uri?,
-    location: Location?,
+    receiptDetailUiState: ReceiptDetailUiState,
     onSaveMetaData: (ReceiptMetaData) -> Unit = {},
 ) {
+    val metadata = receiptDetailUiState.receipt
     if (metadata == ReceiptMetaData.Empty) {
         return
     }
@@ -294,7 +294,7 @@ fun ReceiptInfoPane(
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 8.dp),
-                    enabled = metadata.id == null || metadata.location != location,
+                    enabled = receiptDetailUiState.saved.not(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
@@ -423,45 +423,29 @@ private fun JsonTextView(metadata: ReceiptMetaData) {
 @Composable
 @Preview(showBackground = true, widthDp = 320)
 fun ReceiptInfoPreview() {
-    val json = """
-            {
-              "store": {
-                "name": "◯◯◯",
-                "branch": "△△店",
-                "tel": "012-3456-7890",
-                "address": "東京都千代田区1-2-3",
-                "postalCode": "123-4567",
-                "website": "https://example.com",
-                "email": "test@example.com"
-              },
-              "receipt": {
-                "date": "2025-01-01",
-                "time": "12:34"
-              },
-              "items": [
-                {
-                  "name": "むかし吉備団子15個 ※",
-                  "price": 1728,
-                  "quantity": 1
-                },
-                {
-                  "name": "紙袋 小・縦小・中",
-                  "price": 10,
-                  "quantity": 2
-                }
-              ], 
-              "total": 1738 
-            }
-        """.trimIndent()
+
+    val context = LocalContext.current
+    val uiState = ReceiptDetailUiState(
+        selectedImageUri = "android.resource://${context.packageName}/drawable/dummy_receipt".toUri(),
+        uploadedImageUri = Uri.Builder().authority("example.com").build(),
+        receipt = ReceiptMetaData(Receipt.Sample2),
+        loading = false,
+        location = Location.Default,
+    )
     MaterialTheme {
-        ReceiptInfoPane(ReceiptMetaData(Receipt.fromJson(json)), null, null)
+        ReceiptInfoPane(uiState)
     }
 }
 
 @Composable
 @Preview(showBackground = true, widthDp = 320)
 fun EmptyReceiptInfoPreview() {
+    val uiState = ReceiptDetailUiState(
+        receipt = ReceiptMetaData.Empty,
+        loading = false,
+        location = Location.Default,
+    )
     MaterialTheme {
-        ReceiptInfoPane(ReceiptMetaData.Empty, null, null)
+        ReceiptInfoPane(uiState)
     }
 }

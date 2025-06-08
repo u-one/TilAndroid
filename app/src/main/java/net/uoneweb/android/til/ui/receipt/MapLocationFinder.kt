@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -31,16 +32,18 @@ import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.gis.ui.map.Cross
 import net.uoneweb.android.gis.ui.map.MapComponent
 import net.uoneweb.android.gis.ui.map.MapViewState
+import net.uoneweb.android.til.R
 
 @Composable
 fun MapLocationFinder(location: Location, onLocationSelected: (Location) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Button(
         onClick = {
             expanded = true
         },
     ) {
-        Text("Find Loction")
+        Text(context.getString(R.string.find_with_map))
     }
     if (expanded) {
         MapLocationDialog(

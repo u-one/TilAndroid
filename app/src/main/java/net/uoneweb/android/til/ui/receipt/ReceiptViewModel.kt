@@ -1,8 +1,6 @@
 package net.uoneweb.android.til.ui.receipt
 
 import android.app.Application
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -24,6 +22,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.gis.ui.map.Feature
+import net.uoneweb.android.receipt.ui.ReceiptImage
 import net.uoneweb.android.til.data.SettingsDataStore
 import net.uoneweb.android.til.receiptmapping.ui.ReceiptMappingEvent
 import net.uoneweb.android.til.ui.receipt.data.Receipt
@@ -75,7 +74,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             val id = receiptMetaDataRepository.insert(receiptMetaData)
             _receiptDetailUiState.update {
-                it.copy(receipt = it.receipt.copy(id = id))
+                it.copy(
+                    receipt = it.receipt.copy(id = id),
+                    saved = true,
+                )
             }
         }
     }
@@ -112,7 +114,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             receiptMetaDataRepository.getById(id).collect { metadata ->
                 if (metadata != null) {
                     _receiptDetailUiState.update {
-                        it.copy(receipt = metadata)
+                        it.copy(
+                            receipt = metadata,
+                            saved = true,
+                        )
                     }
                 }
             }
@@ -123,7 +128,13 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     fun reset() {
         _osmInfoJson.value = ""
         _receiptDetailUiState.update {
-            it.copy(selectedImageUri = null, uploadedImageUri = null, receipt = ReceiptMetaData.Empty, loading = false)
+            it.copy(
+                selectedImageUri = null,
+                uploadedImageUri = null,
+                receipt = ReceiptMetaData.Empty,
+                loading = false,
+                saved = true,
+            )
         }
     }
 
@@ -169,6 +180,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             it.copy(
                 location = location,
                 receipt = it.receipt.copy(location = location),
+                saved = false,
             )
         }
 
@@ -179,14 +191,18 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             it.copy(
                 selectedImageUri = localFileUri,
                 loading = true,
+                saved = false,
             )
         }
         val contentResolver = getApplication<Application>().contentResolver
-        val bitmap: Bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(localFileUri))
+        val image = ReceiptImage(contentResolver, localFileUri)
+        val imageLocation = image.location()
+
         val prompt = content {
-            image(bitmap)
+            image(image.bitmap())
             text(GeminiReceiptPrompt.loadPrompt(getApplication()))
         }
+
 
         val model = Firebase.ai(backend = GenerativeBackend.googleAI())
             .generativeModel("gemini-2.0-flash")
@@ -197,6 +213,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         _receiptDetailUiState.update {
             it.copy(
                 loading = false,
+                imageLocation = imageLocation,
                 receipt = ReceiptMetaData(Receipt.fromJson(parser.json())),
             )
         }

@@ -11,9 +11,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.content
 import com.google.firebase.storage.storage
-import com.google.firebase.vertexai.type.content
-import com.google.firebase.vertexai.vertexAI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -187,7 +188,8 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             text(GeminiReceiptPrompt.loadPrompt(getApplication()))
         }
 
-        val model = Firebase.vertexAI.generativeModel("gemini-2.0-flash")
+        val model = Firebase.ai(backend = GenerativeBackend.googleAI())
+            .generativeModel("gemini-2.0-flash")
         val response = model.generateContent(prompt)
         print(response.text)
         val parser = GeminiReceiptResponse(response.text)

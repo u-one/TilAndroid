@@ -106,11 +106,11 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.1.0")
 
 
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-    implementation("com.google.firebase:firebase-vertexai")
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-ai")
     implementation(libs.gson)
 
     implementation("androidx.credentials:credentials:1.5.0")

@@ -1,70 +1,49 @@
 package net.uoneweb.android.til.ui.receipt.data
 
-import com.google.gson.JsonParser
+import android.util.Log
+import com.google.gson.Gson
 
-class Receipt(jsonStr: String) {
-    val version = "v3"
+data class Receipt(
+    val version: String = "v3",
+    val store: Store = Store(),
+    val receipt: ReceiptInfo = ReceiptInfo(),
+    val items: List<Item> = emptyList(),
+    val tax: Tax = Tax(),
+    val total: Int = 0,
+    val breakdown: Breakdown = Breakdown(),
+    val payment: Payment = Payment(),
+    val points: Points = Points(),
+    val remarks: List<String> = emptyList(),
+    val transaction: Transaction = Transaction(),
+) {
+    val json: String
+        get() = Gson().toJson(this)
 
-    val json: String = jsonStr
-    val date: String
-    val time: String
-    val storeName: String
-    val storeBranch: String
-    val total: Int
-    val address: String
-
-    init {
-        if (jsonStr.isEmpty()) {
-            date = ""
-            time = ""
-            storeName = "NA"
-            storeBranch = ""
-            total = 0
-            address = ""
-        } else {
-            val jsonObj = JsonParser.parseString(jsonStr)?.asJsonObject
-            val storeObj = jsonObj?.get("store")?.asJsonObject
-            val receiptObj = jsonObj?.get("receipt")?.asJsonObject
-            date = receiptObj?.get("date")?.asString
-                ?.replace("-", "")
-                ?: ""
-            time = receiptObj?.get("time")?.asString
-                ?.replace(":", "")
-                ?: ""
-            storeName = storeObj?.get("name")?.asString ?: "NA"
-            storeBranch = storeObj?.get("branch")?.asString ?: ""
-            total = jsonObj?.get("total")?.asInt ?: 0
-            address = storeObj?.get("address")?.asString ?: ""
-        }
-    }
 
     fun title(): String {
-        if (storeBranch.isNotBlank()) {
-            return "${date}_${time}_${total}_${version}_${storeName}_${storeBranch}.json"
+        val date = receipt.date.replace("-", "")
+        val time = receipt.time.replace(":", "")
+        return if (store.branch.isNotBlank()) {
+            "${date}_${time}_${total}_${version}_${store.name}_${store.branch}.json"
+        } else {
+            "${date}_${time}_${total}_${version}_${store.name}.json"
         }
-        return "${date}_${time}_${total}_${version}_${storeName}.json"
     }
 
     fun store(): String {
-        return if (storeBranch.isNotBlank()) {
-            "$storeName $storeBranch"
+        return if (store.branch.isNotBlank()) {
+            "${store.name} ${store.branch}"
         } else {
-            storeName
+            store.name
         }
     }
 
-    fun total(): Int {
-        return total
-    }
+    fun total(): Int = total
 
-    fun address(): String {
-        return address
-    }
+    fun address(): String = store.address
 
     companion object {
-
-        val Empty = Receipt("")
-
+        val Empty = Receipt()
         val Sample = Receipt(
             """
             {
@@ -78,8 +57,98 @@ class Receipt(jsonStr: String) {
               },
               "total": 5678 
             }
-        """.trimIndent(),
+            """.trimIndent(),
         )
+
+        fun fromJson(jsonStr: String): Receipt {
+            if (jsonStr.isEmpty()) {
+                return Empty
+            } else {
+                return try {
+                    Gson().fromJson(jsonStr, Receipt::class.java)
+                } catch (e: Exception) {
+                    Log.e("Receipt", "Error parsing json: $jsonStr", e)
+                    Empty
+                }
+            }
+        }
     }
 }
 
+data class Store(
+    val name: String = "NA",
+    val branch: String = "",
+    val tel: String = "",
+    val address: String = "",
+    val postalCode: String = "",
+    val website: String = "",
+    val email: String = "",
+    val openingHours: String = "",
+)
+
+data class ReceiptInfo(
+    val type: String = "",
+    val date: String = "",
+    val time: String = "",
+    val register: String = "",
+    val cashier: String = "",
+    val number: String = "",
+    val issuer: String = "",
+    val registrationNumber: String = "",
+    val storeNumber: String = "",
+    val responsiblePerson: String = "",
+)
+
+data class Item(
+    val code: String = "",
+    val name: String = "",
+    val price: Int = 0,
+    val quantity: Int = 0,
+    val taxIncludedAmount: Int? = null,
+    val taxAmount: Int? = null,
+)
+
+data class TaxRate(
+    val target: Int = 0,
+    val amount: Int = 0,
+)
+
+data class Tax(
+    val rate8: TaxRate = TaxRate(),
+    val rate10: TaxRate = TaxRate(),
+)
+
+data class Breakdown(
+    val tax8: Int = 0,
+    val tax10: Int = 0,
+    val consumptionTax8: Int = 0,
+    val consumptionTax10: Int = 0,
+)
+
+data class Card(
+    val brand: String = "",
+    val approval: String = "",
+)
+
+data class Payment(
+    val method: String = "",
+    val amount: Int = 0,
+    val tendered: Int = 0,
+    val change: Int = 0,
+    val card: Card = Card(),
+)
+
+data class NormalPoints(
+    val amount: Int = 0,
+    val earned: Int = 0,
+)
+
+data class Points(
+    val normal: NormalPoints = NormalPoints(),
+    val earned: Int = 0,
+)
+
+data class Transaction(
+    val type: String = "",
+    val number: String = "",
+)

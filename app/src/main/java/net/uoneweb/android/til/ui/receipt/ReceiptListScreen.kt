@@ -207,7 +207,7 @@ fun ReceiptItem(
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = receipt.content.storeName,
+                    text = receipt.content.store.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
@@ -220,9 +220,13 @@ fun ReceiptItem(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
+                    val date = if (receipt.content.receipt.date.isNotEmpty()) {
+                        receipt.content.receipt.date
+                    } else {
+                        stringResource(R.string.detail_date_unknown)
+                    }
                     Text(
-                        text = receipt.content.date
-                            ?: stringResource(R.string.detail_date_unknown),
+                        text = date,
                         style = MaterialTheme.typography.bodyMedium,
                     )
 

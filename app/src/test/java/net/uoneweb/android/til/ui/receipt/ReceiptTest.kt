@@ -21,11 +21,11 @@ class ReceiptTest {
               "total": 5678 
             }
         """.trimIndent()
-        val receipt = Receipt(json)
+        val receipt = Receipt.fromJson(json)
 
         val actual = receipt.title()
 
-        assertEquals("20250101_1234_5678_v2_store_branch.json", actual)
+        assertEquals("20250101_1234_5678_v3_store_branch.json", actual)
     }
 
     @Test
@@ -43,11 +43,11 @@ class ReceiptTest {
               "total": 5678
             }
         """.trimIndent()
-        val receipt = Receipt(json)
+        val receipt = Receipt.fromJson(json)
 
         val actual = receipt.title()
 
-        assertEquals("20250101_1234_5678_v2_store.json", actual)
+        assertEquals("20250101_1234_5678_v3_store.json", actual)
     }
 
     @Test
@@ -65,7 +65,7 @@ class ReceiptTest {
               "total": 5678
             }
         """.trimIndent()
-        val receipt = Receipt(json)
+        val receipt = Receipt.fromJson(json)
 
         val actual = receipt.store()
 
@@ -87,7 +87,7 @@ class ReceiptTest {
               "total": 5678
             }
         """.trimIndent()
-        val receipt = Receipt(json)
+        val receipt = Receipt.fromJson(json)
 
         val actual = receipt.total()
 
@@ -110,7 +110,7 @@ class ReceiptTest {
               "total": 5678
             }
         """.trimIndent()
-        val receipt = Receipt(json)
+        val receipt = Receipt.fromJson(json)
 
         val actual = receipt.address()
 

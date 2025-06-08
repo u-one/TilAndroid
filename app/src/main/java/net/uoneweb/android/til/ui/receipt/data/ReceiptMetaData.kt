@@ -47,38 +47,44 @@ data class ReceiptMetaData(
 
 
         fun fromJson(json: String): ReceiptMetaData {
-            val gson = Gson()
-            val jsonObj = JsonParser.parseString(json).asJsonObject
+            if (json.isEmpty()) {
+                return Empty
+            }
+            try {
+                val gson = Gson()
+                val jsonObj = JsonParser.parseString(json).asJsonObject
 
-            if (jsonObj.has("meta")) {
-                val metaObj = jsonObj.getAsJsonObject("meta")
-                val id = if (metaObj.has("id")) {
-                    metaObj.get("id").asLong
-                } else null
+                if (jsonObj.has("meta")) {
+                    val metaObj = jsonObj.getAsJsonObject("meta")
+                    val id = if (metaObj.has("id")) {
+                        metaObj.get("id").asLong
+                    } else null
 
-                val location = if (metaObj.has("location")) {
-                    val locationObj = metaObj.getAsJsonObject("location")
-                    Location(
-                        locationObj.get("latitude").asDouble,
-                        locationObj.get("longitude").asDouble,
-                    )
-                } else null
+                    val location = if (metaObj.has("location")) {
+                        val locationObj = metaObj.getAsJsonObject("location")
+                        Location(
+                            locationObj.get("latitude").asDouble,
+                            locationObj.get("longitude").asDouble,
+                        )
+                    } else null
 
-                val filename = if (metaObj.has("filename")) {
-                    metaObj.get("filename").asString
-                } else null
+                    val filename = if (metaObj.has("filename")) {
+                        metaObj.get("filename").asString
+                    } else null
 
-                val receiptObj = jsonObj.getAsJsonObject("receipt")
-                val receipt = Receipt(gson.toJson(receiptObj))
-                return ReceiptMetaData(receipt, id, location, filename)
-            } else if (jsonObj.has("receipt")) {
-                // v2, v1
-                val receiptObj = jsonObj.getAsJsonObject("receipt")
-                val receipt = Receipt(gson.toJson(receiptObj))
-                return ReceiptMetaData(receipt)
-            } else {
-                throw IllegalArgumentException("Invalid JSON format for ReceiptMetaData")
-
+                    val receiptObj = jsonObj.getAsJsonObject("receipt")
+                    val receipt = Receipt.fromJson(gson.toJson(receiptObj))
+                    return ReceiptMetaData(receipt, id, location, filename)
+                } else if (jsonObj.has("receipt")) {
+                    // v2, v1
+                    val receiptObj = jsonObj.getAsJsonObject("receipt")
+                    val receipt = Receipt.fromJson(gson.toJson(receiptObj))
+                    return ReceiptMetaData(receipt)
+                } else {
+                    throw IllegalArgumentException("Invalid JSON format for ReceiptMetaData $json")
+                }
+            } catch (e: Exception) {
+                throw IllegalArgumentException("Invalid JSON format for ReceiptMetaData $json", e)
             }
         }
     }

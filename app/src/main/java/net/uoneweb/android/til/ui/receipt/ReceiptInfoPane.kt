@@ -20,7 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -118,7 +118,7 @@ fun ReceiptInfoPane(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
 
             // 商品項目セクション
@@ -180,14 +180,14 @@ fun ReceiptInfoPane(
                     )
                 }
 
-                Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
 
                 // 商品リスト
                 metadata.content.items.forEach { item ->
                     ItemRow(item, currencyFormatter)
                 }
 
-                Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
 
                 // 合計金額
                 Row(
@@ -221,7 +221,7 @@ fun ReceiptInfoPane(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
             // ファイル名
@@ -253,7 +253,7 @@ fun ReceiptInfoPane(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
 
             // アクションボタン（下部に配置）

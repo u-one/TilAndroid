@@ -1,88 +1,294 @@
 package net.uoneweb.android.til.ui.receipt
 
+import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.til.ui.receipt.data.Receipt
 import net.uoneweb.android.til.ui.receipt.data.ReceiptMetaData
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ReceiptInfoPane(
-    metadata: ReceiptMetaData, imageUri: Uri?, location: Location?,
+    metadata: ReceiptMetaData,
+    imageUri: Uri?,
+    location: Location?,
     onSaveMetaData: (ReceiptMetaData) -> Unit = {},
 ) {
     if (metadata == ReceiptMetaData.Empty) {
         return
     }
 
-    Column {
-        Row {
-            TextShareButton(metadata.content.title(), metadata.json())
-            SaveButton(
-                enabled = metadata.id == null || metadata.location != location,
-                onClick = { onSaveMetaData(metadata) },
+    var showFullJson by remember { mutableStateOf(false) }
+    val currencyFormatter = remember { NumberFormat.getCurrencyInstance(Locale.JAPAN) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(12.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            // ヘッダー部分
+            Text(
+                text = "レシート情報",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp),
             )
+
+            // 店舗情報
+            InfoRow(
+                icon = Icons.Default.Store,
+                label = "店舗",
+                value = metadata.content.store(),
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+            // 日付・時間情報
+            if (metadata.content.receipt.date.isNotEmpty() || metadata.content.receipt.time.isNotEmpty()) {
+                val dateTime = buildString {
+                    append(metadata.content.receipt.date)
+                    if (metadata.content.receipt.date.isNotEmpty() && metadata.content.receipt.time.isNotEmpty()) {
+                        append(" ")
+                    }
+                    append(metadata.content.receipt.time)
+                }
+
+                InfoRow(
+                    icon = Icons.Default.CalendarToday,
+                    label = "日時",
+                    value = dateTime,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            }
+
+            // 金額情報
+            InfoRow(
+                icon = Icons.Default.MonetizationOn,
+                label = "合計",
+                value = currencyFormatter.format(metadata.content.total()),
+                color = MaterialTheme.colorScheme.tertiary,
+                valueStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            )
+
+            // 住所情報
+            if (metadata.content.address().isNotEmpty()) {
+                InfoRow(
+                    icon = Icons.Default.LocationOn,
+                    label = "住所",
+                    value = metadata.content.address(),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // ファイル名
+            Text(
+                text = "ファイル名:",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = metadata.content.title(),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 8.dp, top = 4.dp),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // JSON表示トグルボタン
+            Button(
+                onClick = { showFullJson = !showFullJson },
+                modifier = Modifier.align(Alignment.End),
+            ) {
+                Text(if (showFullJson) "JSONを隠す" else "JSONを表示")
+            }
+
+            // JSON表示エリア
+            if (showFullJson) {
+                Spacer(modifier = Modifier.height(8.dp))
+                JsonTextView(metadata)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // アクションボタン（下部に配置）
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                val context = LocalContext.current
+
+                // シェアボタン
+                ActionButton(
+                    text = "共有",
+                    onClick = {
+                        val title = metadata.content.title()
+                        val text = metadata.json()
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, text)
+                            putExtra(Intent.EXTRA_SUBJECT, title)
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    enabled = true,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                )
+
+                // 保存ボタン
+                ActionButton(
+                    text = "保存",
+                    onClick = { onSaveMetaData(metadata) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp),
+                    enabled = metadata.id == null || metadata.location != location,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                )
+            }
         }
-        Row {
-            Text(text = "店舗")
-            Text(text = metadata.content.store())
-        }
-        Row {
-            Text("合計")
-            Text(text = metadata.content.total().toString() + "円")
-        }
-        Row {
-            Text("住所")
-            Text(text = metadata.content.address())
-        }
-        Text("ファイル名:")
-        Text(text = metadata.content.title())
-        JsonTextView(metadata)
     }
 }
 
 @Composable
-fun SaveButton(
+fun InfoRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    value: String,
+    color: Color,
+    valueStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyLarge,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.padding(end = 12.dp),
+        )
+
+        Column {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = value,
+                style = valueStyle,
+            )
+        }
+    }
+}
+
+@Composable
+fun ActionButton(
+    text: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onClick: () -> Unit = {},
+    colors: androidx.compose.material3.ButtonColors = ButtonDefaults.buttonColors(),
+    content: @Composable () -> Unit = { Text(text) },
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        colors = colors,
+        shape = RoundedCornerShape(8.dp),
     ) {
-        Text("Save")
+        content()
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun SaveButtonPreview() {
-    SaveButton(
-        enabled = false,
-    )
 }
 
 @Composable
 private fun JsonTextView(metadata: ReceiptMetaData) {
     Column {
-        Text("json:")
         Text(
+            text = "JSON データ:",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.LightGray),
-            text = metadata.json(),
-        )
+                .padding(top = 4.dp),
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant,
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+            ) {
+                Text(
+                    text = metadata.json(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
 
@@ -107,11 +313,15 @@ fun ReceiptInfoPreview() {
               "total": 5678 
             }
         """.trimIndent()
-    ReceiptInfoPane(ReceiptMetaData(Receipt(json)), null, null)
+    MaterialTheme {
+        ReceiptInfoPane(ReceiptMetaData(Receipt.fromJson(json)), null, null)
+    }
 }
 
 @Composable
 @Preview(showBackground = true, widthDp = 320)
 fun EmptyReceiptInfoPreview() {
-    ReceiptInfoPane(ReceiptMetaData.Empty, null, null)
+    MaterialTheme {
+        ReceiptInfoPane(ReceiptMetaData.Empty, null, null)
+    }
 }

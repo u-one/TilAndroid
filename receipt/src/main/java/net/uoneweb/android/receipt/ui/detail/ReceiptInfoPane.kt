@@ -328,12 +328,14 @@ fun ItemRow(item: Item, currencyFormatter: NumberFormat) {
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),
         )
-        Text(
-            text = currencyFormatter.format(item.price),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(2f),
-        )
+        if (item.price != null) {
+            Text(
+                text = currencyFormatter.format(item.price),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(2f),
+            )
+        }
     }
 }
 

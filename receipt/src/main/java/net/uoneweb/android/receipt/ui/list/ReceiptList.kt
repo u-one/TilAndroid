@@ -17,9 +17,9 @@ import net.uoneweb.android.receipt.data.ReceiptMetaData
 fun ReceiptList(list: List<ReceiptMetaData> = emptyList(), onClickItem: (item: ReceiptMetaData) -> Unit = {}) {
     val sortedList = list.sortedWith { lsv, rsv ->
         if (lsv.content.title() < rsv.content.title()) {
-            -1
-        } else if (lsv.content.title() > rsv.content.title()) {
             1
+        } else if (lsv.content.title() > rsv.content.title()) {
+            -1
         } else {
             0
         }

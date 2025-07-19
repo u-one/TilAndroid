@@ -1,8 +1,6 @@
 package net.uoneweb.android.receipt.ui
 
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -112,16 +110,14 @@ fun ReceiptScreenMain(
     receiptMappingUiState: ReceiptMappingUiState = ReceiptMappingUiState(),
     onReceiptMappingEvent: (ReceiptMappingEvent) -> Unit = {},
 ) {
+
     val scrollState = rememberScrollState()
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            onReceiptDetailEvent(ReceiptDetailEvent.OnImageSelected(uri))
-        }
-    }
+
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    var showPickerDialog by remember { mutableStateOf(false) }
 
     Box {
         Column(modifier = Modifier.verticalScroll(scrollState)) {
-            var selectedTabIndex by remember { mutableStateOf(0) }
             TabRow(selectedTabIndex = selectedTabIndex) {
                 val tabTitles = listOf("List", "ReceiptInfo", "MappingInfoList", "MappingInfo")
                 tabTitles.forEachIndexed { index, title ->
@@ -166,12 +162,23 @@ fun ReceiptScreenMain(
             }
         }
         FloatingActionButton(
-            onClick = { launcher.launch("image/*") },
+            onClick = { showPickerDialog = true },
             modifier = Modifier
                 .align(androidx.compose.ui.Alignment.BottomEnd)
                 .padding(16.dp),
         ) {
             Icon(Icons.Default.Add, contentDescription = "レシート追加")
+        }
+        if (showPickerDialog) {
+            ImagePickerDialog(
+                onImageSelected = {
+                    onReceiptDetailEvent(ReceiptDetailEvent.OnImageSelected(it))
+                    selectedTabIndex = 1
+                },
+                onDismissRequest = {
+                    showPickerDialog = false
+                },
+            )
         }
     }
 }

@@ -7,15 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,12 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.uoneweb.android.gis.ui.location.CurrentLocationButton
-import org.maplibre.geojson.Feature
 
 @Composable
 fun MapScreen() {
     var showDropDown by remember { mutableStateOf(false) }
     val mapViewState = remember { MapViewState() }
+    var userMessage by remember { mutableStateOf("") }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Column {
@@ -77,7 +73,11 @@ fun MapScreen() {
                     },
                 )
             }
-            FeatureList(mapViewState, modifier = Modifier.fillMaxSize())
+            FeatureList(mapViewState, modifier = Modifier.weight(1f))
+            AIChatUI(
+                userMessage = userMessage,
+                onUserMessageChange = { userMessage = it },
+            )
         }
 
     }
@@ -110,4 +110,3 @@ fun Cross(modifier: Modifier = Modifier) {
 fun MapScreenPreview() {
     MapScreen()
 }
-

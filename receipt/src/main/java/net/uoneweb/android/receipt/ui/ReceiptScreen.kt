@@ -1,9 +1,17 @@
 package net.uoneweb.android.receipt.ui
 
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,14 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.Location
-import net.uoneweb.android.receipt.ui.detail.ReceiptDetail
-import net.uoneweb.android.receipt.ui.detail.ReceiptDetailEvent
-import net.uoneweb.android.receipt.ui.detail.ReceiptDetailUiState
-import net.uoneweb.android.receipt.ui.list.ReceiptList
 import net.uoneweb.android.mapping.ui.ReceiptMappingDetail
 import net.uoneweb.android.mapping.ui.ReceiptMappingEvent
 import net.uoneweb.android.mapping.ui.ReceiptMappingList
@@ -31,10 +36,13 @@ import net.uoneweb.android.mapping.ui.ReceiptMappingUiState
 import net.uoneweb.android.receipt.data.Receipt
 import net.uoneweb.android.receipt.data.ReceiptMappingInfo
 import net.uoneweb.android.receipt.data.ReceiptMetaData
+import net.uoneweb.android.receipt.ui.detail.ReceiptDetail
+import net.uoneweb.android.receipt.ui.detail.ReceiptDetailEvent
+import net.uoneweb.android.receipt.ui.detail.ReceiptDetailUiState
+import net.uoneweb.android.receipt.ui.list.ReceiptList
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
-
     val receiptMappingInfo by viewModel.osmInfoJson
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
     //val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
@@ -105,49 +113,65 @@ fun ReceiptScreenMain(
     onReceiptMappingEvent: (ReceiptMappingEvent) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
-    Column(modifier = Modifier.verticalScroll(scrollState)) {
-        var selectedTabIndex by remember { mutableStateOf(0) }
-        TabRow(selectedTabIndex = selectedTabIndex) {
-            val tabTitles = listOf("List", "ReceiptInfo", "MappingInfoList", "MappingInfo")
-            tabTitles.forEachIndexed { index, title ->
-                androidx.compose.material.Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index },
-                    text = { Text(title) },
-                )
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            onReceiptDetailEvent(ReceiptDetailEvent.OnImageSelected(uri))
+        }
+    }
+
+    Box {
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
+            var selectedTabIndex by remember { mutableStateOf(0) }
+            TabRow(selectedTabIndex = selectedTabIndex) {
+                val tabTitles = listOf("List", "ReceiptInfo", "MappingInfoList", "MappingInfo")
+                tabTitles.forEachIndexed { index, title ->
+                    androidx.compose.material.Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(title) },
+                    )
+                }
+            }
+            when (selectedTabIndex) {
+                0 -> {
+                    ReceiptList(
+                        list,
+                        onClickItem = {
+                            onClickItem(it)
+                            selectedTabIndex = 1
+                        },
+                    )
+                }
+
+                1 -> {
+                    ReceiptDetail(receiptDetailUiState, onReceiptDetailEvent)
+                }
+
+                2 -> {
+                    ReceiptMappingList(
+                        receiptMappingInfoList,
+                        onClickItem = {
+                            // TODO: load
+                            selectedTabIndex = 3
+                        },
+                    )
+                }
+
+                3 -> {
+                    ReceiptMappingDetail(
+                        uiState = receiptMappingUiState,
+                        onEvent = onReceiptMappingEvent,
+                    )
+                }
             }
         }
-        when (selectedTabIndex) {
-            0 -> {
-                ReceiptList(
-                    list,
-                    onClickItem = {
-                        onClickItem(it)
-                        selectedTabIndex = 1
-                    },
-                )
-            }
-
-            1 -> {
-                ReceiptDetail(receiptDetailUiState, onReceiptDetailEvent)
-            }
-
-            2 -> {
-                ReceiptMappingList(
-                    receiptMappingInfoList,
-                    onClickItem = {
-                        // TODO: load
-                        selectedTabIndex = 3
-                    },
-                )
-            }
-
-            3 -> {
-                ReceiptMappingDetail(
-                    uiState = receiptMappingUiState,
-                    onEvent = onReceiptMappingEvent,
-                )
-            }
+        FloatingActionButton(
+            onClick = { launcher.launch("image/*") },
+            modifier = Modifier
+                .align(androidx.compose.ui.Alignment.BottomEnd)
+                .padding(16.dp),
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "レシート追加")
         }
     }
 }
@@ -191,4 +215,3 @@ fun ReceiptScreenMainPreview() {
         receiptDetailUiState = receiptDetailUiState,
     )
 }
-

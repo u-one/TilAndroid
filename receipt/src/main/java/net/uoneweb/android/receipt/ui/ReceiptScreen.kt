@@ -116,6 +116,13 @@ fun ReceiptScreenMain(
     var selectedTabIndex by remember { mutableStateOf(0) }
     var showPickerDialog by remember { mutableStateOf(false) }
 
+    val imagePickerDialogState = rememberImagePickerDialogState(
+        onImageSelected = {
+            onReceiptDetailEvent(ReceiptDetailEvent.OnImageSelected(it))
+            selectedTabIndex = 1
+        },
+    )
+
     Box {
         Column(modifier = Modifier.verticalScroll(scrollState)) {
             TabRow(selectedTabIndex = selectedTabIndex) {
@@ -171,10 +178,7 @@ fun ReceiptScreenMain(
         }
         if (showPickerDialog) {
             ImagePickerDialog(
-                onImageSelected = {
-                    onReceiptDetailEvent(ReceiptDetailEvent.OnImageSelected(it))
-                    selectedTabIndex = 1
-                },
+                state = imagePickerDialogState,
                 onDismissRequest = {
                     showPickerDialog = false
                 },

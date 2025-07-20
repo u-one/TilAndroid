@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +32,8 @@ sealed class ReceiptDetailEvent {
     data class OnSaveMetaData(val metaData: ReceiptMetaData) : ReceiptDetailEvent()
     object OnClickImageUpload : ReceiptDetailEvent()
     object OnClickTest : ReceiptDetailEvent()
+    data class OnCorrectionSubmitted(val correction: String) : ReceiptDetailEvent()
+    data class OnCorrectionTextChanged(val text: String) : ReceiptDetailEvent()
 }
 
 @Composable
@@ -80,6 +83,19 @@ fun ReceiptDetail(uiState: ReceiptDetailUiState, onEvent: (ReceiptDetailEvent) -
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
         ReceiptInfoPane(uiState, { onEvent(ReceiptDetailEvent.OnSaveMetaData(it)) })
+
+        OutlinedTextField(
+            value = uiState.correctionText,
+            onValueChange = { onEvent(ReceiptDetailEvent.OnCorrectionTextChanged(it)) },
+            label = { Text("修正内容") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Button(
+            onClick = { onEvent(ReceiptDetailEvent.OnCorrectionSubmitted(uiState.correctionText)) },
+            enabled = uiState.correctionText.isNotBlank()
+        ) {
+            Text("修正を送信")
+        }
     }
 }
 

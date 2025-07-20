@@ -15,6 +15,23 @@ object GeminiReceiptPrompt {
         val reader = BufferedReader(InputStreamReader(inputStream))
         return reader.use { it.readText() }
     }
+
+    fun loadCorrectionPrompt(context: Context, originalJson: String, correction: String): String {
+        val basePrompt = loadPrompt(context)
+        return """
+            $basePrompt
+
+            あなたは以前、この画像から以下の情報を抽出しました。
+            ```json
+            $originalJson
+            ```
+
+            しかし、ユーザーから以下の修正依頼がありました。
+            """ + correction + """
+
+            このフィードバックを考慮し、元の画像から正しい情報を再抽出し、修正されたJSON形式で出力してください。
+            """
+    }
 }
 
 data class GeminiReceiptResponse(

@@ -360,4 +360,49 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
+    fun updateCorrectionText(text: String) {
+        _receiptDetailUiState.update {
+            it.copy(correctionText = text)
+        }
+    }
+
+    suspend fun correctReceiptInfo(correction: String) {
+        val currentReceiptJson = _receiptDetailUiState.value.receipt.content.json
+        val selectedImageUri = _receiptDetailUiState.value.selectedImageUri
+
+        if (selectedImageUri == null) {
+            Log.e("ReceiptViewModel", "No image selected for correction.")
+            return
+        }
+
+        _receiptDetailUiState.update {
+            it.copy(
+                loading = true,
+                correctionText = "", // Clear correction text after submission
+            )
+        }
+
+        val contentResolver = getApplication<Application>().contentResolver
+        val image = ReceiptImage(contentResolver, selectedImageUri)
+
+        val prompt = content {
+            image(image.bitmap())
+            text(GeminiReceiptPrompt.loadCorrectionPrompt(getApplication(), currentReceiptJson, correction))
+        }
+
+        val model = Firebase.ai(backend = GenerativeBackend.googleAI())
+            .generativeModel("gemini-2.0-flash")
+        val response = model.generateContent(prompt)
+        print(response.text)
+        val parser = GeminiReceiptResponse(response.text)
+        print(parser.json())
+        _receiptDetailUiState.update {
+            it.copy(
+                loading = false,
+                receipt = ReceiptMetaData(Receipt.fromJson(parser.json())),
+            )
+        }
+    }
 }
+

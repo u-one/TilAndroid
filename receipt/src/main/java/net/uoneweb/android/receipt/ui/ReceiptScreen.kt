@@ -91,6 +91,14 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                         is ReceiptDetailEvent.OnClickTest -> {
                             viewModel.receiptResultTest()
                         }
+
+                        is ReceiptDetailEvent.OnCorrectionSubmitted -> {
+                            viewModel.correctReceiptInfo(event.correction)
+                        }
+
+                        is ReceiptDetailEvent.OnCorrectionTextChanged -> {
+                            viewModel.updateCorrectionText(event.text)
+                        }
                     }
                 }
             },

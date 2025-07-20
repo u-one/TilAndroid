@@ -12,4 +12,5 @@ data class ReceiptDetailUiState(
     val location: Location? = Location.Default,
     val loading: Boolean = false,
     val saved: Boolean = false,
+    val correctionText: String = "",
 )

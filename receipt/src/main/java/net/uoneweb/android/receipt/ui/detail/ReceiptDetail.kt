@@ -9,6 +9,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,9 +36,21 @@ sealed class ReceiptDetailEvent {
 @Composable
 fun ReceiptDetail(uiState: ReceiptDetailUiState, onEvent: (ReceiptDetailEvent) -> Unit) {
     val context = LocalContext.current
+    var showPreviewDialog by remember { mutableStateOf(false) }
+
+    if (showPreviewDialog) {
+        uiState.selectedImageUri?.let {
+            ImagePreviewDialog(uri = it, onDismiss = { showPreviewDialog = false })
+        }
+    }
+
     Column {
         Row {
-            ImageSelector(uiState.selectedImageUri) { it?.let { onEvent(ReceiptDetailEvent.OnImageSelected(it)) } }
+            ImageSelector(
+                uiState.selectedImageUri,
+                onImageSelected = { it?.let { onEvent(ReceiptDetailEvent.OnImageSelected(it)) } },
+                onImageClick = { showPreviewDialog = true }
+            )
         }
         Button(onClick = { onEvent(ReceiptDetailEvent.OnClickTest) }) { Text(text = "ReceiptResultTest") }
         ImageUploaderButton(uiState.selectedImageUri, uiState.uploadedImageUri) { onEvent(ReceiptDetailEvent.OnClickImageUpload) }

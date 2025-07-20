@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -16,7 +17,7 @@ import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun ImageSelector(selectedImageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
+fun ImageSelector(selectedImageUri: Uri?, onImageSelected: (Uri?) -> Unit, onImageClick: (() -> Unit)? = null) {
     val imagePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
         onImageSelected(uri)
     }
@@ -29,7 +30,9 @@ fun ImageSelector(selectedImageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
             Image(
                 painter = rememberAsyncImagePainter(uri),
                 contentDescription = "Selected image",
-                modifier = Modifier.size(256.dp),
+                modifier = Modifier
+                    .size(256.dp)
+                    .then(if (onImageClick != null) Modifier.clickable { onImageClick() } else Modifier),
             )
         }
     }
@@ -39,5 +42,5 @@ fun ImageSelector(selectedImageUri: Uri?, onImageSelected: (Uri?) -> Unit) {
 @Preview(showBackground = true, widthDp = 320)
 fun ImageSelectorPreview() {
     val selectedImageUri = "android.resource://sample/drawable/dummy_receipt".toUri()
-    ImageSelector(selectedImageUri) {}
+    ImageSelector(selectedImageUri, onImageSelected = {})
 }

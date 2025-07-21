@@ -1,6 +1,5 @@
 package net.uoneweb.android.receipt.ui.detail
 
-import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,10 +16,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +49,6 @@ import java.util.Locale
 @Composable
 fun ReceiptInfoPane(
     receiptDetailUiState: ReceiptDetailUiState,
-    onSaveMetaData: (ReceiptMetaData) -> Unit = {},
 ) {
     val metadata = receiptDetailUiState.receipt
     if (metadata == ReceiptMetaData.Empty) {
@@ -64,245 +59,186 @@ fun ReceiptInfoPane(
     var showItems by remember { mutableStateOf(true) }
     val currencyFormatter = remember { NumberFormat.getCurrencyInstance(Locale.JAPAN) }
 
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(12.dp),
+            .padding(16.dp), // Adjust padding for new card structure
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        ) {
-            // ヘッダー部分
-            Text(
-                text = "レシート情報",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
+        Text(
+            text = "レシート情報",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+        // 店舗情報
+        InfoRow(
+            icon = Icons.Default.Store,
+            label = "店舗",
+            value = metadata.content.store(),
+            color = MaterialTheme.colorScheme.primary,
+        )
 
-            // 店舗情報
+        // 日付・時間情報
+        if (metadata.content.receipt.date.isNotEmpty() || metadata.content.receipt.time.isNotEmpty()) {
+            val dateTime = buildString {
+                append(metadata.content.receipt.date)
+                if (metadata.content.receipt.date.isNotEmpty() && metadata.content.receipt.time.isNotEmpty()) {
+                    append(" ")
+                }
+                append(metadata.content.receipt.time)
+            }
+
             InfoRow(
-                icon = Icons.Default.Store,
-                label = "店舗",
-                value = metadata.content.store(),
-                color = MaterialTheme.colorScheme.primary,
+                icon = Icons.Default.CalendarToday,
+                label = "日時",
+                value = dateTime,
+                color = MaterialTheme.colorScheme.secondary,
             )
+        }
 
-            // 日付・時間情報
-            if (metadata.content.receipt.date.isNotEmpty() || metadata.content.receipt.time.isNotEmpty()) {
-                val dateTime = buildString {
-                    append(metadata.content.receipt.date)
-                    if (metadata.content.receipt.date.isNotEmpty() && metadata.content.receipt.time.isNotEmpty()) {
-                        append(" ")
-                    }
-                    append(metadata.content.receipt.time)
-                }
+        // 住所情報
+        if (metadata.content.address().isNotEmpty()) {
+            InfoRow(
+                icon = Icons.Default.LocationOn,
+                label = "住所",
+                value = metadata.content.address(),
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
 
-                InfoRow(
-                    icon = Icons.Default.CalendarToday,
-                    label = "日時",
-                    value = dateTime,
-                    color = MaterialTheme.colorScheme.secondary,
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // 商品項目セクション
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 8.dp),
                 )
-            }
-
-            // 住所情報
-            if (metadata.content.address().isNotEmpty()) {
-                InfoRow(
-                    icon = Icons.Default.LocationOn,
-                    label = "住所",
-                    value = metadata.content.address(),
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 商品項目セクション
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 8.dp),
-                    )
-                    Text(
-                        text = "商品項目 (${metadata.content.items.size}点)",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-
-                Button(
-                    onClick = { showItems = !showItems },
-                    colors = ButtonDefaults.textButtonColors(),
-                ) {
-                    Text(if (showItems) "折りたたむ" else "展開する")
-                }
-            }
-
-            if (showItems && metadata.content.items.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 商品リストのヘッダー
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp, horizontal = 8.dp),
-                ) {
-                    Text(
-                        text = "商品名",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(3f),
-                    )
-                    Text(
-                        text = "数量",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                        text = "金額",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.weight(2f),
-                    )
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
-
-                // 商品リスト
-                metadata.content.items.forEach { item ->
-                    ItemRow(item, currencyFormatter)
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
-
-                // 合計金額
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(modifier = Modifier.weight(3f))
-                    Text(
-                        text = "合計",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                        text = currencyFormatter.format(metadata.content.total()),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.weight(2f),
-                    )
-                }
-            } else if (metadata.content.items.isEmpty()) {
                 Text(
-                    text = "商品情報がありません",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
+                    text = "商品項目 (${metadata.content.items.size}点)",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
+            Button(
+                onClick = { showItems = !showItems },
+                colors = ButtonDefaults.textButtonColors(),
+            ) {
+                Text(if (showItems) "折りたたむ" else "展開する")
+            }
+        }
+
+        if (showItems && metadata.content.items.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            // ファイル名
+            // 商品リストのヘッダー
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
+            ) {
+                Text(
+                    text = "商品名",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(3f),
+                )
+                Text(
+                    text = "数量",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    text = "金額",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(2f),
+                )
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+
+            // 商品リスト
+            metadata.content.items.forEach { item ->
+                ItemRow(item, currencyFormatter)
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+
+            // 合計金額
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp, horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(modifier = Modifier.weight(3f))
+                Text(
+                    text = "合計",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    text = currencyFormatter.format(metadata.content.total()),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(2f),
+                )
+            }
+        } else if (metadata.content.items.isEmpty()) {
             Text(
-                text = "ファイル名:",
+                text = "商品情報がありません",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
             )
-            Text(
-                text = metadata.content.title(),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 8.dp, top = 4.dp),
-            )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // JSON表示トグルボタン
-            Button(
-                onClick = { showFullJson = !showFullJson },
-                modifier = Modifier.align(Alignment.End),
-            ) {
-                Text(if (showFullJson) "JSONを隠す" else "JSONを表示")
-            }
+        // ファイル名
+        Text(
+            text = "ファイル名:",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = metadata.content.title(),
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(start = 8.dp, top = 4.dp),
+        )
 
-            // JSON表示エリア
-            if (showFullJson) {
-                Spacer(modifier = Modifier.height(8.dp))
-                JsonTextView(metadata)
-            }
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
+        // JSON表示トグルボタン
+        Button(
+            onClick = { showFullJson = !showFullJson },
+            modifier = Modifier.align(Alignment.End),
+        ) {
+            Text(if (showFullJson) "JSONを隠す" else "JSONを表示")
+        }
 
-            // アクションボタン（下部に配置）
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                val context = LocalContext.current
-
-                // シェアボタン
-                ActionButton(
-                    text = "共有",
-                    onClick = {
-                        val title = metadata.content.title()
-                        val text = metadata.json()
-                        val sendIntent: Intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, text)
-                            putExtra(Intent.EXTRA_SUBJECT, title)
-                            type = "text/plain"
-                        }
-                        val shareIntent = Intent.createChooser(sendIntent, null)
-                        context.startActivity(shareIntent)
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp),
-                    enabled = true,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                )
-
-                // 保存ボタン
-                ActionButton(
-                    text = "保存",
-                    onClick = { onSaveMetaData(metadata) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp),
-                    enabled = receiptDetailUiState.saved.not(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                )
-            }
+        // JSON表示エリア
+        if (showFullJson) {
+            Spacer(modifier = Modifier.height(8.dp))
+            JsonTextView(metadata)
         }
     }
 }
@@ -374,25 +310,6 @@ fun InfoRow(
     }
 }
 
-@Composable
-fun ActionButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
-    content: @Composable () -> Unit = { Text(text) },
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled,
-        colors = colors,
-        shape = RoundedCornerShape(8.dp),
-    ) {
-        content()
-    }
-}
 
 @Composable
 private fun JsonTextView(metadata: ReceiptMetaData) {

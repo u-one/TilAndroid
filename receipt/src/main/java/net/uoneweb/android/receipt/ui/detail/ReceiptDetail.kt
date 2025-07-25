@@ -137,7 +137,7 @@ fun ReceiptDetail(uiState: ReceiptDetailUiState, onEvent: (ReceiptDetailEvent) -
                                 val location = uiState.imageLocation
                                 onEvent(ReceiptDetailEvent.OnLocationSet(location))
                             },
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(8.dp),
                         ) {
                             Text(context.getString(R.string.use_image_location))
                         }
@@ -189,25 +189,30 @@ fun ReceiptDetail(uiState: ReceiptDetailUiState, onEvent: (ReceiptDetailEvent) -
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Button(onClick = { onEvent(ReceiptDetailEvent.OnClickTest) },
-                    shape = RoundedCornerShape(8.dp)) { Text(text = "Test") }
+                    Button(
+                        onClick = { onEvent(ReceiptDetailEvent.OnClickTest) },
+                        shape = RoundedCornerShape(8.dp),
+                    ) { Text(text = "Test") }
 
                     ActionButton(
                         text = "共有",
                         onClick = {
+                            val title = uiState.receipt.content.title()
+                            val text = uiState.receipt.json()
                             val shareIntent = Intent().apply {
                                 action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_STREAM, uiState.uploadedImageUri)
-                                type = "image/*"
+                                putExtra(Intent.EXTRA_TEXT, text)
+                                putExtra(Intent.EXTRA_SUBJECT, title)
+                                type = "text/plain"
                             }
-                            context.startActivity(Intent.createChooser(shareIntent, "画像を共有"))
+                            context.startActivity(Intent.createChooser(shareIntent, "共有"))
                         },
-                        enabled = uiState.uploadedImageUri != null,
+                        enabled = uiState.receipt != ReceiptMetaData.Empty,
                     )
                     ActionButton(
                         text = "保存",
                         onClick = { onEvent(ReceiptDetailEvent.OnSaveMetaData(uiState.receipt)) },
-                        enabled = uiState.receipt != ReceiptMetaData.Empty,
+                        enabled = uiState.saved.not(),
                     )
                 }
                 Text(

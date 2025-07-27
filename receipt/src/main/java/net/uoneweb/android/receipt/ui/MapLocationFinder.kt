@@ -61,7 +61,7 @@ fun MapLocationFinder(location: Location, onLocationSelected: (Location) -> Unit
 
 @Composable
 fun MapLocationDialog(location: Location = Location.Default, onLocationSelected: (Location) -> Unit = {}, onDismissRequest: () -> Unit = {}) {
-    val mapViewState = remember { MapViewState(initialLocation = location) }
+    val mapViewState = remember { MapViewState(initialLocation = location, initialZoom = 17.0) }
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier

@@ -27,12 +27,17 @@ import com.google.android.gms.location.LocationServices
 import net.uoneweb.android.gis.R
 
 @Composable
-fun CurrentLocationComponent(location: Location?, onLocation: (Location?) -> Unit) {
+fun CurrentLocationComponent(onLocation: (Location?) -> Unit) {
     var loading by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    // TODO: CurrentLocationButtonをおさずに自動取得するようにする
+    var currentLocation by remember { mutableStateOf(Location.Empty) }
     Row {
         CurrentLocationButton(
-            onLocation = onLocation,
+            onLocation = {
+                currentLocation = it ?: Location.Empty
+                onLocation(it)
+            },
             onLoadingStateChange = {
                 loading = it
             },
@@ -49,9 +54,9 @@ fun CurrentLocationComponent(location: Location?, onLocation: (Location?) -> Uni
                     .align(Alignment.CenterVertically),
             )
         }
-        if (location != null) {
+        if (currentLocation != Location.Empty) {
             Text(
-                "Latitude: ${location.latitude}, Longitude: ${location.longitude}",
+                "Latitude: ${currentLocation.latitude}, Longitude: ${currentLocation.longitude}",
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
         }
@@ -126,5 +131,5 @@ fun getCurrentLocation(
 @Preview(showBackground = true)
 @Composable
 fun PreviewCurrentLocationComponent() {
-    CurrentLocationComponent(location = Location(1.0, 2.0)) {}
+    CurrentLocationComponent() {}
 }

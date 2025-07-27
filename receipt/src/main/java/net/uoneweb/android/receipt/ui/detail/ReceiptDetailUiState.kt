@@ -9,7 +9,7 @@ data class ReceiptDetailUiState(
     val uploadedImageUri: Uri? = null,
     val receipt: ReceiptMetaData = ReceiptMetaData.Empty,
     val imageLocation: Location = Location.Empty,
-    val location: Location? = Location.Default,
+    val currentLocation: Location? = Location.Default,
     val loading: Boolean = false,
     val saved: Boolean = false,
     val correctionText: String = "",

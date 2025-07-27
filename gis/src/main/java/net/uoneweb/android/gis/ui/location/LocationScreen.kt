@@ -18,7 +18,6 @@ fun LocationScreen() {
 
     var location by remember { mutableStateOf<Location?>(null) }
 
-    CurrentLocationComponent(location) {
-        location = it
+    CurrentLocationComponent() {
     }
 }

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -111,10 +112,10 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
 
     fun select(id: Long) {
         viewModelScope.launch {
-            receiptMetaDataRepository.getById(id).collect { metadata ->
+            receiptMetaDataRepository.getById(id).first().let { metadata ->
                 if (metadata != null) {
                     _receiptDetailUiState.update {
-                        it.copy(
+                        ReceiptDetailUiState(
                             receipt = metadata,
                             saved = true,
                         )
@@ -178,7 +179,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     fun setLocation(location: Location) {
         _receiptDetailUiState.update {
             it.copy(
-                location = location,
+                currentLocation = location,
                 receipt = it.receipt.copy(location = location),
                 saved = false,
             )

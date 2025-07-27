@@ -204,7 +204,7 @@ fun ReceiptScreenMainProgressPreview() {
         selectedImageUri = "android.resource://${context.packageName}/drawable/dummy_receipt".toUri(),
         uploadedImageUri = Uri.Builder().build(),
         receipt = ReceiptMetaData.Empty,
-        location = null,
+        currentLocation = null,
         loading = true,
     )
 
@@ -222,7 +222,7 @@ fun ReceiptScreenMainPreview() {
         selectedImageUri = "android.resource://${context.packageName}/drawable/dummy_receipt".toUri(),
         uploadedImageUri = Uri.Builder().authority("example.com").build(),
         receipt = ReceiptMetaData(Receipt.Sample),
-        location = null,
+        currentLocation = null,
         loading = true,
     )
 

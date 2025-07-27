@@ -1,5 +1,6 @@
 package net.uoneweb.android.receipt.ui.detail
 
+import InfoRow
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,10 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -276,42 +274,6 @@ fun ItemRow(item: Item, currencyFormatter: NumberFormat) {
 }
 
 @Composable
-fun InfoRow(
-    icon: ImageVector,
-    label: String,
-    value: String,
-    color: Color,
-    valueStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.padding(end = 12.dp),
-        )
-
-        Column {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = value,
-                style = valueStyle,
-            )
-        }
-    }
-}
-
-
-@Composable
 private fun JsonTextView(metadata: ReceiptMetaData) {
     Column {
         Text(
@@ -352,7 +314,7 @@ fun ReceiptInfoPreview() {
         uploadedImageUri = Uri.Builder().authority("example.com").build(),
         receipt = ReceiptMetaData(Receipt.Sample2),
         loading = false,
-        location = Location.Default,
+        currentLocation = Location.Default,
     )
     MaterialTheme {
         ReceiptInfoPane(uiState)
@@ -365,7 +327,7 @@ fun EmptyReceiptInfoPreview() {
     val uiState = ReceiptDetailUiState(
         receipt = ReceiptMetaData.Empty,
         loading = false,
-        location = Location.Default,
+        currentLocation = Location.Default,
     )
     MaterialTheme {
         ReceiptInfoPane(uiState)

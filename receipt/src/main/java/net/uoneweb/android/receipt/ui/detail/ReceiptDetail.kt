@@ -1,5 +1,6 @@
 package net.uoneweb.android.receipt.ui.detail
 
+import InfoRow
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -125,7 +128,14 @@ fun ReceiptDetail(uiState: ReceiptDetailUiState, onEvent: (ReceiptDetailEvent) -
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
-                CurrentLocationComponent(location = uiState.location) { it?.let { onEvent(ReceiptDetailEvent.OnLocationSet(it)) } }
+                InfoRow(
+                    icon = Icons.Default.LocationOn,
+                    label = "位置",
+                    value = "${uiState.receipt.location?.latitude},${uiState.receipt.location?.longitude}",
+                    color = MaterialTheme.colorScheme.error,
+                )
+                CurrentLocationComponent() { it?.let { onEvent(ReceiptDetailEvent.OnLocationSet(it)) } }
+                // 画像の位置情報
                 if (uiState.imageLocation != Location.Empty) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -145,7 +155,7 @@ fun ReceiptDetail(uiState: ReceiptDetailUiState, onEvent: (ReceiptDetailEvent) -
                     }
                 }
                 MapLocationFinder(
-                    uiState.location ?: Location.Default,
+                    uiState.receipt.location ?: Location.Default,
                     onLocationSelected = { onEvent(ReceiptDetailEvent.OnLocationSet(it)) },
                 )
             }
@@ -269,7 +279,7 @@ fun ReceiptDetailPreview() {
         uploadedImageUri = Uri.Builder().authority("example.com").build(),
         receipt = ReceiptMetaData.Sample,
         loading = false,
-        location = Location.Default,
+        currentLocation = Location.Default,
         saved = false,
         correctionText = "",
     )

@@ -31,10 +31,8 @@ import net.uoneweb.android.til.R
 
 @Composable
 fun DriveScreen() {
-
-    //SigninWithFirebase()
+    // SigninWithFirebase()
     SigninWithOAuthScreen()
-
 }
 
 @Composable
@@ -43,18 +41,19 @@ fun SigninWithFirebase() {
     val coroutineScope = rememberCoroutineScope()
 
     Column {
-
         Button(
             onClick = {
                 val credentialManager = CredentialManager.create(context)
-                val googleIdOption = GetGoogleIdOption.Builder()
-                    .setServerClientId(getString(context, R.string.default_web_client_id))
-                    .setFilterByAuthorizedAccounts(true)
-                    .build()
+                val googleIdOption =
+                    GetGoogleIdOption.Builder()
+                        .setServerClientId(getString(context, R.string.default_web_client_id))
+                        .setFilterByAuthorizedAccounts(true)
+                        .build()
 
-                val request = GetCredentialRequest.Builder()
-                    .addCredentialOption(googleIdOption)
-                    .build()
+                val request =
+                    GetCredentialRequest.Builder()
+                        .addCredentialOption(googleIdOption)
+                        .build()
                 coroutineScope.launch {
                     try {
                         val result = credentialManager.getCredential(context, request)

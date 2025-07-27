@@ -10,24 +10,29 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-
 class SettingsDataStore(context: Context) {
-    private val SHOW_BOTTOM_BAR_KEY = booleanPreferencesKey("show_bottom_bar")
+    companion object {
+        private val SHOW_BOTTOM_BAR_KEY = booleanPreferencesKey("show_bottom_bar")
+    }
 
-    val showBottomBarFlow: Flow<Boolean> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                exception.printStackTrace()
-                emit(emptyPreferences())
-            } else {
-                throw exception
+    val showBottomBarFlow: Flow<Boolean> =
+        context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    exception.printStackTrace()
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
             }
-        }
-        .map { preferences ->
-            preferences[SHOW_BOTTOM_BAR_KEY] == true
-        }
+            .map { preferences ->
+                preferences[SHOW_BOTTOM_BAR_KEY] == true
+            }
 
-    suspend fun saveShowBottomBar(show: Boolean, context: Context) {
+    suspend fun saveShowBottomBar(
+        show: Boolean,
+        context: Context,
+    ) {
         context.dataStore.edit { preferences ->
             preferences[SHOW_BOTTOM_BAR_KEY] = show
         }

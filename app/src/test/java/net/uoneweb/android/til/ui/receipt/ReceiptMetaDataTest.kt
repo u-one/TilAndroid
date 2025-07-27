@@ -10,19 +10,19 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ReceiptMetaDataTest {
-
-    val receiptJson = """
-            {
-              "store": {
-                "name": "store",
-                "branch": "branch"
-              },
-              "receipt": {
-                "date": "2025-01-01",
-                "time": "12:34"
-              },
-              "total": 5678 
-            }
+    val receiptJson =
+        """
+        {
+          "store": {
+            "name": "store",
+            "branch": "branch"
+          },
+          "receipt": {
+            "date": "2025-01-01",
+            "time": "12:34"
+          },
+          "total": 5678 
+        }
         """.trimIndent()
 
     @Test
@@ -58,7 +58,8 @@ class ReceiptMetaDataTest {
     @Test
     fun testFromJsonWithFullData() {
         // 完全なデータを含むJSONを作成
-        val json = """
+        val json =
+            """
             {
               "meta": {
                 "version": "v3",
@@ -71,7 +72,7 @@ class ReceiptMetaDataTest {
               },
               "receipt": $receiptJson
             }
-        """.trimIndent()
+            """.trimIndent()
 
         // テスト対象メソッドを実行
         val result = ReceiptMetaData.fromJson(json)
@@ -89,7 +90,8 @@ class ReceiptMetaDataTest {
     @Test
     fun testFromJsonWithPartialData() {
         // 一部のメタデータのみを含むJSONを作成
-        val json = """
+        val json =
+            """
             {
               "meta": {
                 "version": "v3",
@@ -97,7 +99,7 @@ class ReceiptMetaDataTest {
               },
               "receipt": $receiptJson
             }
-        """.trimIndent()
+            """.trimIndent()
 
         // テスト対象メソッドを実行
         val result = ReceiptMetaData.fromJson(json)
@@ -112,11 +114,12 @@ class ReceiptMetaDataTest {
     @Test
     fun testFromJsonWithLegacyFormat() {
         // 古いフォーマット（receiptのみ）のJSONを作成
-        val json = """
+        val json =
+            """
             {
               "receipt": $receiptJson
             }
-        """.trimIndent()
+            """.trimIndent()
 
         // テスト対象メソッドを実行
         val result = ReceiptMetaData.fromJson(json)

@@ -33,154 +33,155 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CameraFragment
-@Inject
-constructor() : Fragment() {
-    private var _binding: FragmentCameraBinding? = null
-    private val binding get() = _binding!!
+    @Inject
+    constructor() : Fragment() {
+        private var _binding: FragmentCameraBinding? = null
+        private val binding get() = _binding!!
 
-    private var imageCapture: ImageCapture? = null
+        private var imageCapture: ImageCapture? = null
 
-    private var videoCapture: VideoCapture<Recorder>? = null
-    private var recording: Recording? = null
+        private var videoCapture: VideoCapture<Recorder>? = null
+        private var recording: Recording? = null
 
-    private lateinit var cameraExecutor: ExecutorService
+        private lateinit var cameraExecutor: ExecutorService
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        val cameraViewModel =
-            ViewModelProvider(this).get(CameraViewModel::class.java)
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?,
+        ): View {
+            val cameraViewModel =
+                ViewModelProvider(this).get(CameraViewModel::class.java)
 
-        _binding = FragmentCameraBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+            _binding = FragmentCameraBinding.inflate(inflater, container, false)
+            val root: View = binding.root
 
-        binding.viewFinder
+            binding.viewFinder
 
-        cameraExecutor = Executors.newSingleThreadExecutor()
+            cameraExecutor = Executors.newSingleThreadExecutor()
 
-        binding.imageCaptureButton.setOnClickListener {
-            takePhoto()
+            binding.imageCaptureButton.setOnClickListener {
+                takePhoto()
+            }
+            binding.videoCaptureButton.setOnClickListener {
+                captureVideo()
+            }
+
+            startCamera()
+
+            return root
         }
-        binding.videoCaptureButton.setOnClickListener {
-            captureVideo()
-        }
 
-        startCamera()
+        private fun startCamera() {
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
-        return root
-    }
+            cameraProviderFuture.addListener(
+                {
+                    val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+                    val preview =
+                        Preview.Builder()
+                            .build()
+                            .also {
+                                it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+                            }
 
-        cameraProviderFuture.addListener(
-            {
-                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+                    imageCapture = ImageCapture.Builder().build()
 
-                val preview =
-                    Preview.Builder()
-                        .build()
-                        .also {
-                            it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-                        }
-
-                imageCapture = ImageCapture.Builder().build()
-
-                val s = ResolutionSelector.Builder().setResolutionStrategy(
-                    ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY,
-                ).build()
-                s.allowedResolutionMode
-                val imageAnalyzer =
-                    ImageAnalysis.Builder()
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
-                        .setResolutionSelector(s)
-                        .build()
-                        .also {
+                    val s =
+                        ResolutionSelector.Builder().setResolutionStrategy(
+                            ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY,
+                        ).build()
+                    s.allowedResolutionMode
+                    val imageAnalyzer =
+                        ImageAnalysis.Builder()
+                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
+                            .setResolutionSelector(s)
+                            .build()
+                            .also {
                             /*
                             it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
                                 Log.d(TAG, "Average luminosity: $luma")
                             })
                              */
-                            it.setAnalyzer(cameraExecutor, BarcodeAnalyzer {})
-                        }
+                                it.setAnalyzer(cameraExecutor, BarcodeAnalyzer {})
+                            }
 
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-                try {
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
-                        this,
-                        cameraSelector,
-                        preview,
-                        imageAnalyzer,
-                    )
+                    try {
+                        cameraProvider.unbindAll()
+                        cameraProvider.bindToLifecycle(
+                            this,
+                            cameraSelector,
+                            preview,
+                            imageAnalyzer,
+                        )
                     /*
                     cameraProvider.bindToLifecycle(
                         this, cameraSelector, preview, imageCapture, imageAnalyzer
                     )
                      */
-                } catch (e: Exception) {
-                    Log.e(TAG, "Use case binding failed", e)
-                }
-            },
-            ContextCompat.getMainExecutor(requireContext()),
-        )
-    }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Use case binding failed", e)
+                    }
+                },
+                ContextCompat.getMainExecutor(requireContext()),
+            )
+        }
 
-    private fun takePhoto() {
-        val imageCapture = imageCapture ?: return
+        private fun takePhoto() {
+            val imageCapture = imageCapture ?: return
 
-        val name =
-            SimpleDateFormat(FILENAME_FORMAT, Locale.JAPAN)
-                .format(System.currentTimeMillis())
+            val name =
+                SimpleDateFormat(FILENAME_FORMAT, Locale.JAPAN)
+                    .format(System.currentTimeMillis())
 
-        val contentValues =
-            ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                    put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
-                }
-            }
-
-        val outputOptions =
-            ImageCapture.OutputFileOptions
-                .Builder(
-                    activity?.contentResolver!!,
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    contentValues,
-                ).build()
-
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
-                    Log.d(TAG, msg)
+            val contentValues =
+                ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+                    }
                 }
 
-                override fun onError(e: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: $(e.message}", e)
-                }
-            },
-        )
+            val outputOptions =
+                ImageCapture.OutputFileOptions
+                    .Builder(
+                        activity?.contentResolver!!,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        contentValues,
+                    ).build()
+
+            imageCapture.takePicture(
+                outputOptions,
+                ContextCompat.getMainExecutor(requireContext()),
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                        val msg = "Photo capture succeeded: ${output.savedUri}"
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                        Log.d(TAG, msg)
+                    }
+
+                    override fun onError(e: ImageCaptureException) {
+                        Log.e(TAG, "Photo capture failed: $(e.message}", e)
+                    }
+                },
+            )
+        }
+
+        private fun captureVideo() {}
+
+        override fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+
+            cameraExecutor.shutdown()
+        }
+
+        companion object {
+            private val TAG = this::class.java.simpleName
+            const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        }
     }
-
-    private fun captureVideo() {}
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-
-        cameraExecutor.shutdown()
-    }
-
-    companion object {
-        private val TAG = this::class.java.simpleName
-        const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-    }
-}

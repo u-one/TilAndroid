@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 import net.uoneweb.android.data.ReceiptSettingDataStore
 import net.uoneweb.android.til.data.SettingsDataStore
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferenceScreen() {
@@ -62,8 +61,10 @@ fun PreferenceScreen() {
 
 @Composable
 fun Preferences(
-    showBottomBar: Boolean = true, onShowBottomBarChange: (Boolean) -> Unit = {},
-    apiKey: String, onApiKeyChange: (String) -> Unit = {},
+    showBottomBar: Boolean = true,
+    onShowBottomBarChange: (Boolean) -> Unit = {},
+    apiKey: String,
+    onApiKeyChange: (String) -> Unit = {},
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -72,13 +73,15 @@ fun Preferences(
             Text(
                 text = "Show BottomBar",
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .align(alignment = CenterVertically)
-                    .weight(1f),
+                modifier =
+                    Modifier
+                        .padding(bottom = 16.dp)
+                        .align(alignment = CenterVertically)
+                        .weight(1f),
             )
             Switch(
-                showBottomBar, onCheckedChange = onShowBottomBarChange,
+                showBottomBar,
+                onCheckedChange = onShowBottomBarChange,
                 modifier = Modifier.align(alignment = CenterVertically),
             )
         }
@@ -99,11 +102,12 @@ fun Preferences(
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                val icon = if (isPasswordVisible) {
-                    Icons.Filled.Face
-                } else {
-                    Icons.Filled.Lock
-                }
+                val icon =
+                    if (isPasswordVisible) {
+                        Icons.Filled.Face
+                    } else {
+                        Icons.Filled.Lock
+                    }
                 IconButton(
                     onClick = {
                         isPasswordVisible = !isPasswordVisible
@@ -120,6 +124,7 @@ fun Preferences(
         Spacer(modifier = Modifier.height(16.dp))
 
         // 現状定常的に保存
+
         /*
         Button(
             onClick = {

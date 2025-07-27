@@ -28,7 +28,6 @@ import net.uoneweb.android.receipt.data.ReceiptMetaData
 import net.uoneweb.android.receipt.repository.ReceiptMetaDataRepository
 
 class ShareReceiverActivity : AppCompatActivity() {
-
     lateinit var receiptMetaDataRepository: ReceiptMetaDataRepository
     lateinit var event: IntentEvent
 

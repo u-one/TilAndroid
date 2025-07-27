@@ -1,6 +1,5 @@
 package net.uoneweb.android.til.ui.graphql
 
-//import com.apollographql.apollo3.ApolloClient
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,18 +9,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-//import com.trevorblades.countries.GetCountryQuery
 import kotlinx.coroutines.launch
+
+// import com.apollographql.apollo3.ApolloClient
+// import com.trevorblades.countries.GetCountryQuery
 
 @Composable
 fun GraphQLScreen() {
     var code by remember { mutableStateOf("ZW") }
-    //var country by remember { mutableStateOf<GetCountryQuery.Country?>(null) }
+    // var country by remember { mutableStateOf<GetCountryQuery.Country?>(null) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(code) {
         scope.launch {
             // TODO: fix dependencies
+
             /*
             val appolloclient =
                 ApolloClient.Builder()

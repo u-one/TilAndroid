@@ -4,24 +4,23 @@ import net.uoneweb.android.receipt.webapi.GeminiReceiptResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
 class GeminiReceiptResponseTest {
-
-    val text = """
-    ```json
-    {
-      "store": {
-        "name": "string"
-      },
-      "items": [
+    val text =
+        """
+        ```json
         {
-          "name": "string",
-          "price": "number"
+          "store": {
+            "name": "string"
+          },
+          "items": [
+            {
+              "name": "string",
+              "price": "number"
+            }
+          ]
         }
-      ]
-    }
-    ```
-    """.trimIndent()
+        ```
+        """.trimIndent()
 
     @Test
     fun testJson() {

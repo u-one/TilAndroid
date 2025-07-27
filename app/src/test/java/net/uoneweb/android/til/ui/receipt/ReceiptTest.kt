@@ -5,10 +5,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ReceiptTest {
-
     @Test
     fun testTitle() {
-        val json = """
+        val json =
+            """
             {
               "store": {
                 "name": "store",
@@ -20,7 +20,7 @@ class ReceiptTest {
               },
               "total": 5678 
             }
-        """.trimIndent()
+            """.trimIndent()
         val receipt = Receipt.fromJson(json)
 
         val actual = receipt.title()
@@ -30,7 +30,8 @@ class ReceiptTest {
 
     @Test
     fun testTitleNoBranch() {
-        val json = """
+        val json =
+            """
             {
               "store": {
                 "name": "store",
@@ -42,7 +43,7 @@ class ReceiptTest {
               },
               "total": 5678
             }
-        """.trimIndent()
+            """.trimIndent()
         val receipt = Receipt.fromJson(json)
 
         val actual = receipt.title()
@@ -52,7 +53,8 @@ class ReceiptTest {
 
     @Test
     fun testStore() {
-        val json = """
+        val json =
+            """
             {
               "store": {
                 "name": "store",
@@ -64,7 +66,7 @@ class ReceiptTest {
               },
               "total": 5678
             }
-        """.trimIndent()
+            """.trimIndent()
         val receipt = Receipt.fromJson(json)
 
         val actual = receipt.store()
@@ -74,7 +76,8 @@ class ReceiptTest {
 
     @Test
     fun testTotal() {
-        val json = """
+        val json =
+            """
             {
               "store": {
                 "name": "store",
@@ -86,7 +89,7 @@ class ReceiptTest {
               },
               "total": 5678
             }
-        """.trimIndent()
+            """.trimIndent()
         val receipt = Receipt.fromJson(json)
 
         val actual = receipt.total()
@@ -96,7 +99,8 @@ class ReceiptTest {
 
     @Test
     fun testAddress() {
-        val json = """
+        val json =
+            """
             {
               "store": {
                 "name": "store",
@@ -109,7 +113,7 @@ class ReceiptTest {
               },
               "total": 5678
             }
-        """.trimIndent()
+            """.trimIndent()
         val receipt = Receipt.fromJson(json)
 
         val actual = receipt.address()

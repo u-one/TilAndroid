@@ -41,9 +41,7 @@ sealed class IntentEvent() {
     data class Unknown(val text: String = "") : IntentEvent()
 }
 
-
 class IntentParser(private val contentResolver: ContentResolver) {
-
     fun parse(intent: Intent?): IntentEvent {
         when (intent?.action) {
             Intent.ACTION_SEND -> {
@@ -79,7 +77,7 @@ class IntentParser(private val contentResolver: ContentResolver) {
                 return IntentEvent.Unknown("unknown action: ${intent?.action}")
             }
         }
-        return IntentEvent.Unknown("unsupported type: ${intent}")
+        return IntentEvent.Unknown("unsupported type: $intent")
     }
 
     fun readString(uri: Uri): String {

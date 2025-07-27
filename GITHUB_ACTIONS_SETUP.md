@@ -32,6 +32,9 @@ Firebase用の設定ファイルです。
 
 ## ワークフロー概要
 
+### 要件
+- **Java**: JDK 17 (Android Gradle Plugin 8.10.0の要件)
+
 ### buildジョブ
 - **トリガー**: main/developブランチへのpush、mainブランチへのPR
 - **実行内容**:

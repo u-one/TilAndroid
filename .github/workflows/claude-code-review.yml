@@ -1,18 +1,18 @@
-name: Claude Code Review
+name: Claude Code Review（コードレビュー）
 
 on:
   pull_request:
     types: [opened, synchronize]
-    # Optional: Only run on specific file changes
+    # オプション: 特定のファイル変更時のみ実行（Android/Kotlinファイル）
     # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+    #   - "app/**/*.kt"
+    #   - "**/src/**/*.kt"
+    #   - "**/*.gradle.kts"
+    #   - "**/build.gradle"
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
+    # オプション: PR作成者でフィルタリング
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||
     #   github.event.pull_request.user.login == 'new-developer' ||
@@ -26,52 +26,55 @@ jobs:
       id-token: write
     
     steps:
-      - name: Checkout repository
+      - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Run Claude Code Review
+      - name: Claude Code Reviewを実行
         id: claude-review
         uses: anthropics/claude-code-action@beta
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
-          # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
+          # オプション: モデルを指定（デフォルトはClaude Sonnet 4、Claude Opus 4を使用する場合はコメントアウトを外す）
           # model: "claude-opus-4-20250514"
           
-          # Direct prompt for automated review (no @claude mention needed)
+          # Android/Kotlin開発用の自動レビュープロンプト（@claudeの言及は不要）
           direct_prompt: |
-            Please review this pull request and provide feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Performance considerations
-            - Security concerns
-            - Test coverage
+            このAndroid/Kotlin pull requestをレビューし、以下の点についてフィードバックを提供してください：
+            - Android開発のベストプラクティスとKotlinコーディング規約
+            - Jetpack ComposeのUI設計とパフォーマンス
+            - MVVMアーキテクチャと状態管理
+            - メモリリークやパフォーマンスの問題
+            - セキュリティと権限管理
+            - テストカバレッジとCompose UIテスト
+            - Gradle設定とビルド最適化
             
-            Be constructive and helpful in your feedback.
+            Android開発経験を活かした建設的で実用的なフィードバックをお願いします。
 
-          # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
+          # オプション: 同じPRへの後続のプッシュでClaudeが同じコメントを再利用するためのスティッキーコメントを使用
           # use_sticky_comment: true
           
-          # Optional: Customize review based on file types
+          # オプション: Android/Kotlinファイルタイプに基づいたレビューのカスタマイズ
           # direct_prompt: |
-          #   Review this PR focusing on:
-          #   - For TypeScript files: Type safety and proper interface usage
-          #   - For API endpoints: Security, input validation, and error handling
-          #   - For React components: Performance, accessibility, and best practices
-          #   - For tests: Coverage, edge cases, and test quality
+          #   このAndroid PRを以下の点に焦点を当ててレビューしてください：
+          #   - Kotlinファイル: null安全性、data classの使用、コルーチンの適切な使用
+          #   - Compose UI: 再構成の最適化、状態管理、メモ化の適用
+          #   - ViewModel: 状態管理、ライフサイクル、メモリリーク防止
+          #   - Repository/DataSource: 非同期処理、エラーハンドリング、データキャッシュ
+          #   - テスト: JUnit 5、Compose UIテスト、MockKの使用
           
-          # Optional: Different prompts for different authors
+          # オプション: 異なる作成者用の異なるプロンプト
           # direct_prompt: |
           #   ${{ github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR' && 
-          #   'Welcome! Please review this PR from a first-time contributor. Be encouraging and provide detailed explanations for any suggestions.' ||
-          #   'Please provide a thorough code review focusing on our coding standards and best practices.' }}
+          #   'ようこそ！初回貢献者のPRをレビューしてください。奨励的で、提案に対して詳細な説明を提供してください。' ||
+          #   'コーディング規約とベストプラクティスに焦点を当てた徹底的なコードレビューを提供してください。' }}
           
-          # Optional: Add specific tools for running tests or linting
-          # allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck)"
+          # オプション: Androidビルドやテスト実行用の特定ツールを追加
+          # allowed_tools: "Bash(./gradlew test),Bash(./gradlew spotlessCheck),Bash(./gradlew assembleDebug),Bash(./gradlew connectedAndroidTest)"
           
-          # Optional: Skip review for certain conditions
+          # オプション: 特定の条件でレビューをスキップ
           # if: |
           #   !contains(github.event.pull_request.title, '[skip-review]') &&
           #   !contains(github.event.pull_request.title, '[WIP]')

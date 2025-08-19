@@ -216,6 +216,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
                 loading = false,
                 imageLocation = imageLocation,
                 receipt = ReceiptMetaData(Receipt.fromJson(parser.json())),
+                saved = false
             )
         }
     }
@@ -225,6 +226,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         _receiptDetailUiState.update {
             it.copy(
                 receipt = ReceiptMetaData(Receipt.fromJson(testData)),
+                saved = false
             )
         }
     }
@@ -402,6 +404,7 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
             it.copy(
                 loading = false,
                 receipt = ReceiptMetaData(Receipt.fromJson(parser.json())),
+                saved = false
             )
         }
     }

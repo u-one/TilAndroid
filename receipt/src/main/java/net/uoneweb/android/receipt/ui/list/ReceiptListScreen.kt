@@ -21,28 +21,21 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -137,42 +130,16 @@ fun ReceiptListScreen(
 
                 is ReceiptListUiState.Success -> {
                     val successState = uiState as ReceiptListUiState.Success
-                    var expanded by remember { mutableStateOf(false) }
 
                     Column(modifier = Modifier.fillMaxSize()) {
-                        ExposedDropdownMenuBox(
-                            expanded = expanded,
-                            onExpandedChange = { expanded = it },
+                        YearMonthDropdown(
+                            options = successState.yearMonthOptions,
+                            selectedYearMonth = successState.selectedYearMonth,
+                            onYearMonthSelected = { viewModel.selectYearMonth(it) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                        ) {
-                            TextField(
-                                value = formatYearMonth(successState.selectedYearMonth),
-                                onValueChange = {},
-                                readOnly = true,
-                                trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                                },
-                                modifier = Modifier
-                                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                                    .fillMaxWidth(),
-                            )
-                            ExposedDropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                            ) {
-                                successState.yearMonthOptions.forEach { yearMonth ->
-                                    DropdownMenuItem(
-                                        text = { Text(formatYearMonth(yearMonth)) },
-                                        onClick = {
-                                            viewModel.selectYearMonth(yearMonth)
-                                            expanded = false
-                                        },
-                                    )
-                                }
-                            }
-                        }
+                        )
 
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -215,15 +182,6 @@ fun ReceiptListScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun formatYearMonth(yearMonth: String): String {
-    return if (yearMonth == ReceiptListViewModel.UNKNOWN_DATE_KEY) {
-        stringResource(R.string.list_unknown_date)
-    } else {
-        yearMonth.replace("-", "年") + "月"
     }
 }
 

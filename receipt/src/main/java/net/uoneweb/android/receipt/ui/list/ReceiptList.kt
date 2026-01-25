@@ -35,50 +35,65 @@ data class ReceiptListState(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReceiptList(
     state: ReceiptListState,
     onYearMonthSelected: (String) -> Unit = {},
     onClickItem: (ReceiptMetaData) -> Unit = {},
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Column {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
+        YearMonthDropdown(
+            options = state.yearMonthOptions,
+            selectedYearMonth = state.selectedYearMonth,
+            onYearMonthSelected = onYearMonthSelected,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-        ) {
-            TextField(
-                value = formatYearMonth(state.selectedYearMonth),
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    .fillMaxWidth(),
-            )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                state.yearMonthOptions.forEach { yearMonth ->
-                    DropdownMenuItem(
-                        text = { Text(formatYearMonth(yearMonth)) },
-                        onClick = {
-                            onYearMonthSelected(yearMonth)
-                            expanded = false
-                        },
-                    )
-                }
-            }
-        }
+        )
 
         state.receipts.forEach { item ->
             ReceiptListItem(item, onClickItem)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun YearMonthDropdown(
+    options: List<String>,
+    selectedYearMonth: String,
+    onYearMonthSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier,
+    ) {
+        TextField(
+            value = formatYearMonth(selectedYearMonth),
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth(),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEach { yearMonth ->
+                DropdownMenuItem(
+                    text = { Text(formatYearMonth(yearMonth)) },
+                    onClick = {
+                        onYearMonthSelected(yearMonth)
+                        expanded = false
+                    },
+                )
+            }
         }
     }
 }
@@ -116,6 +131,16 @@ fun ReceiptListPreview() {
             selectedYearMonth = "2025-01",
             receipts = listOf(ReceiptMetaData.Sample),
         ),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun YearMonthDropdownPreview() {
+    YearMonthDropdown(
+        options = listOf("2025-01", "2025-02", ReceiptListState.UNKNOWN_DATE_KEY),
+        selectedYearMonth = "2025-01",
+        onYearMonthSelected = {},
     )
 }
 

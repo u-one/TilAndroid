@@ -38,12 +38,12 @@ import net.uoneweb.android.receipt.ui.detail.ReceiptDetail
 import net.uoneweb.android.receipt.ui.detail.ReceiptDetailEvent
 import net.uoneweb.android.receipt.ui.detail.ReceiptDetailUiState
 import net.uoneweb.android.receipt.ui.list.ReceiptList
+import net.uoneweb.android.receipt.ui.list.ReceiptListState
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val receiptMappingInfo by viewModel.osmInfoJson
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
-    //val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
     val receiptMappingInfoList = viewModel.listReceiptMappingInfos().collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -57,6 +57,23 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
         location = receiptDetailUiState.receipt.location ?: Location.Default,
     )
 
+    // ReceiptList用の状態を収集
+    val yearMonthList by viewModel.yearMonthList.collectAsState()
+    val unknownDateCount by viewModel.unknownDateCount.collectAsState()
+    val selectedYearMonth by viewModel.selectedYearMonth.collectAsState()
+    val selectedReceipts by viewModel.getReceiptsForMonth(selectedYearMonth).collectAsState()
+
+    val receiptListState = ReceiptListState(
+        yearMonthOptions = buildList {
+            addAll(yearMonthList)
+            if (unknownDateCount > 0) {
+                add(ReceiptListState.UNKNOWN_DATE_KEY)
+            }
+        },
+        selectedYearMonth = selectedYearMonth,
+        receipts = selectedReceipts,
+    )
+
     Column {
         ReceiptScreenMain(
             list = receiptMetaDataList.value,
@@ -67,7 +84,8 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 }
             },
             receiptDetailUiState = receiptDetailUiState,
-            receiptViewModel = viewModel,
+            receiptListState = receiptListState,
+            onYearMonthSelected = { viewModel.selectYearMonth(it) },
             onReceiptDetailEvent = { event ->
                 coroutineScope.launch {
                     when (event) {
@@ -118,7 +136,8 @@ fun ReceiptScreenMain(
     onReceiptDetailEvent: (receiptDetailEvent: ReceiptDetailEvent) -> Unit = {},
     receiptMappingUiState: ReceiptMappingUiState = ReceiptMappingUiState(),
     onReceiptMappingEvent: (ReceiptMappingEvent) -> Unit = {},
-    receiptViewModel: ReceiptViewModel? = null,
+    receiptListState: ReceiptListState = ReceiptListState(),
+    onYearMonthSelected: (String) -> Unit = {},
 ) {
 
     val scrollState = rememberScrollState()
@@ -147,24 +166,14 @@ fun ReceiptScreenMain(
             }
             when (selectedTabIndex) {
                 0 -> {
-                    if (receiptViewModel != null) {
-                        ReceiptList(
-                            list,
-                            onClickItem = {
-                                onClickItem(it)
-                                selectedTabIndex = 1
-                            },
-                            viewModel = receiptViewModel,
-                        )
-                    } else {
-                        ReceiptList(
-                            list,
-                            onClickItem = {
-                                onClickItem(it)
-                                selectedTabIndex = 1
-                            },
-                        )
-                    }
+                    ReceiptList(
+                        state = receiptListState,
+                        onYearMonthSelected = onYearMonthSelected,
+                        onClickItem = {
+                            onClickItem(it)
+                            selectedTabIndex = 1
+                        },
+                    )
                 }
 
                 1 -> {
@@ -245,5 +254,10 @@ fun ReceiptScreenMainPreview() {
             ReceiptMetaData(Receipt.Empty),
         ),
         receiptDetailUiState = receiptDetailUiState,
+        receiptListState = ReceiptListState(
+            yearMonthOptions = listOf("2025-01"),
+            selectedYearMonth = "2025-01",
+            receipts = listOf(ReceiptMetaData(Receipt.Sample)),
+        ),
     )
 }

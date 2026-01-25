@@ -13,14 +13,18 @@ import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
 import com.google.firebase.ai.type.content
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.uoneweb.android.receipt.ui.list.ReceiptListState
 import net.uoneweb.android.data.ReceiptSettingDataStore
 import net.uoneweb.android.gis.ui.location.Location
 import net.uoneweb.android.gis.ui.map.Feature
@@ -45,6 +49,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ReceiptViewModel(application: Application) : AndroidViewModel(application) {
     private val receiptMetaDataRepository = ReceiptMetaDataRepository(application)
     private val receiptMappingInfoRepository = ReceiptMappingInfoRepository(application)
@@ -129,6 +134,36 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     fun selectYearMonth(yearMonth: String) {
         _selectedYearMonth.value = yearMonth
     }
+
+    private val selectedReceiptsFlow = _selectedYearMonth.flatMapLatest { yearMonth ->
+        if (yearMonth == UNKNOWN_DATE_KEY) {
+            receiptMetaDataRepository.getUnknownDate()
+        } else {
+            receiptMetaDataRepository.getByYearMonth(yearMonth)
+        }
+    }
+
+    val receiptListState: StateFlow<ReceiptListState> = combine(
+        yearMonthList,
+        unknownDateCount,
+        _selectedYearMonth,
+        selectedReceiptsFlow,
+    ) { yearMonthList, unknownCount, selectedYearMonth, receipts ->
+        ReceiptListState(
+            yearMonthOptions = buildList {
+                addAll(yearMonthList)
+                if (unknownCount > 0) {
+                    add(UNKNOWN_DATE_KEY)
+                }
+            },
+            selectedYearMonth = selectedYearMonth,
+            receipts = receipts,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ReceiptListState(),
+    )
 
     companion object {
         const val UNKNOWN_DATE_KEY = "__unknown__"

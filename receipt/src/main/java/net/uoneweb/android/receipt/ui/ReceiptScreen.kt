@@ -57,22 +57,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
         location = receiptDetailUiState.receipt.location ?: Location.Default,
     )
 
-    // ReceiptList用の状態を収集
-    val yearMonthList by viewModel.yearMonthList.collectAsState()
-    val unknownDateCount by viewModel.unknownDateCount.collectAsState()
-    val selectedYearMonth by viewModel.selectedYearMonth.collectAsState()
-    val selectedReceipts by viewModel.getReceiptsForMonth(selectedYearMonth).collectAsState()
-
-    val receiptListState = ReceiptListState(
-        yearMonthOptions = buildList {
-            addAll(yearMonthList)
-            if (unknownDateCount > 0) {
-                add(ReceiptListState.UNKNOWN_DATE_KEY)
-            }
-        },
-        selectedYearMonth = selectedYearMonth,
-        receipts = selectedReceipts,
-    )
+    val receiptListState by viewModel.receiptListState.collectAsState()
 
     Column {
         ReceiptScreenMain(

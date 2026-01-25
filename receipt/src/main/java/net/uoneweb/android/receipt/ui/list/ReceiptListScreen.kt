@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
@@ -59,7 +60,6 @@ fun ReceiptListScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
-
     val currencyFormatter = remember { NumberFormat.getCurrencyInstance(Locale.JAPAN) }
 
     Scaffold(
@@ -91,98 +91,174 @@ fun ReceiptListScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            when (uiState) {
-                is ReceiptListUiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
+            ReceiptListContent(
+                uiState = uiState,
+                onYearMonthSelected = { viewModel.selectYearMonth(it) },
+                onReceiptClick = onReceiptClick,
+                onDeleteReceipt = { receipt ->
+                    scope.launch {
+                        viewModel.deleteReceipt(receipt)
+                        snackbarHostState.showSnackbar("レシートを削除しました")
                     }
-                }
+                },
+                currencyFormatter = currencyFormatter,
+            )
+        }
+    }
+}
 
-                is ReceiptListUiState.Empty -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Receipt,
-                                contentDescription = null,
-                                modifier = Modifier.size(64.dp),
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(R.string.list_empty),
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = stringResource(R.string.list_empty_description),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                    }
-                }
+@Composable
+private fun ReceiptListContent(
+    uiState: ReceiptListUiState,
+    onYearMonthSelected: (String) -> Unit,
+    onReceiptClick: (Long) -> Unit,
+    onDeleteReceipt: (ReceiptMetaData) -> Unit,
+    currencyFormatter: NumberFormat,
+) {
+    when (uiState) {
+        is ReceiptListUiState.Loading -> ReceiptListLoading()
+        is ReceiptListUiState.Empty -> ReceiptListEmpty()
+        is ReceiptListUiState.Success -> ReceiptListSuccess(
+            state = uiState,
+            onYearMonthSelected = onYearMonthSelected,
+            onReceiptClick = onReceiptClick,
+            onDeleteReceipt = onDeleteReceipt,
+            currencyFormatter = currencyFormatter,
+        )
+        is ReceiptListUiState.Error -> ReceiptListError(uiState.message)
+    }
+}
 
-                is ReceiptListUiState.Success -> {
-                    val successState = uiState as ReceiptListUiState.Success
+@Composable
+private fun ReceiptListLoading() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
 
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        YearMonthDropdown(
-                            options = successState.yearMonthOptions,
-                            selectedYearMonth = successState.selectedYearMonth,
-                            onYearMonthSelected = { viewModel.selectYearMonth(it) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                        )
+@Composable
+private fun ReceiptListEmpty() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Receipt,
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.list_empty),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.list_empty_description),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
 
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                        ) {
-                            items(
-                                items = successState.receipts,
-                                key = { it.id ?: 0 },
-                            ) { receipt ->
-                                ReceiptItem(
-                                    receipt = receipt,
-                                    currencyFormatter = currencyFormatter,
-                                    onReceiptClick = { onReceiptClick(receipt.id!!) },
-                                    onDeleteClick = {
-                                        scope.launch {
-                                            viewModel.deleteReceipt(receipt)
-                                            snackbarHostState.showSnackbar(
-                                                "レシートを削除しました",
-                                            )
-                                        }
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
+@Composable
+private fun ReceiptListSuccess(
+    state: ReceiptListUiState.Success,
+    onYearMonthSelected: (String) -> Unit,
+    onReceiptClick: (Long) -> Unit,
+    onDeleteReceipt: (ReceiptMetaData) -> Unit,
+    currencyFormatter: NumberFormat,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        YearMonthDropdown(
+            options = state.yearMonthOptions,
+            selectedYearMonth = state.selectedYearMonth,
+            onYearMonthSelected = onYearMonthSelected,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        )
 
-                is ReceiptListUiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(
-                                R.string.list_error,
-                                (uiState as ReceiptListUiState.Error).message,
-                            ),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            items(
+                items = state.receipts,
+                key = { it.id ?: 0 },
+            ) { receipt ->
+                ReceiptItem(
+                    receipt = receipt,
+                    currencyFormatter = currencyFormatter,
+                    onReceiptClick = { onReceiptClick(receipt.id!!) },
+                    onDeleteClick = { onDeleteReceipt(receipt) },
+                )
             }
         }
     }
+}
+
+@Composable
+private fun ReceiptListError(message: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.list_error, message),
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReceiptListLoadingPreview() {
+    ReceiptListLoading()
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReceiptListEmptyPreview() {
+    ReceiptListEmpty()
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReceiptListSuccessPreview() {
+    ReceiptListSuccess(
+        state = ReceiptListUiState.Success(
+            yearMonthOptions = listOf("2025-01", "2025-02"),
+            selectedYearMonth = "2025-01",
+            receipts = listOf(ReceiptMetaData.Sample),
+        ),
+        onYearMonthSelected = {},
+        onReceiptClick = {},
+        onDeleteReceipt = {},
+        currencyFormatter = NumberFormat.getCurrencyInstance(Locale.JAPAN),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReceiptListErrorPreview() {
+    ReceiptListError("エラーが発生しました")
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReceiptItemPreview() {
+    ReceiptItem(
+        receipt = ReceiptMetaData.Sample,
+        currencyFormatter = NumberFormat.getCurrencyInstance(Locale.JAPAN),
+        onReceiptClick = {},
+        onDeleteClick = {},
+    )
 }
 
 @Composable

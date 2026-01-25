@@ -8,7 +8,7 @@ import net.uoneweb.android.receipt.dto.ReceiptMappingInfoEntity
 import net.uoneweb.android.receipt.dto.ReceiptMetaDataDao
 import net.uoneweb.android.receipt.dto.ReceiptMetaDataEntity
 
-@Database(entities = [ReceiptMetaDataEntity::class, ReceiptMappingInfoEntity::class], version = 1)
+@Database(entities = [ReceiptMetaDataEntity::class, ReceiptMappingInfoEntity::class], version = 2)
 @TypeConverters(LocationConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun receiptMetaDataDao(): ReceiptMetaDataDao

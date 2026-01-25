@@ -61,6 +61,15 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     private val _osmInfoJson: MutableState<String> = mutableStateOf("")
     val osmInfoJson: State<String> = _osmInfoJson
 
+    private val _selectedYearMonth = MutableStateFlow(getCurrentYearMonth())
+    val selectedYearMonth: StateFlow<String> = _selectedYearMonth.asStateFlow()
+
+    private fun getCurrentYearMonth(): String {
+        val now = java.util.Calendar.getInstance()
+        val year = now.get(java.util.Calendar.YEAR)
+        val month = now.get(java.util.Calendar.MONTH) + 1
+        return String.format("%04d-%02d", year, month)
+    }
 
     init {
         this.viewModelScope.launch {
@@ -88,6 +97,42 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         started = SharingStarted.Lazily,
         initialValue = emptyList(),
     )
+
+    val yearMonthList: StateFlow<List<String>> = receiptMetaDataRepository.getYearMonthList().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = emptyList(),
+    )
+
+    val unknownDateCount: StateFlow<Int> = receiptMetaDataRepository.getCountUnknownDate().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = 0,
+    )
+
+    private val receiptsCache = mutableMapOf<String, StateFlow<List<ReceiptMetaData>>>()
+
+    fun getReceiptsForMonth(yearMonth: String): StateFlow<List<ReceiptMetaData>> {
+        return receiptsCache.getOrPut(yearMonth) {
+            if (yearMonth == UNKNOWN_DATE_KEY) {
+                receiptMetaDataRepository.getUnknownDate()
+            } else {
+                receiptMetaDataRepository.getByYearMonth(yearMonth)
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue = emptyList(),
+            )
+        }
+    }
+
+    fun selectYearMonth(yearMonth: String) {
+        _selectedYearMonth.value = yearMonth
+    }
+
+    companion object {
+        const val UNKNOWN_DATE_KEY = "__unknown__"
+    }
 
     fun listReceiptMappingInfos(): StateFlow<List<ReceiptMappingInfo>> =
         receiptMappingInfoRepository.getAll()

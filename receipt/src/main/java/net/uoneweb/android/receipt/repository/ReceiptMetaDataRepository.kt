@@ -27,6 +27,30 @@ class ReceiptMetaDataRepository(context: Context) {
         }
     }
 
+    fun getYearMonthList(): Flow<List<String>> {
+        return dao.getYearMonthList()
+    }
+
+    fun getByYearMonth(yearMonth: String): Flow<List<ReceiptMetaData>> {
+        return dao.getByYearMonth(yearMonth).map { entities ->
+            entities.map { ReceiptMetaDataEntity.toReceiptMetaData(it) }
+        }
+    }
+
+    fun getUnknownDate(): Flow<List<ReceiptMetaData>> {
+        return dao.getUnknownDate().map { entities ->
+            entities.map { ReceiptMetaDataEntity.toReceiptMetaData(it) }
+        }
+    }
+
+    fun getCountByYearMonth(yearMonth: String): Flow<Int> {
+        return dao.getCountByYearMonth(yearMonth)
+    }
+
+    fun getCountUnknownDate(): Flow<Int> {
+        return dao.getCountUnknownDate()
+    }
+
     suspend fun update(id: Long, metadata: ReceiptMetaData) = withContext(Dispatchers.IO) {
         val entity = ReceiptMetaDataEntity.fromReceiptMetaData(metadata)
         dao.update(entity)

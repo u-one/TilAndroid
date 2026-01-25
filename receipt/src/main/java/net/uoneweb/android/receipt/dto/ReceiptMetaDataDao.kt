@@ -19,6 +19,21 @@ interface ReceiptMetaDataDao {
     @Query("SELECT * FROM receipt_metadata")
     fun getAll(): Flow<List<ReceiptMetaDataEntity>>
 
+    @Query("SELECT DISTINCT receiptYearMonth FROM receipt_metadata WHERE receiptYearMonth IS NOT NULL ORDER BY receiptYearMonth DESC")
+    fun getYearMonthList(): Flow<List<String>>
+
+    @Query("SELECT * FROM receipt_metadata WHERE receiptYearMonth = :yearMonth ORDER BY receiptDate DESC")
+    fun getByYearMonth(yearMonth: String): Flow<List<ReceiptMetaDataEntity>>
+
+    @Query("SELECT * FROM receipt_metadata WHERE receiptYearMonth IS NULL ORDER BY id DESC")
+    fun getUnknownDate(): Flow<List<ReceiptMetaDataEntity>>
+
+    @Query("SELECT COUNT(*) FROM receipt_metadata WHERE receiptYearMonth = :yearMonth")
+    fun getCountByYearMonth(yearMonth: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM receipt_metadata WHERE receiptYearMonth IS NULL")
+    fun getCountUnknownDate(): Flow<Int>
+
     @Update
     suspend fun update(metadata: ReceiptMetaDataEntity)
 

@@ -67,6 +67,7 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 }
             },
             receiptDetailUiState = receiptDetailUiState,
+            receiptViewModel = viewModel,
             onReceiptDetailEvent = { event ->
                 coroutineScope.launch {
                     when (event) {
@@ -117,6 +118,7 @@ fun ReceiptScreenMain(
     onReceiptDetailEvent: (receiptDetailEvent: ReceiptDetailEvent) -> Unit = {},
     receiptMappingUiState: ReceiptMappingUiState = ReceiptMappingUiState(),
     onReceiptMappingEvent: (ReceiptMappingEvent) -> Unit = {},
+    receiptViewModel: ReceiptViewModel? = null,
 ) {
 
     val scrollState = rememberScrollState()
@@ -145,13 +147,24 @@ fun ReceiptScreenMain(
             }
             when (selectedTabIndex) {
                 0 -> {
-                    ReceiptList(
-                        list,
-                        onClickItem = {
-                            onClickItem(it)
-                            selectedTabIndex = 1
-                        },
-                    )
+                    if (receiptViewModel != null) {
+                        ReceiptList(
+                            list,
+                            onClickItem = {
+                                onClickItem(it)
+                                selectedTabIndex = 1
+                            },
+                            viewModel = receiptViewModel,
+                        )
+                    } else {
+                        ReceiptList(
+                            list,
+                            onClickItem = {
+                                onClickItem(it)
+                                selectedTabIndex = 1
+                            },
+                        )
+                    }
                 }
 
                 1 -> {

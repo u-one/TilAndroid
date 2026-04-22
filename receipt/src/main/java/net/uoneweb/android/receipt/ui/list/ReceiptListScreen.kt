@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -184,7 +185,11 @@ private fun ReceiptListSuccess(
                 .fillMaxWidth()
                 .padding(16.dp),
         )
-
+        MonthlyHeader(
+            yearMonth = state.selectedYearMonth,
+            total = state.total,
+            currencyFormatter = currencyFormatter,
+        )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -216,6 +221,40 @@ private fun ReceiptListError(message: String) {
     }
 }
 
+@Composable
+fun MonthlyHeader(
+    yearMonth: String,
+    total: Int,
+    currencyFormatter: NumberFormat,
+) {
+    val displayMonth = if (yearMonth.isEmpty()) {
+        "日付不明"
+    } else {
+        val parts = yearMonth.split("-")
+        if (parts.size >= 2) "${parts[0]}年${parts[1].trimStart('0')}月" else yearMonth
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = displayMonth,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = currencyFormatter.format(total),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+    HorizontalDivider(thickness = 2.dp)
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun ReceiptListLoadingPreview() {
@@ -236,6 +275,7 @@ private fun ReceiptListSuccessPreview() {
             yearMonthOptions = listOf("2025-01", "2025-02"),
             selectedYearMonth = "2025-01",
             receipts = listOf(ReceiptMetaData.Sample),
+            total = 1000,
         ),
         onYearMonthSelected = {},
         onReceiptClick = {},

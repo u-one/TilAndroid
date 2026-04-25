@@ -11,9 +11,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import net.uoneweb.android.receipt.UNKNOWN_DATE_KEY
+import net.uoneweb.android.receipt.currentYearMonth
 import net.uoneweb.android.receipt.data.ReceiptMetaData
 import net.uoneweb.android.receipt.repository.ReceiptMetaDataRepository
-import java.util.Calendar
 
 /**
  * ViewModel for the Receipt List screen.
@@ -25,7 +26,7 @@ class ReceiptListViewModel(
 
     private val repository = ReceiptMetaDataRepository(application)
 
-    private val _selectedYearMonth = MutableStateFlow(getCurrentYearMonth())
+    private val _selectedYearMonth = MutableStateFlow(currentYearMonth())
     val selectedYearMonth: StateFlow<String> = _selectedYearMonth
 
     private val yearMonthListFlow = repository.getYearMonthList()
@@ -82,16 +83,6 @@ class ReceiptListViewModel(
         repository.delete(receipt)
     }
 
-    companion object {
-        const val UNKNOWN_DATE_KEY = "__unknown__"
-
-        private fun getCurrentYearMonth(): String {
-            val now = Calendar.getInstance()
-            val year = now.get(Calendar.YEAR)
-            val month = now.get(Calendar.MONTH) + 1
-            return String.format("%04d-%02d", year, month)
-        }
-    }
 }
 
 /**

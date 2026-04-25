@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.uoneweb.android.receipt.UNKNOWN_DATE_KEY
+import net.uoneweb.android.receipt.currentYearMonth
 import net.uoneweb.android.receipt.ui.list.ReceiptListState
 import net.uoneweb.android.data.ReceiptSettingDataStore
 import net.uoneweb.android.gis.ui.location.Location
@@ -66,15 +68,8 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
     private val _osmInfoJson: MutableState<String> = mutableStateOf("")
     val osmInfoJson: State<String> = _osmInfoJson
 
-    private val _selectedYearMonth = MutableStateFlow(getCurrentYearMonth())
+    private val _selectedYearMonth = MutableStateFlow(currentYearMonth())
     val selectedYearMonth: StateFlow<String> = _selectedYearMonth.asStateFlow()
-
-    private fun getCurrentYearMonth(): String {
-        val now = java.util.Calendar.getInstance()
-        val year = now.get(java.util.Calendar.YEAR)
-        val month = now.get(java.util.Calendar.MONTH) + 1
-        return String.format("%04d-%02d", year, month)
-    }
 
     init {
         this.viewModelScope.launch {
@@ -115,22 +110,6 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         initialValue = 0,
     )
 
-    private val receiptsCache = mutableMapOf<String, StateFlow<List<ReceiptMetaData>>>()
-
-    fun getReceiptsForMonth(yearMonth: String): StateFlow<List<ReceiptMetaData>> {
-        return receiptsCache.getOrPut(yearMonth) {
-            if (yearMonth == UNKNOWN_DATE_KEY) {
-                receiptMetaDataRepository.getUnknownDate()
-            } else {
-                receiptMetaDataRepository.getByYearMonth(yearMonth)
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.Lazily,
-                initialValue = emptyList(),
-            )
-        }
-    }
-
     fun selectYearMonth(yearMonth: String) {
         _selectedYearMonth.value = yearMonth
     }
@@ -164,10 +143,6 @@ class ReceiptViewModel(application: Application) : AndroidViewModel(application)
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ReceiptListState(),
     )
-
-    companion object {
-        const val UNKNOWN_DATE_KEY = "__unknown__"
-    }
 
     fun listReceiptMappingInfos(): StateFlow<List<ReceiptMappingInfo>> =
         receiptMappingInfoRepository.getAll()

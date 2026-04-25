@@ -17,8 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import net.uoneweb.android.receipt.R
-
-const val UNKNOWN_DATE_KEY = "__unknown__"
+import net.uoneweb.android.receipt.UNKNOWN_DATE_KEY
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

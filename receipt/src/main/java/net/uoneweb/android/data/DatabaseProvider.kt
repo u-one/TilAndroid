@@ -1,6 +1,7 @@
 package net.uoneweb.android.data
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -32,7 +33,7 @@ object DatabaseProvider {
                         )
                     }
                 } catch (e: Exception) {
-                    // JSONパース失敗時は無視
+                    Log.e("DatabaseProvider", "Migration failed to parse JSON for id=$id", e)
                 }
             }
             cursor.close()

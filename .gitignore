@@ -16,7 +16,7 @@ app/google-services.json
 local.properties
 
 # Claude Code / AI tools
-.claude/
+.claude/settings.local.json
 .serena/
 
 # Environment

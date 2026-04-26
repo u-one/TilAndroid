@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -qE '\\.(kt|kts)\"' && ./gradlew spotlessApply 2>&1 | tail -5 || true",
+            "statusMessage": "Spotless フォーマット適用中...",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./gradlew test 2>&1 | tail -20 || true",
+            "statusMessage": "単体テスト実行中...",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  }
+}

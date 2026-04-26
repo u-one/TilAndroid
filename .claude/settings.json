@@ -7,8 +7,8 @@
           {
             "type": "command",
             "command": "grep -qE '\\.(kt|kts)\"' && ./gradlew spotlessApply 2>&1 | tail -5 || true",
-            "statusMessage": "Spotless フォーマット適用中...",
-            "timeout": 120
+            "timeout": 120,
+            "statusMessage": "Spotless フォーマット適用中..."
           }
         ]
       }
@@ -20,11 +20,14 @@
           {
             "type": "command",
             "command": "./gradlew test 2>&1 | tail -20 || true",
-            "statusMessage": "単体テスト実行中...",
-            "timeout": 300
+            "timeout": 300,
+            "statusMessage": "単体テスト実行中..."
           }
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "compose-expert@aldefy-compose-skill": true
   }
 }

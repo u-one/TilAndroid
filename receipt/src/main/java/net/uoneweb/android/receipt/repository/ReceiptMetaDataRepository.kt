@@ -34,12 +34,20 @@ class ReceiptMetaDataRepository(context: Context) {
     fun getByYearMonth(yearMonth: String): Flow<List<ReceiptMetaData>> {
         return dao.getByYearMonth(yearMonth).map { entities ->
             entities.map { ReceiptMetaDataEntity.toReceiptMetaData(it) }
+                .sortedByDescending { it.content.receipt.date + "T" + it.content.receipt.time }
         }
     }
 
     fun getUnknownDate(): Flow<List<ReceiptMetaData>> {
         return dao.getUnknownDate().map { entities ->
             entities.map { ReceiptMetaDataEntity.toReceiptMetaData(it) }
+        }
+    }
+
+    fun getByDate(date: String): Flow<List<ReceiptMetaData>> {
+        return dao.getByDate(date).map { entities ->
+            entities.map { ReceiptMetaDataEntity.toReceiptMetaData(it) }
+                .sortedByDescending { it.content.receipt.time }
         }
     }
 

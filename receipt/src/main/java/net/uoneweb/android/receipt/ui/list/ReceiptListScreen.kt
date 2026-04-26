@@ -185,6 +185,10 @@ private fun ReceiptListSuccess(
                 .fillMaxWidth()
                 .padding(16.dp),
         )
+        TodayHeader(
+            total = state.todayTotal,
+            currencyFormatter = currencyFormatter,
+        )
         MonthlyHeader(
             yearMonth = state.selectedYearMonth,
             total = state.total,
@@ -217,6 +221,30 @@ private fun ReceiptListError(message: String) {
         Text(
             text = stringResource(R.string.list_error, message),
             color = MaterialTheme.colorScheme.error,
+        )
+    }
+}
+
+@Composable
+fun TodayHeader(
+    total: Int,
+    currencyFormatter: NumberFormat,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "今日の合計",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            text = currencyFormatter.format(total),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
         )
     }
 }
@@ -276,6 +304,7 @@ private fun ReceiptListSuccessPreview() {
             selectedYearMonth = "2025-01",
             receipts = listOf(ReceiptMetaData.Sample),
             total = 1000,
+            todayTotal = 500,
         ),
         onYearMonthSelected = {},
         onReceiptClick = {},
@@ -331,34 +360,34 @@ fun ReceiptItem(
             Column(
                 modifier = Modifier.weight(1f),
             ) {
-                Text(
-                    text = receipt.content.store.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
+                val date = if (receipt.content.receipt.date.isNotEmpty()) {
+                    receipt.content.receipt.date
+                } else {
+                    stringResource(R.string.detail_date_unknown)
+                }
+                val time = receipt.content.receipt.time
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    val date = if (receipt.content.receipt.date.isNotEmpty()) {
-                        receipt.content.receipt.date
-                    } else {
-                        stringResource(R.string.detail_date_unknown)
-                    }
                     Text(
-                        text = date,
-                        style = MaterialTheme.typography.bodySmall,
+                        text = if (time.isNotEmpty()) "$date $time" else date,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
                     )
-
                     Text(
                         text = currencyFormatter.format(receipt.content.total),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                     )
                 }
+
+                Text(
+                    text = receipt.content.store(),
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
 
             IconButton(onClick = onDeleteClick) {

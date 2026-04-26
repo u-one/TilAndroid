@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import net.uoneweb.android.receipt.UNKNOWN_DATE_KEY
+import net.uoneweb.android.receipt.currentDate
 import net.uoneweb.android.receipt.currentYearMonth
 import net.uoneweb.android.receipt.data.ReceiptMetaData
 import net.uoneweb.android.receipt.repository.ReceiptMetaDataRepository
@@ -37,12 +38,15 @@ class ReceiptListViewModel(
         }
     }
 
+    private val todayReceiptsFlow = repository.getByDate(currentDate())
+
     val uiState: StateFlow<ReceiptListUiState> = combine(
         yearMonthListFlow,
         unknownCountFlow,
         _selectedYearMonth,
         selectedReceiptsFlow,
-    ) { yearMonthList, unknownCount, selectedYearMonth, receipts ->
+        todayReceiptsFlow,
+    ) { yearMonthList, unknownCount, selectedYearMonth, receipts, todayReceipts ->
         if (yearMonthList.isEmpty() && unknownCount == 0) {
             ReceiptListUiState.Empty
         } else {
@@ -55,6 +59,7 @@ class ReceiptListViewModel(
                 selectedYearMonth = selectedYearMonth,
                 receipts = receipts,
                 total = receipts.sumOf { it.content.total },
+                todayTotal = todayReceipts.sumOf { it.content.total },
             )
         }
     }
@@ -84,6 +89,7 @@ sealed class ReceiptListUiState {
         val selectedYearMonth: String,
         val receipts: List<ReceiptMetaData>,
         val total: Int,
+        val todayTotal: Int,
     ) : ReceiptListUiState()
     data class Error(val message: String) : ReceiptListUiState()
 }

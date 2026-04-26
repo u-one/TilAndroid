@@ -112,13 +112,12 @@ class ShareReceiverActivity : AppCompatActivity() {
     suspend fun saveMultipleReceipts(list: List<ReceiptMetaData>) {
         var cnt = 0
         for (receipt in list) {
-            val data = ReceiptMetaData.fromJson(receipt.toString())
-            val id = receiptMetaDataRepository.insert(data)
+            val id = receiptMetaDataRepository.insert(receipt)
             if (id >= 0) {
                 cnt++
                 Log.d("handleJson", "Inserted receipt with ID: $id")
             } else {
-                Log.e("handleJson", "Failed to insert receipt: $data")
+                Log.e("handleJson", "Failed to insert receipt: $receipt")
             }
         }
         Log.d("handleJson", "Inserted $cnt/${list.size} receipts")

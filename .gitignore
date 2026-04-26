@@ -14,3 +14,16 @@ app/google-services.json
 .externalNativeBuild
 .cxx
 local.properties
+
+# Claude Code / AI tools
+.claude/
+.serena/
+
+# Environment
+.env
+
+# Build outputs
+app/release/
+
+# Work in progress docs
+docs/wip/

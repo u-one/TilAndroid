@@ -9,5 +9,9 @@
     <string name="list_error">エラー： %1$s</string>
     <string name="detail_date_unknown">不明</string>
     <string name="list_delete">削除</string>
+    <string name="list_unknown_date">日付不明</string>
+    <string name="list_group_count">%1$d件</string>
+    <string name="list_expand">展開</string>
+    <string name="list_collapse">折りたたむ</string>
     <string name="find_with_map">地図を開く</string>
 </resources>

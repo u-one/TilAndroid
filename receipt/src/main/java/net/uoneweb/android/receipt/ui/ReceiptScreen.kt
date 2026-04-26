@@ -38,12 +38,12 @@ import net.uoneweb.android.receipt.ui.detail.ReceiptDetail
 import net.uoneweb.android.receipt.ui.detail.ReceiptDetailEvent
 import net.uoneweb.android.receipt.ui.detail.ReceiptDetailUiState
 import net.uoneweb.android.receipt.ui.list.ReceiptList
+import net.uoneweb.android.receipt.ui.list.ReceiptListState
 
 @Composable
 fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
     val receiptMappingInfo by viewModel.osmInfoJson
     val receiptMetaDataList = viewModel.listReceiptMetaData.collectAsState()
-    //val receiptMappingInfoList = viewModel.listReceiptMappingInfosByReceiptId(receipt.id ?: 0).collectAsState()
     val receiptMappingInfoList = viewModel.listReceiptMappingInfos().collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -57,6 +57,8 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
         location = receiptDetailUiState.receipt.location ?: Location.Default,
     )
 
+    val receiptListState by viewModel.receiptListState.collectAsState()
+
     Column {
         ReceiptScreenMain(
             list = receiptMetaDataList.value,
@@ -67,6 +69,8 @@ fun ReceiptScreen(viewModel: ReceiptViewModel = viewModel()) {
                 }
             },
             receiptDetailUiState = receiptDetailUiState,
+            receiptListState = receiptListState,
+            onYearMonthSelected = { viewModel.selectYearMonth(it) },
             onReceiptDetailEvent = { event ->
                 coroutineScope.launch {
                     when (event) {
@@ -117,6 +121,8 @@ fun ReceiptScreenMain(
     onReceiptDetailEvent: (receiptDetailEvent: ReceiptDetailEvent) -> Unit = {},
     receiptMappingUiState: ReceiptMappingUiState = ReceiptMappingUiState(),
     onReceiptMappingEvent: (ReceiptMappingEvent) -> Unit = {},
+    receiptListState: ReceiptListState = ReceiptListState(),
+    onYearMonthSelected: (String) -> Unit = {},
 ) {
 
     val scrollState = rememberScrollState()
@@ -146,7 +152,8 @@ fun ReceiptScreenMain(
             when (selectedTabIndex) {
                 0 -> {
                     ReceiptList(
-                        list,
+                        state = receiptListState,
+                        onYearMonthSelected = onYearMonthSelected,
                         onClickItem = {
                             onClickItem(it)
                             selectedTabIndex = 1
@@ -232,5 +239,10 @@ fun ReceiptScreenMainPreview() {
             ReceiptMetaData(Receipt.Empty),
         ),
         receiptDetailUiState = receiptDetailUiState,
+        receiptListState = ReceiptListState(
+            yearMonthOptions = listOf("2025-01"),
+            selectedYearMonth = "2025-01",
+            receipts = listOf(ReceiptMetaData(Receipt.Sample)),
+        ),
     )
 }

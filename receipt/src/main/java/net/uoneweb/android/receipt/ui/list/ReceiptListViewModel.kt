@@ -16,9 +16,6 @@ import net.uoneweb.android.receipt.currentYearMonth
 import net.uoneweb.android.receipt.data.ReceiptMetaData
 import net.uoneweb.android.receipt.repository.ReceiptMetaDataRepository
 
-/**
- * ViewModel for the Receipt List screen.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReceiptListViewModel(
     application: Application,
@@ -40,9 +37,6 @@ class ReceiptListViewModel(
         }
     }
 
-    /**
-     * UI state for the Receipt List screen.
-     */
     val uiState: StateFlow<ReceiptListUiState> = combine(
         yearMonthListFlow,
         unknownCountFlow,
@@ -60,6 +54,7 @@ class ReceiptListViewModel(
                 yearMonthOptions = options,
                 selectedYearMonth = selectedYearMonth,
                 receipts = receipts,
+                total = receipts.sumOf { it.content.total },
             )
         }
     }
@@ -76,18 +71,11 @@ class ReceiptListViewModel(
         _selectedYearMonth.value = yearMonth
     }
 
-    /**
-     * Deletes a receipt.
-     */
     suspend fun deleteReceipt(receipt: ReceiptMetaData) {
         repository.delete(receipt)
     }
-
 }
 
-/**
- * UI state for the Receipt List screen.
- */
 sealed class ReceiptListUiState {
     data object Loading : ReceiptListUiState()
     data object Empty : ReceiptListUiState()
@@ -95,6 +83,7 @@ sealed class ReceiptListUiState {
         val yearMonthOptions: List<String>,
         val selectedYearMonth: String,
         val receipts: List<ReceiptMetaData>,
+        val total: Int,
     ) : ReceiptListUiState()
     data class Error(val message: String) : ReceiptListUiState()
 }

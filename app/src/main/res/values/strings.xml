@@ -8,6 +8,7 @@
     <string name="pager">ポケベル</string>
     <string name="audio">音</string>
     <string name="receipt">receipt</string>
+    <string name="receipt_list">receipt list</string>
     <string name="drive">drive</string>
     <string name="location">location</string>
     <string name="map">map</string>

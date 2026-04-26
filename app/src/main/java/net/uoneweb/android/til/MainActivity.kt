@@ -57,6 +57,7 @@ import kotlinx.coroutines.launch
 import net.uoneweb.android.gis.ui.location.LocationScreen
 import net.uoneweb.android.gis.ui.map.MapScreen
 import net.uoneweb.android.receipt.ui.ReceiptScreen
+import net.uoneweb.android.receipt.ui.list.ReceiptListScreen
 import net.uoneweb.android.til.data.SettingsDataStore
 import net.uoneweb.android.til.ui.audio.AudioScreen
 import net.uoneweb.android.til.ui.buttons.ButtonsScreen
@@ -257,6 +258,8 @@ sealed class Screen(
 
     data object Receipt : Screen("receipt", R.string.receipt, Icons.Filled.AccountBox)
 
+    data object ReceiptList : Screen("receipt_list", R.string.receipt_list, Icons.Filled.AccountBox)
+
     data object Drive : Screen("drive", R.string.drive, Icons.Filled.Menu)
 
     data object Location : Screen("location", R.string.location, Icons.Filled.LocationOn)
@@ -276,6 +279,7 @@ private val screens =
         Screen.Pager,
         Screen.Audio,
         Screen.Receipt,
+        Screen.ReceiptList,
         Screen.Drive,
         Screen.Location,
         Screen.Map,
@@ -316,7 +320,9 @@ private fun TilNavHost(
         }
         composable(Screen.Receipt.route) {
             ReceiptScreen()
-            // ReceiptListScreen()
+        }
+        composable(Screen.ReceiptList.route) {
+            ReceiptListScreen()
         }
         composable(Screen.Drive.route) {
             DriveScreen()
